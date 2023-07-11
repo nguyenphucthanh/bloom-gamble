@@ -8,6 +8,7 @@ import React, {
 import styles from "./styles.module.scss"
 import { useAppDispatch } from "../../app/hooks"
 import { IGambleState, setPlayer } from "./gambleSlice"
+import trollImage from "../../images/troll.jpeg"
 
 export const EnterPlayer: FC = () => {
   const dispatch = useAppDispatch()
@@ -54,6 +55,25 @@ export const EnterPlayer: FC = () => {
             />
           </div>
         ))}
+        <div className="flex flex-col items-center gap-2">
+          <div className="text-center text-red-500 font-bold text-lg">
+            Chúc các bạn may mắn
+          </div>
+          <iframe
+            src="https://giphy.com/embed/uzWoRrlxnbL6TJgIbP"
+            width="320"
+            height="200"
+            frameBorder="0"
+            className="giphy-embed"
+            allowFullScreen
+            title="troll"
+          ></iframe>
+          <p>
+            <a href="https://giphy.com/gifs/pokemon-anime-cheer-meowth-uzWoRrlxnbL6TJgIbP">
+              via GIPHY
+            </a>
+          </p>
+        </div>
         <button
           type="submit"
           className="text-white font-bold text-3xl bg-blue-500 rounded-lg p-2 text-center w-1/2 disabled:opacity-50"
