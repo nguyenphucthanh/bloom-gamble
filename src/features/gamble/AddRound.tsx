@@ -1,10 +1,11 @@
 import React, { FC, useCallback, useMemo, useState } from "react"
-import { useAppDispatch } from "../../app/hooks"
-import { IGambleRound, PlayerKey, newRound } from "./gambleSlice"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import { IGambleRound, PlayerKey, newRound, selectPlayer } from "./gambleSlice"
 import { partition, sortBy } from "lodash"
 import { fullFillRound, parseRoundString } from "../../app/libs/convert-pattern"
 
 const AddRow: FC = () => {
+  const players = useAppSelector(selectPlayer)
   const dispatch = useAppDispatch()
   const [round, setRound] = useState<{
     [key: string]: number | null
@@ -108,7 +109,7 @@ const AddRow: FC = () => {
   }, [])
 
   const convertSmartFill = useCallback(() => {
-    const parsedRound = fullFillRound(parseRoundString(smartFill))
+    const parsedRound = fullFillRound(parseRoundString(smartFill, players))
     if (parsedRound) {
       const anyUnfilled = Object.keys(parsedRound).find((key: string) => {
         return (

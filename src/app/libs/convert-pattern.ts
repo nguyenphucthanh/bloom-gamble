@@ -1,19 +1,30 @@
 import { partition } from "lodash"
-import { IGambleRound, PlayerKey } from "./../../features/gamble/gambleSlice"
+import {
+  IGambleRound,
+  IGambleState,
+  PlayerKey,
+} from "./../../features/gamble/gambleSlice"
 /**
  * create a function, input is a string following this pattern "A 1 B 2 C 3"
  * then convert into an object { "A": -1, "B": -2, "C": -3 }
  */
 export const parseRoundString = (
   str: string,
+  players: IGambleState["player"],
 ): Record<string, number | null> => {
   const result: Record<string, number> = {}
   const splitted = str.split(" ")
 
+  const playerNames = Object.values(players).map((name) => name.toLowerCase())
   for (let i = 0; i < splitted.length; i += 2) {
-    const key = splitted[i].toUpperCase()
-    if (["A", "B", "C", "D"].includes(key))
-      result[key] = -parseInt(splitted[i + 1])
+    const name = splitted[i].toLowerCase()
+    const playerKey = Object.keys(players).find(
+      (key: string) => players[key as PlayerKey].toLowerCase() === name,
+    )
+
+    if (playerNames.includes(name)) {
+      result[playerKey as PlayerKey] = -parseInt(splitted[i + 1])
+    }
   }
 
   return result
