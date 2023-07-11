@@ -74,57 +74,78 @@ const AddRow: FC = () => {
     return true
   }, [round])
 
-  const onBlur = useCallback((playerKey: string, value: number) => {
-    const keys = ["A", "B", "C", "D"]
-    // case white win
-    if (value === 39) {
-      const [_entered, left] = partition(keys, (k) => k === playerKey)
-      setRound((prev) => {
-        const next = { ...prev }
-        left.forEach((key: string) => {
-          next[key] = -13
-        })
-        return next
+  const calcLastPlayerPoint = useCallback((prev: IGambleRound) => {
+    const keys: PlayerKey[] = ["A", "B", "C", "D"]
+    const [entered, empties] = partition(keys, (k: string) => {
+      return prev[k as PlayerKey] !== null && prev[k as PlayerKey] !== undefined
+    })
+    if (empties.length === 1) {
+      let autoValue = 0
+      entered.forEach((e: string) => {
+        autoValue -= prev[e as PlayerKey] ?? 0
       })
-    } else {
-      // not white win
-      setRound((prev) => {
-        const [entered, empties] = partition(keys, (k: string) => {
-          return prev[k] !== null && prev[k] !== undefined
-        })
-        if (empties.length === 1) {
-          let autoValue = 0
-          entered.forEach((e: string) => {
-            autoValue -= prev[e] ?? 0
-          })
-          const next = { ...prev }
+      const next = { ...prev }
 
-          next[empties[0]] = autoValue
-          return next
-        }
-
-        return prev
-      })
+      next[empties[0]] = autoValue
+      return next
     }
+
+    return prev
   }, [])
+
+  const onBlur = useCallback(
+    (playerKey: string, value: number) => {
+      const keys = ["A", "B", "C", "D"]
+      // case white win
+      if (value === 39) {
+        const [_entered, left] = partition(keys, (k) => k === playerKey)
+        setRound((prev) => {
+          const next = { ...prev }
+          left.forEach((key: string) => {
+            next[key] = -13
+          })
+          return next
+        })
+      } else {
+        // not white win
+        setRound((prev) => {
+          return calcLastPlayerPoint(prev as IGambleRound)
+        })
+      }
+    },
+    [calcLastPlayerPoint],
+  )
 
   const convertSmartFill = useCallback(() => {
     const parsedRound = fullFillRound(parseRoundString(smartFill, players))
     if (parsedRound) {
-      const anyUnfilled = Object.keys(parsedRound).find((key: string) => {
+      let next = {
+        A: round.A ?? parsedRound.A ?? null,
+        B: round.B ?? parsedRound.B ?? null,
+        C: round.C ?? parsedRound.C ?? null,
+        D: round.D ?? parsedRound.D ?? null,
+      }
+      next = calcLastPlayerPoint(next)
+      const anyUnfilled = Object.keys(next).find((key: string) => {
         return (
-          parsedRound[key as PlayerKey] === null ||
-          parsedRound[key as PlayerKey] === undefined
+          next[key as PlayerKey] === null ||
+          next[key as PlayerKey] === undefined
         )
       })
       if (anyUnfilled) {
-        setRound(parsedRound)
+        setRound(next)
       } else {
-        dispatch(newRound(parsedRound))
+        dispatch(newRound(next))
+        setRound({
+          A: null,
+          B: null,
+          C: null,
+          D: null,
+        })
       }
       setSmartFill("")
     }
-  }, [smartFill, dispatch])
+  }, [smartFill, players, calcLastPlayerPoint, dispatch, round])
 
   return (
     <tfoot>
