@@ -1,0 +1,20 @@
+.inputPlayer {
+    @apply text-lg border border-gray-500 rounded-lg p-2;
+
+    &:focus,
+    &:active {
+        @apply border border-blue-500 ring-2 ring-blue-300 outline-none;
+    }
+}
+
+.table {
+    @apply border border-gray-100 w-full mt-5 rounded overflow-hidden ring-2 ring-blue-300;
+
+    th, td {
+        @apply p-2 text-right border border-gray-300;
+    }
+
+    th {
+        @apply bg-blue-50 font-bold;
+    }
+}
