@@ -23,7 +23,7 @@ export const parseRoundString = (
     )
 
     if (playerNames.includes(name)) {
-      result[playerKey as PlayerKey] = -parseInt(splitted[i + 1])
+      result[playerKey as PlayerKey] = parseInt(splitted[i + 1])
     }
   }
 

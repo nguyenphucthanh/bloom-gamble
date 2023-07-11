@@ -8,7 +8,7 @@ const AddRow: FC = () => {
   const players = useAppSelector(selectPlayer)
   const dispatch = useAppDispatch()
   const [round, setRound] = useState<{
-    [key: string]: number | null
+    [key: string]: string | null
   }>({
     A: null,
     B: null,
@@ -17,53 +17,75 @@ const AddRow: FC = () => {
   })
   const [smartFill, setSmartFill] = useState("")
 
-  const setPoint = useCallback((name: string, value: number) => {
+  const parsedRound = useMemo(() => {
+    return {
+      A: round.A ? parseInt(round.A || "0", 10) : null,
+      B: round.B ? parseInt(round.B || "0", 10) : null,
+      C: round.C ? parseInt(round.C || "0", 10) : null,
+      D: round.D ? parseInt(round.D || "0", 10) : null,
+    }
+  }, [round])
+
+  const setPoint = useCallback((name: string, value: string) => {
     setRound((prev) => ({
       ...prev,
       [name]: value,
     }))
   }, [])
 
+  const addNewRound = useCallback(
+    (round: IGambleRound) => {
+      const { A, B, C, D } = round
+      dispatch(
+        newRound({
+          A: -A,
+          B: -B,
+          C: -C,
+          D: -D,
+        }),
+      )
+    },
+    [dispatch],
+  )
+
   const addRound = useCallback(() => {
-    const { A, B, C, D } = round
-    dispatch(
-      newRound({
-        A,
-        B,
-        C,
-        D,
-      } as IGambleRound),
-    )
+    const { A, B, C, D } = parsedRound
+    addNewRound({
+      A,
+      B,
+      C,
+      D,
+    } as IGambleRound)
     setRound({
       A: null,
       B: null,
       C: null,
       D: null,
     })
-  }, [dispatch, round])
+  }, [addNewRound, parsedRound])
 
   const isAbleToAdd = useMemo(() => {
+    const { A, B, C, D } = parsedRound
     const isAllValued =
-      round.A !== null &&
-      round.A !== undefined &&
-      typeof round.A === "number" &&
-      round.B !== null &&
-      round.B !== undefined &&
-      typeof round.B === "number" &&
-      round.C !== null &&
-      round.C !== undefined &&
-      typeof round.C === "number" &&
-      round.D !== null &&
-      round.D !== undefined &&
-      typeof round.D === "number"
+      A !== null &&
+      A !== undefined &&
+      typeof A === "number" &&
+      B !== null &&
+      B !== undefined &&
+      typeof B === "number" &&
+      C !== null &&
+      C !== undefined &&
+      typeof C === "number" &&
+      D !== null &&
+      D !== undefined &&
+      typeof D === "number"
 
     if (isAllValued) {
       // enter 4 zeros
-      if (!round.A && !round.B && !round.C && !round.D) {
+      if (!A && !B && !C && !D) {
         return false
       }
-      const total =
-        (round.A ?? 0) + (round.B ?? 0) + (round.C ?? 0) + (round.D ?? 0)
+      const total = (A ?? 0) + (B ?? 0) + (C ?? 0) + (D ?? 0)
       if (total !== 0) {
         return false
       }
@@ -72,7 +94,7 @@ const AddRow: FC = () => {
     }
 
     return true
-  }, [round])
+  }, [parsedRound])
 
   const calcLastPlayerPoint = useCallback((prev: IGambleRound) => {
     const keys: PlayerKey[] = ["A", "B", "C", "D"]
@@ -94,23 +116,37 @@ const AddRow: FC = () => {
   }, [])
 
   const onBlur = useCallback(
-    (playerKey: string, value: number) => {
+    (playerKey: string, value: string) => {
       const keys = ["A", "B", "C", "D"]
       // case white win
-      if (value === 39) {
-        const [_entered, left] = partition(keys, (k) => k === playerKey)
-        setRound((prev) => {
-          const next = { ...prev }
-          left.forEach((key: string) => {
-            next[key] = -13
+      const parsed = parseInt(value, 10)
+      if (!isNaN(parsed)) {
+        if (parsed === 39) {
+          const [, left] = partition(keys, (k) => k === playerKey)
+          setRound((prev) => {
+            const next = { ...prev }
+            left.forEach((key: string) => {
+              next[key] = "-13"
+            })
+            return next
           })
-          return next
-        })
-      } else {
-        // not white win
-        setRound((prev) => {
-          return calcLastPlayerPoint(prev as IGambleRound)
-        })
+        } else {
+          // not white win
+          setRound((prev) => {
+            const calc = calcLastPlayerPoint({
+              A: prev.A ? parseInt(prev.A || "0", 10) : null,
+              B: prev.B ? parseInt(prev.B || "0", 10) : null,
+              C: prev.C ? parseInt(prev.C || "0", 10) : null,
+              D: prev.D ? parseInt(prev.D || "0", 10) : null,
+            } as IGambleRound)
+            return {
+              A: calc.A?.toString() || null,
+              B: calc.B?.toString() || null,
+              C: calc.C?.toString() || null,
+              D: calc.D?.toString() || null,
+            }
+          })
+        }
       }
     },
     [calcLastPlayerPoint],
@@ -120,10 +156,10 @@ const AddRow: FC = () => {
     const parsedRound = fullFillRound(parseRoundString(smartFill, players))
     if (parsedRound) {
       let next = {
-        A: round.A ?? parsedRound.A ?? null,
-        B: round.B ?? parsedRound.B ?? null,
-        C: round.C ?? parsedRound.C ?? null,
-        D: round.D ?? parsedRound.D ?? null,
+        A: parsedRound.A ?? parsedRound.A ?? null,
+        B: parsedRound.B ?? parsedRound.B ?? null,
+        C: parsedRound.C ?? parsedRound.C ?? null,
+        D: parsedRound.D ?? parsedRound.D ?? null,
       }
       next = calcLastPlayerPoint(next)
       const anyUnfilled = Object.keys(next).find((key: string) => {
@@ -133,9 +169,14 @@ const AddRow: FC = () => {
         )
       })
       if (anyUnfilled) {
-        setRound(next)
+        setRound({
+          A: next.A.toString(),
+          B: next.B.toString(),
+          C: next.C.toString(),
+          D: next.D.toString(),
+        })
       } else {
-        dispatch(newRound(next))
+        addNewRound(next)
         setRound({
           A: null,
           B: null,
@@ -145,7 +186,7 @@ const AddRow: FC = () => {
       }
       setSmartFill("")
     }
-  }, [smartFill, players, calcLastPlayerPoint, dispatch, round])
+  }, [smartFill, players, calcLastPlayerPoint, addNewRound])
 
   return (
     <tfoot>
@@ -155,19 +196,14 @@ const AddRow: FC = () => {
           <td key={id}>
             <label title={id}>
               <input
+                type="text"
                 placeholder="0"
-                type="number"
                 className="text-black block w-full rounded text-2xl p-1 border border-gray-300 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 value={round[id as string] ?? ""}
-                onChange={(e) =>
-                  setPoint(id, parseFloat(e.target.value || "0"))
-                }
+                onChange={(e) => setPoint(id, e.target.value)}
                 onBlur={(e) => {
-                  onBlur(id, parseFloat(e.target.value || "0"))
+                  onBlur(id, e.target.value)
                 }}
-                min={-200}
-                max={200}
-                step={1}
               />
             </label>
           </td>
