@@ -8,7 +8,6 @@ import React, {
 import styles from "./styles.module.scss"
 import { useAppDispatch } from "../../app/hooks"
 import { IGambleState, setPlayer } from "./gambleSlice"
-import trollImage from "../../images/troll.jpeg"
 
 export const EnterPlayer: FC = () => {
   const dispatch = useAppDispatch()
