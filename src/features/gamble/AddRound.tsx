@@ -1,7 +1,8 @@
 import React, { FC, useCallback, useMemo, useState } from "react"
 import { useAppDispatch } from "../../app/hooks"
-import { IGambleRound, newRound } from "./gambleSlice"
-import { partition } from "lodash"
+import { IGambleRound, PlayerKey, newRound } from "./gambleSlice"
+import { partition, sortBy } from "lodash"
+import { fullFillRound, parseRoundString } from "../../app/libs/convert-pattern"
 
 const AddRow: FC = () => {
   const dispatch = useAppDispatch()
@@ -13,6 +14,7 @@ const AddRow: FC = () => {
     C: null,
     D: null,
   })
+  const [smartFill, setSmartFill] = useState("")
 
   const setPoint = useCallback((name: string, value: number) => {
     setRound((prev) => ({
@@ -105,11 +107,29 @@ const AddRow: FC = () => {
     }
   }, [])
 
+  const convertSmartFill = useCallback(() => {
+    const parsedRound = fullFillRound(parseRoundString(smartFill))
+    if (parsedRound) {
+      const anyUnfilled = Object.keys(parsedRound).find((key: string) => {
+        return (
+          parsedRound[key as PlayerKey] === null ||
+          parsedRound[key as PlayerKey] === undefined
+        )
+      })
+      if (anyUnfilled) {
+        setRound(parsedRound)
+      } else {
+        dispatch(newRound(parsedRound))
+      }
+      setSmartFill("")
+    }
+  }, [smartFill, dispatch])
+
   return (
     <tfoot>
       <tr>
         <td>New</td>
-        {Object.keys(round).map((id) => (
+        {sortBy(Object.keys(round)).map((id) => (
           <td key={id}>
             <label title={id}>
               <input
@@ -149,6 +169,45 @@ const AddRow: FC = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <td>OR</td>
+        <td colSpan={4}>
+          <label title={"PatternInput"}>
+            <input
+              placeholder="A 1 B 2 C 3"
+              type="text"
+              className="text-black block w-full rounded text-2xl p-1 border border-gray-300 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 uppercase"
+              value={smartFill}
+              onChange={(e) => {
+                setSmartFill(e.target.value)
+              }}
+            />
+          </label>
+          <div>Chỉ cần ghi người thua, điểm tự đảo dấu</div>
+        </td>
+        <td>
+          <button
+            title="Convert"
+            className="bg-blue-500 text-white text-2xl p-3 rounded-full disabled:opacity-30"
+            onClick={convertSmartFill}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"
               />
             </svg>
           </button>
