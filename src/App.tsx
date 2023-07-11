@@ -4,7 +4,7 @@ import { EnterPlayer } from "./features/gamble/EnterPlayer"
 import { useAppSelector } from "./app/hooks"
 import { selectPlayer } from "./features/gamble/gambleSlice"
 import { useMemo } from "react"
-import Table from "./features/gamble/Table"
+import Gamble from "./features/gamble"
 
 function App() {
   const player = useAppSelector(selectPlayer)
@@ -24,7 +24,7 @@ function App() {
       <div className="text-center text-red-500 font-bold">
         Người thua bạc theo quy định pháp luật không cần phải trả nợ.
       </div>
-      {isGameStarted ? <Table /> : <EnterPlayer />}
+      {isGameStarted ? <Gamble /> : <EnterPlayer />}
     </div>
   )
 }
