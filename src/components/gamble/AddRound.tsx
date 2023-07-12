@@ -186,11 +186,11 @@ const AddRow: FC = () => {
     <tfoot>
       <tr>
         <td>New</td>
-        {sortBy(Object.keys(round)).map((id) => (
+        {sortBy(Object.keys(round)).map((id: string) => (
           <td key={id}>
             <EnterPoint
               key={id}
-              playerName={players[id]}
+              playerName={players[id as PlayerKey]}
               value={round[id as string] ?? null}
               onChange={(value: number | null) => {
                 setPoint(id, value);
