@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { IGambleRound, PlayerKey, newRound, selectPlayer } from "./gambleSlice"
 import { partition, sortBy } from "lodash"
 import { fullFillRound, parseRoundString } from "../../app/libs/convert-pattern"
+import VoiceButton from "./VoiceButton"
 
 const AddRow: FC = () => {
   const players = useAppSelector(selectPlayer)
@@ -235,7 +236,7 @@ const AddRow: FC = () => {
       <tr>
         <td>OR</td>
         <td colSpan={4}>
-          <label title={"PatternInput"}>
+          <label title={"PatternInput"} className="flex">
             <input
               placeholder="A 1 B 2 C 3"
               type="text"
@@ -245,6 +246,7 @@ const AddRow: FC = () => {
                 setSmartFill(e.target.value)
               }}
             />
+            <VoiceButton callback={setSmartFill} />
           </label>
           <div>Chỉ cần ghi người thua, điểm tự đảo dấu</div>
         </td>
