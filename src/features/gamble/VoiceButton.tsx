@@ -42,7 +42,7 @@ const VoiceButton: FC<IVoiceButtonProps> = ({ callback }) => {
 
   return (
     recognition && (
-      <div className="relative flex h-11 w-12 mx-2">
+      <div className="w-15 relative flex h-11 sm:w-12 mx-2">
         <span
           className={`${
             isListening ? "animate-ping" : ""
