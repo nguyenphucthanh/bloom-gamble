@@ -1,6 +1,7 @@
 import React, { FC, useCallback } from "react";
 import { useAppSelector } from "../../store/hooks";
 import {
+  IGambleRound,
   selectEndGame,
   selectPlayer,
   selectPlayerPoint,
@@ -45,11 +46,12 @@ const Table: FC = () => {
           </tr>
         </thead>
         <tbody>
-          {rounds.map((round, index) => (
+          {rounds.map((round: IGambleRound, index: number) => (
             <TableRound
+              key={index}
               round={round}
               index={index}
-              isAbleToDelete={index === rounds.length - 1}
+              isAbleToDelete
             />
           ))}
         </tbody>

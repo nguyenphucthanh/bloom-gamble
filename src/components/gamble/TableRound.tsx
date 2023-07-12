@@ -60,7 +60,7 @@ const TableRound: FC<ITableRoundProps> = ({ round, index, isAbleToDelete }) => {
           <button
             title="Delete row"
             type="button"
-            className="bg-red-500 text-white text-2xl p-3 rounded-full"
+            className="text-red-500 border-red-500 border text-2xl p-3 rounded-full"
             onClick={deleteRound}
           >
             <svg

@@ -4,12 +4,13 @@ import { IGambleRound, PlayerKey, newRound, selectPlayer } from "./gambleSlice";
 import { partition, sortBy } from "lodash";
 import { fullFillRound, parseRoundString } from "../../lib/convert-pattern";
 import VoiceButton from "./VoiceButton";
+import EnterPoint from "./EnterPoint";
 
 const AddRow: FC = () => {
   const players = useAppSelector(selectPlayer);
   const dispatch = useAppDispatch();
   const [round, setRound] = useState<{
-    [key: string]: string | null;
+    [key: string]: number | null;
   }>({
     A: null,
     B: null,
@@ -18,16 +19,7 @@ const AddRow: FC = () => {
   });
   const [smartFill, setSmartFill] = useState("");
 
-  const parsedRound = useMemo(() => {
-    return {
-      A: round.A ? parseInt(round.A || "0", 10) : null,
-      B: round.B ? parseInt(round.B || "0", 10) : null,
-      C: round.C ? parseInt(round.C || "0", 10) : null,
-      D: round.D ? parseInt(round.D || "0", 10) : null,
-    };
-  }, [round]);
-
-  const setPoint = useCallback((name: string, value: string) => {
+  const setPoint = useCallback((name: string, value: number | null) => {
     setRound((prev) => ({
       ...prev,
       [name]: value,
@@ -50,7 +42,7 @@ const AddRow: FC = () => {
   );
 
   const addRound = useCallback(() => {
-    const { A, B, C, D } = parsedRound;
+    const { A, B, C, D } = round;
     addNewRound({
       A,
       B,
@@ -63,10 +55,10 @@ const AddRow: FC = () => {
       C: null,
       D: null,
     });
-  }, [addNewRound, parsedRound]);
+  }, [addNewRound, round]);
 
   const isAbleToAdd = useMemo(() => {
-    const { A, B, C, D } = parsedRound;
+    const { A, B, C, D } = round;
     const isAllValued =
       A !== null &&
       A !== undefined &&
@@ -95,7 +87,7 @@ const AddRow: FC = () => {
     }
 
     return true;
-  }, [parsedRound]);
+  }, [round]);
 
   const calcLastPlayerPoint = useCallback((prev: IGambleRound) => {
     const keys: PlayerKey[] = ["A", "B", "C", "D"];
@@ -119,17 +111,16 @@ const AddRow: FC = () => {
   }, []);
 
   const onBlur = useCallback(
-    (playerKey: string, value: string) => {
+    (playerKey: string, value: number | null) => {
       const keys = ["A", "B", "C", "D"];
       // case white win
-      const parsed = parseInt(value, 10);
-      if (!isNaN(parsed)) {
-        if (parsed === 39) {
+      if (value !== null && value !== undefined && !isNaN(value)) {
+        if (value === 39) {
           const [, left] = partition(keys, (k) => k === playerKey);
           setRound((prev) => {
             const next = { ...prev };
             left.forEach((key: string) => {
-              next[key] = "-13";
+              next[key] = -13;
             });
             return next;
           });
@@ -137,16 +128,16 @@ const AddRow: FC = () => {
           // not white win
           setRound((prev) => {
             const calc = calcLastPlayerPoint({
-              A: prev.A ? parseInt(prev.A || "0", 10) : null,
-              B: prev.B ? parseInt(prev.B || "0", 10) : null,
-              C: prev.C ? parseInt(prev.C || "0", 10) : null,
-              D: prev.D ? parseInt(prev.D || "0", 10) : null,
+              A: prev.A ?? null,
+              B: prev.B ?? null,
+              C: prev.C ?? null,
+              D: prev.D ?? null,
             } as IGambleRound);
             return {
-              A: calc.A?.toString() || null,
-              B: calc.B?.toString() || null,
-              C: calc.C?.toString() || null,
-              D: calc.D?.toString() || null,
+              A: calc.A ?? null,
+              B: calc.B ?? null,
+              C: calc.C ?? null,
+              D: calc.D ?? null,
             };
           });
         }
@@ -173,10 +164,10 @@ const AddRow: FC = () => {
       });
       if (anyUnfilled) {
         setRound({
-          A: next.A.toString(),
-          B: next.B.toString(),
-          C: next.C.toString(),
-          D: next.D.toString(),
+          A: next.A,
+          B: next.B,
+          C: next.C,
+          D: next.D,
         });
       } else {
         addNewRound(next);
@@ -197,18 +188,15 @@ const AddRow: FC = () => {
         <td>New</td>
         {sortBy(Object.keys(round)).map((id) => (
           <td key={id}>
-            <label title={id}>
-              <input
-                type="text"
-                placeholder="0"
-                className="text-black block w-full rounded text-2xl p-1 border border-gray-300 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                value={round[id as string] ?? ""}
-                onChange={(e) => setPoint(id, e.target.value)}
-                onBlur={(e) => {
-                  onBlur(id, e.target.value);
-                }}
-              />
-            </label>
+            <EnterPoint
+              key={id}
+              playerName={players[id]}
+              value={round[id as string] ?? null}
+              onChange={(value: number | null) => {
+                setPoint(id, value);
+                onBlur(id, value);
+              }}
+            />
           </td>
         ))}
         <td>
