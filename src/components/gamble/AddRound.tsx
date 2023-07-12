@@ -1,22 +1,22 @@
-import React, { FC, useCallback, useMemo, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import { IGambleRound, PlayerKey, newRound, selectPlayer } from "./gambleSlice"
-import { partition, sortBy } from "lodash"
-import { fullFillRound, parseRoundString } from "../../app/libs/convert-pattern"
-import VoiceButton from "./VoiceButton"
+import React, { FC, useCallback, useMemo, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { IGambleRound, PlayerKey, newRound, selectPlayer } from "./gambleSlice";
+import { partition, sortBy } from "lodash";
+import { fullFillRound, parseRoundString } from "../../lib/convert-pattern";
+import VoiceButton from "./VoiceButton";
 
 const AddRow: FC = () => {
-  const players = useAppSelector(selectPlayer)
-  const dispatch = useAppDispatch()
+  const players = useAppSelector(selectPlayer);
+  const dispatch = useAppDispatch();
   const [round, setRound] = useState<{
-    [key: string]: string | null
+    [key: string]: string | null;
   }>({
     A: null,
     B: null,
     C: null,
     D: null,
-  })
-  const [smartFill, setSmartFill] = useState("")
+  });
+  const [smartFill, setSmartFill] = useState("");
 
   const parsedRound = useMemo(() => {
     return {
@@ -24,49 +24,49 @@ const AddRow: FC = () => {
       B: round.B ? parseInt(round.B || "0", 10) : null,
       C: round.C ? parseInt(round.C || "0", 10) : null,
       D: round.D ? parseInt(round.D || "0", 10) : null,
-    }
-  }, [round])
+    };
+  }, [round]);
 
   const setPoint = useCallback((name: string, value: string) => {
     setRound((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }, [])
+    }));
+  }, []);
 
   const addNewRound = useCallback(
     (round: IGambleRound) => {
-      const { A, B, C, D } = round
+      const { A, B, C, D } = round;
       dispatch(
         newRound({
           A: -A,
           B: -B,
           C: -C,
           D: -D,
-        }),
-      )
+        })
+      );
     },
-    [dispatch],
-  )
+    [dispatch]
+  );
 
   const addRound = useCallback(() => {
-    const { A, B, C, D } = parsedRound
+    const { A, B, C, D } = parsedRound;
     addNewRound({
       A,
       B,
       C,
       D,
-    } as IGambleRound)
+    } as IGambleRound);
     setRound({
       A: null,
       B: null,
       C: null,
       D: null,
-    })
-  }, [addNewRound, parsedRound])
+    });
+  }, [addNewRound, parsedRound]);
 
   const isAbleToAdd = useMemo(() => {
-    const { A, B, C, D } = parsedRound
+    const { A, B, C, D } = parsedRound;
     const isAllValued =
       A !== null &&
       A !== undefined &&
@@ -79,58 +79,60 @@ const AddRow: FC = () => {
       typeof C === "number" &&
       D !== null &&
       D !== undefined &&
-      typeof D === "number"
+      typeof D === "number";
 
     if (isAllValued) {
       // enter 4 zeros
       if (!A && !B && !C && !D) {
-        return false
+        return false;
       }
-      const total = (A ?? 0) + (B ?? 0) + (C ?? 0) + (D ?? 0)
+      const total = (A ?? 0) + (B ?? 0) + (C ?? 0) + (D ?? 0);
       if (total !== 0) {
-        return false
+        return false;
       }
     } else {
-      return false
+      return false;
     }
 
-    return true
-  }, [parsedRound])
+    return true;
+  }, [parsedRound]);
 
   const calcLastPlayerPoint = useCallback((prev: IGambleRound) => {
-    const keys: PlayerKey[] = ["A", "B", "C", "D"]
+    const keys: PlayerKey[] = ["A", "B", "C", "D"];
     const [entered, empties] = partition(keys, (k: string) => {
-      return prev[k as PlayerKey] !== null && prev[k as PlayerKey] !== undefined
-    })
+      return (
+        prev[k as PlayerKey] !== null && prev[k as PlayerKey] !== undefined
+      );
+    });
     if (empties.length === 1) {
-      let autoValue = 0
+      let autoValue = 0;
       entered.forEach((e: string) => {
-        autoValue -= prev[e as PlayerKey] ?? 0
-      })
-      const next = { ...prev }
+        autoValue -= prev[e as PlayerKey] ?? 0;
+      });
+      const next = { ...prev };
 
-      next[empties[0]] = autoValue
-      return next
+      next[empties[0]] = autoValue;
+      return next;
     }
 
-    return prev
-  }, [])
+    return prev;
+  }, []);
 
   const onBlur = useCallback(
     (playerKey: string, value: string) => {
-      const keys = ["A", "B", "C", "D"]
+      const keys = ["A", "B", "C", "D"];
       // case white win
-      const parsed = parseInt(value, 10)
+      const parsed = parseInt(value, 10);
       if (!isNaN(parsed)) {
         if (parsed === 39) {
-          const [, left] = partition(keys, (k) => k === playerKey)
+          const [, left] = partition(keys, (k) => k === playerKey);
           setRound((prev) => {
-            const next = { ...prev }
+            const next = { ...prev };
             left.forEach((key: string) => {
-              next[key] = "-13"
-            })
-            return next
-          })
+              next[key] = "-13";
+            });
+            return next;
+          });
         } else {
           // not white win
           setRound((prev) => {
@@ -139,55 +141,55 @@ const AddRow: FC = () => {
               B: prev.B ? parseInt(prev.B || "0", 10) : null,
               C: prev.C ? parseInt(prev.C || "0", 10) : null,
               D: prev.D ? parseInt(prev.D || "0", 10) : null,
-            } as IGambleRound)
+            } as IGambleRound);
             return {
               A: calc.A?.toString() || null,
               B: calc.B?.toString() || null,
               C: calc.C?.toString() || null,
               D: calc.D?.toString() || null,
-            }
-          })
+            };
+          });
         }
       }
     },
-    [calcLastPlayerPoint],
-  )
+    [calcLastPlayerPoint]
+  );
 
   const convertSmartFill = useCallback(() => {
-    const parsedRound = fullFillRound(parseRoundString(smartFill, players))
+    const parsedRound = fullFillRound(parseRoundString(smartFill, players));
     if (parsedRound) {
       let next = {
         A: parsedRound.A ?? parsedRound.A ?? null,
         B: parsedRound.B ?? parsedRound.B ?? null,
         C: parsedRound.C ?? parsedRound.C ?? null,
         D: parsedRound.D ?? parsedRound.D ?? null,
-      }
-      next = calcLastPlayerPoint(next)
+      };
+      next = calcLastPlayerPoint(next);
       const anyUnfilled = Object.keys(next).find((key: string) => {
         return (
           next[key as PlayerKey] === null ||
           next[key as PlayerKey] === undefined
-        )
-      })
+        );
+      });
       if (anyUnfilled) {
         setRound({
           A: next.A.toString(),
           B: next.B.toString(),
           C: next.C.toString(),
           D: next.D.toString(),
-        })
+        });
       } else {
-        addNewRound(next)
+        addNewRound(next);
         setRound({
           A: null,
           B: null,
           C: null,
           D: null,
-        })
+        });
       }
-      setSmartFill("")
+      setSmartFill("");
     }
-  }, [smartFill, players, calcLastPlayerPoint, addNewRound])
+  }, [smartFill, players, calcLastPlayerPoint, addNewRound]);
 
   return (
     <tfoot>
@@ -203,7 +205,7 @@ const AddRow: FC = () => {
                 value={round[id as string] ?? ""}
                 onChange={(e) => setPoint(id, e.target.value)}
                 onBlur={(e) => {
-                  onBlur(id, e.target.value)
+                  onBlur(id, e.target.value);
                 }}
               />
             </label>
@@ -243,7 +245,7 @@ const AddRow: FC = () => {
               className="text-black block w-full rounded text-2xl p-1 border border-gray-300 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 uppercase"
               value={smartFill}
               onChange={(e) => {
-                setSmartFill(e.target.value)
+                setSmartFill(e.target.value);
               }}
             />
             <VoiceButton callback={setSmartFill} />
@@ -274,7 +276,7 @@ const AddRow: FC = () => {
         </td>
       </tr>
     </tfoot>
-  )
-}
+  );
+};
 
-export default AddRow
+export default AddRow;

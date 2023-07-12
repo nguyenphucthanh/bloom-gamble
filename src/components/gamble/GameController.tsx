@@ -1,43 +1,43 @@
-import React, { FC, useCallback, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import { endGame, resetAll, selectEndGame, selectRounds } from "./gambleSlice"
-import PhoneCallModal from "./PhoneCallModal"
-import ConfirmDeleteRoundModal from "./ConfirmDeleteRoundModal"
-import ConfirmEndGameModal from "./ConfirmEndGameModal"
+import React, { FC, useCallback, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { endGame, resetAll, selectEndGame, selectRounds } from "./gambleSlice";
+import PhoneCallModal from "./PhoneCallModal";
+import ConfirmDeleteRoundModal from "./ConfirmDeleteRoundModal";
+import ConfirmEndGameModal from "./ConfirmEndGameModal";
 
 const GameController: FC = () => {
-  const isGameEnded = useAppSelector(selectEndGame)
-  const rounds = useAppSelector(selectRounds)
-  const [callTitle, setCallTitle] = useState("")
-  const [showCallModal, setShowCallModal] = useState(false)
-  const [showEndGameModal, setShowEndGameModal] = useState(false)
-  const dispatch = useAppDispatch()
+  const isGameEnded = useAppSelector(selectEndGame);
+  const rounds = useAppSelector(selectRounds);
+  const [callTitle, setCallTitle] = useState("");
+  const [showCallModal, setShowCallModal] = useState(false);
+  const [showEndGameModal, setShowEndGameModal] = useState(false);
+  const dispatch = useAppDispatch();
 
   const restartGame = useCallback(() => {
-    dispatch(resetAll())
-  }, [dispatch])
+    dispatch(resetAll());
+  }, [dispatch]);
 
   const endThisGame = useCallback(() => {
-    setShowEndGameModal(true)
-  }, [])
+    setShowEndGameModal(true);
+  }, []);
 
   const openCallModal = useCallback((title: string) => {
-    setCallTitle(title)
-    setShowCallModal(true)
-  }, [])
+    setCallTitle(title);
+    setShowCallModal(true);
+  }, []);
 
   const closeCallModal = useCallback(() => {
-    setShowCallModal(false)
-  }, [])
+    setShowCallModal(false);
+  }, []);
 
   const closeEndGameModal = useCallback(() => {
-    setShowEndGameModal(false)
-  }, [])
+    setShowEndGameModal(false);
+  }, []);
 
   const onConfirmEndGame = useCallback(() => {
-    setShowEndGameModal(false)
-    dispatch(endGame())
-  }, [dispatch])
+    setShowEndGameModal(false);
+    dispatch(endGame());
+  }, [dispatch]);
 
   return (
     <>
@@ -76,7 +76,7 @@ const GameController: FC = () => {
         <button
           className="font-bold bg-red-500 text-white rounded p-3 text-center justify-center inline-flex gap-2 w-full"
           onClick={() => {
-            openCallModal("113")
+            openCallModal("113");
           }}
         >
           <svg
@@ -98,7 +98,7 @@ const GameController: FC = () => {
         <button
           className="font-bold bg-red-500 text-white rounded p-3 text-center justify-center inline-flex gap-2 w-full"
           onClick={() => {
-            openCallModal("Đài truyền hình VTV3")
+            openCallModal("Đài truyền hình VTV3");
           }}
         >
           <svg
@@ -129,7 +129,7 @@ const GameController: FC = () => {
         confirm={onConfirmEndGame}
       />
     </>
-  )
-}
+  );
+};
 
-export default GameController
+export default GameController;

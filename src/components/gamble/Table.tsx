@@ -1,35 +1,35 @@
-import React, { FC, useCallback } from "react"
-import { useAppSelector } from "../../app/hooks"
+import React, { FC, useCallback } from "react";
+import { useAppSelector } from "../../store/hooks";
 import {
   selectEndGame,
   selectPlayer,
   selectPlayerPoint,
   selectPlayerRank,
   selectRounds,
-} from "./gambleSlice"
-import styles from "./styles.module.scss"
-import AddRow from "./AddRound"
-import TableRound from "./TableRound"
+} from "./gambleSlice";
+import styles from "./styles.module.scss";
+import AddRow from "./AddRound";
+import TableRound from "./TableRound";
 
 const Table: FC = () => {
-  const rounds = useAppSelector(selectRounds)
-  const player = useAppSelector(selectPlayer)
-  const playerPoint = useAppSelector(selectPlayerPoint)
-  const playerRank = useAppSelector(selectPlayerRank)
-  const isGameEnded = useAppSelector(selectEndGame)
+  const rounds = useAppSelector(selectRounds);
+  const player = useAppSelector(selectPlayer);
+  const playerPoint = useAppSelector(selectPlayerPoint);
+  const playerRank = useAppSelector(selectPlayerRank);
+  const isGameEnded = useAppSelector(selectEndGame);
 
   const colorClasses = useCallback((rank: number) => {
     switch (rank) {
       case 1:
-        return "text-red-500 font-bold"
+        return "text-red-500 font-bold";
       case 2:
-        return "text-orange-500"
+        return "text-orange-500";
       case 3:
-        return "text-green-500"
+        return "text-green-500";
       default:
-        return "text-gray-900"
+        return "text-gray-900";
     }
-  }, [])
+  }, []);
 
   return (
     <section>
@@ -79,7 +79,7 @@ const Table: FC = () => {
         )}
       </table>
     </section>
-  )
-}
+  );
+};
 
-export default Table
+export default Table;

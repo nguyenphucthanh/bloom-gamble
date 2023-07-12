@@ -1,40 +1,40 @@
-import React, { FC, useCallback, useState } from "react"
+import React, { FC, useCallback, useState } from "react";
 
-import { IGambleRound, removeRound, selectEndGame } from "./gambleSlice"
-import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import ConfirmDeleteRoundModal from "./ConfirmDeleteRoundModal"
+import { IGambleRound, removeRound, selectEndGame } from "./gambleSlice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import ConfirmDeleteRoundModal from "./ConfirmDeleteRoundModal";
 
 export interface ITableRoundProps {
-  round: IGambleRound
-  index: number
-  isAbleToDelete?: boolean
+  round: IGambleRound;
+  index: number;
+  isAbleToDelete?: boolean;
 }
 
 const TableRound: FC<ITableRoundProps> = ({ round, index, isAbleToDelete }) => {
-  const [openConfirm, setOpenConfirm] = useState(false)
-  const dispatch = useAppDispatch()
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const dispatch = useAppDispatch();
   const isMax = useCallback(
     (point: number) => {
-      const max = Math.max(round.A, round.B, round.C, round.D)
-      return max === point
+      const max = Math.max(round.A, round.B, round.C, round.D);
+      return max === point;
     },
-    [round],
-  )
+    [round]
+  );
 
-  const isGameEnded = useAppSelector(selectEndGame)
+  const isGameEnded = useAppSelector(selectEndGame);
 
   const deleteRound = useCallback(() => {
-    setOpenConfirm(true)
-  }, [])
+    setOpenConfirm(true);
+  }, []);
 
   const confirmDeleteRound = useCallback(() => {
-    dispatch(removeRound(index))
-    setOpenConfirm(false)
-  }, [index, dispatch])
+    dispatch(removeRound(index));
+    setOpenConfirm(false);
+  }, [index, dispatch]);
 
   const closeConfirm = useCallback(() => {
-    setOpenConfirm(false)
-  }, [])
+    setOpenConfirm(false);
+  }, []);
 
   return (
     <tr>
@@ -88,7 +88,7 @@ const TableRound: FC<ITableRoundProps> = ({ round, index, isAbleToDelete }) => {
         />
       </td>
     </tr>
-  )
-}
+  );
+};
 
-export default TableRound
+export default TableRound;

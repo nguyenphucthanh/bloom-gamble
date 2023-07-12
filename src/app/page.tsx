@@ -1,11 +1,12 @@
-'use client'
-import { Main } from '@/components/main/main'
-import React from "react"
+"use client";
+
+import GambleComponent from "@/components/gamble";
+import React from "react";
 
 export default function Home() {
   return (
     <main>
-      <Main />
+      <GambleComponent />
     </main>
-  )
+  );
 }

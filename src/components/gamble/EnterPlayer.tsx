@@ -4,40 +4,40 @@ import React, {
   useCallback,
   useMemo,
   useState,
-} from "react"
-import styles from "./styles.module.scss"
-import { useAppDispatch } from "../../app/hooks"
-import { IGambleState, setPlayer } from "./gambleSlice"
+} from "react";
+import styles from "./styles.module.scss";
+import { useAppDispatch } from "../../store/hooks";
+import { IGambleState, setPlayer } from "./gambleSlice";
 
 export const EnterPlayer: FC = () => {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const [names, setNames] = useState<{
-    [key: string]: string
+    [key: string]: string;
   }>({
     A: "",
     B: "",
     C: "",
     D: "",
-  })
+  });
 
   const setPlayerName = useCallback((id: string, name: string) => {
     setNames((prev) => ({
       ...prev,
       [id]: name,
-    }))
-  }, [])
+    }));
+  }, []);
 
   const startGame = useCallback<FormEventHandler<HTMLFormElement>>(
     (event) => {
-      event.preventDefault()
-      dispatch(setPlayer(names as IGambleState["player"]))
+      event.preventDefault();
+      dispatch(setPlayer(names as IGambleState["player"]));
     },
-    [dispatch, names],
-  )
+    [dispatch, names]
+  );
 
   const isAbleToSubmit = useMemo(() => {
-    return names.A && names.B && names.C && names.D
-  }, [names])
+    return names.A && names.B && names.C && names.D;
+  }, [names]);
 
   return (
     <form className="mt-4" onSubmit={startGame}>
@@ -58,15 +58,6 @@ export const EnterPlayer: FC = () => {
           <div className="text-center text-red-500 font-bold text-lg">
             Chúc các bạn may mắn
           </div>
-          <iframe
-            src="https://giphy.com/embed/uzWoRrlxnbL6TJgIbP"
-            width="320"
-            height="200"
-            frameBorder="0"
-            className="giphy-embed"
-            allowFullScreen
-            title="troll"
-          ></iframe>
           <p>
             <a href="https://giphy.com/gifs/pokemon-anime-cheer-meowth-uzWoRrlxnbL6TJgIbP">
               via GIPHY
@@ -82,5 +73,5 @@ export const EnterPlayer: FC = () => {
         </button>
       </div>
     </form>
-  )
-}
+  );
+};

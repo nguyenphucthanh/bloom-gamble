@@ -1,14 +1,14 @@
-import React, { FC, Fragment } from "react"
-import { Dialog, Transition } from "@headlessui/react"
-import styles from "./styles.module.scss"
-import { useAppSelector } from "../../app/hooks"
-import { IGambleRound, selectPlayer } from "./gambleSlice"
+import React, { FC, Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import styles from "./styles.module.scss";
+import { useAppSelector } from "../../store/hooks";
+import { IGambleRound, selectPlayer } from "./gambleSlice";
 
 export interface IConfirmDeleteRoundModalProps {
-  isOpen: boolean
-  closeModal: () => void
-  confirm: () => void
-  round: IGambleRound
+  isOpen: boolean;
+  closeModal: () => void;
+  confirm: () => void;
+  round: IGambleRound;
 }
 const ConfirmDeleteRoundModal: FC<IConfirmDeleteRoundModalProps> = ({
   isOpen,
@@ -16,7 +16,7 @@ const ConfirmDeleteRoundModal: FC<IConfirmDeleteRoundModalProps> = ({
   confirm,
   round,
 }) => {
-  const players = useAppSelector(selectPlayer)
+  const players = useAppSelector(selectPlayer);
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
@@ -96,6 +96,6 @@ const ConfirmDeleteRoundModal: FC<IConfirmDeleteRoundModalProps> = ({
         </div>
       </Dialog>
     </Transition>
-  )
-}
-export default ConfirmDeleteRoundModal
+  );
+};
+export default ConfirmDeleteRoundModal;

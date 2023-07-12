@@ -10,7 +10,8 @@
 .table {
     @apply border border-gray-100 w-full mt-5 rounded overflow-hidden ring-2 ring-blue-300;
 
-    th, td {
+    th,
+    td {
         @apply p-2 text-right border border-gray-300;
     }
 

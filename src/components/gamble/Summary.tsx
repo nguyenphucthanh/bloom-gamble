@@ -1,22 +1,21 @@
-import React, { FC, useMemo } from "react"
+import React, { FC, useMemo } from "react";
 import {
   PlayerKey,
   selectPayback,
   selectPlayer,
   selectPlayerArchive,
   selectPlayerRank,
-} from "./gambleSlice"
-import { useAppSelector } from "../../app/hooks"
-import imageWinner from "../../images/winner.jpg"
-import imageLoser from "../../images/loser.jpg"
-import styles from "./styles.module.scss"
+} from "./gambleSlice";
+import { useAppSelector } from "../../store/hooks";
+import Image from "next/image";
+import styles from "./styles.module.scss";
 
 const Line: FC<{ nameFrom: string; nameTo: string; amount: number }> = ({
   nameFrom,
   nameTo,
   amount,
 }) => {
-  const player = useAppSelector(selectPlayer)
+  const player = useAppSelector(selectPlayer);
 
   return (
     <li className="flex gap-2">
@@ -40,27 +39,27 @@ const Line: FC<{ nameFrom: string; nameTo: string; amount: number }> = ({
         <span className="text-red-500 font-bold">{amount}K</span>
       </span>
     </li>
-  )
-}
+  );
+};
 
 const Summary: FC = () => {
-  const paybacks = useAppSelector(selectPayback)
-  const playerRanks = useAppSelector(selectPlayerRank)
-  const player = useAppSelector(selectPlayer)
-  const archive = useAppSelector(selectPlayerArchive)
+  const paybacks = useAppSelector(selectPayback);
+  const playerRanks = useAppSelector(selectPlayerRank);
+  const player = useAppSelector(selectPlayer);
+  const archive = useAppSelector(selectPlayerArchive);
 
   const winnerAndLoser = useMemo(() => {
-    const ranks = [playerRanks.A, playerRanks.B, playerRanks.C, playerRanks.D]
-    const min = Math.min(...ranks)
-    const max = Math.max(...ranks)
+    const ranks = [playerRanks.A, playerRanks.B, playerRanks.C, playerRanks.D];
+    const min = Math.min(...ranks);
+    const max = Math.max(...ranks);
     const winnerKey = Object.keys(playerRanks).find(
-      (key) => playerRanks[key as PlayerKey] === min,
-    )
+      (key) => playerRanks[key as PlayerKey] === min
+    );
     const loserKeys = Object.keys(playerRanks).filter(
-      (key) => playerRanks[key as PlayerKey] === max,
-    )
-    return { winnerKey, loserKeys }
-  }, [playerRanks])
+      (key) => playerRanks[key as PlayerKey] === max
+    );
+    return { winnerKey, loserKeys };
+  }, [playerRanks]);
 
   return (
     <div className="p-3 border border-blue-300 shadow-lg shadow-blue-300s mt-5 rounded">
@@ -76,19 +75,31 @@ const Summary: FC = () => {
                 nameFrom={payback.player}
                 amount={payback.amount}
               />
-            ))
+            ));
         })}
       </ul>
       <div className="grid grid-cols-2 gap-2 mt-4">
         <div className="flex flex-col items-center gap-2">
-          <img src={imageWinner} alt="Winner" className="rounded-full" />
+          <Image
+            src={"/winner.jpg"}
+            alt="Winner"
+            className="rounded-full"
+            width={120}
+            height={120}
+          />
           <h3 className="font-bold text-center">Winner</h3>
           <h4 className="font-bold text-center text-2xl rounded-full bg-red-500 text-white p-3 w-full">
             {player[winnerAndLoser.winnerKey as PlayerKey]}
           </h4>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <img src={imageLoser} alt="Loser" className="rounded-full" />
+          <img
+            src={"/loser.jpg"}
+            alt="Loser"
+            className="rounded-full"
+            width={120}
+            height={120}
+          />
           <h3 className="font-bold text-center">Loser</h3>
           <h4 className="font-bold text-center text-2xl rounded-full bg-black text-white p-3 w-full">
             {winnerAndLoser.loserKeys
@@ -120,7 +131,7 @@ const Summary: FC = () => {
         </tbody>
       </table>
     </div>
-  )
-}
+  );
+};
 
-export default Summary
+export default Summary;
