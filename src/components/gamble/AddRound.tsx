@@ -203,7 +203,7 @@ const AddRow: FC = () => {
           <button
             disabled={!isAbleToAdd}
             title="Add"
-            className="bg-blue-500 text-white text-2xl p-3 rounded-full disabled:opacity-30"
+            className="bg-blue-500 text-white text-2xl p-2 rounded-full disabled:opacity-30"
             onClick={addRound}
           >
             <svg
@@ -243,7 +243,7 @@ const AddRow: FC = () => {
         <td>
           <button
             title="Convert"
-            className="bg-blue-500 text-white text-2xl p-3 rounded-full disabled:opacity-30"
+            className="bg-blue-500 text-white text-2xl p-2 rounded-full disabled:opacity-30"
             onClick={convertSmartFill}
           >
             <svg

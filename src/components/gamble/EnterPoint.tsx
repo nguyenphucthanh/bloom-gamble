@@ -62,7 +62,7 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
   return (
     <div>
       <button
-        className="bg-gray-100 text-gray-900 rounded text-lg p-3 block w-14"
+        className="bg-gray-100 text-gray-900 rounded text-sm p-3 px-1 block w-10  "
         onClick={() => {
           setIsNegative(true);
           setOpen(true);

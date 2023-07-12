@@ -39,28 +39,16 @@ const TableRound: FC<ITableRoundProps> = ({ round, index, isAbleToDelete }) => {
   return (
     <tr>
       <td className="text-gray-300">{index + 1}</td>
-      <td className={isMax(round.A) ? "text-red-500" : ""}>
-        {round.A <= -26 ? "💀" : ""}
-        {round.A}
-      </td>
-      <td className={isMax(round.B) ? "text-red-500" : ""}>
-        {round.B <= -26 ? "💀" : ""}
-        {round.B}
-      </td>
-      <td className={isMax(round.C) ? "text-red-500" : ""}>
-        {round.C <= -26 ? "💀" : ""}
-        {round.C}
-      </td>
-      <td className={isMax(round.D) ? "text-red-500" : ""}>
-        {round.D <= -26 ? "💀" : ""}
-        {round.D}
-      </td>
+      <td className={isMax(round.A) ? "text-red-500" : ""}>{round.A}</td>
+      <td className={isMax(round.B) ? "text-red-500" : ""}>{round.B}</td>
+      <td className={isMax(round.C) ? "text-red-500" : ""}>{round.C}</td>
+      <td className={isMax(round.D) ? "text-red-500" : ""}>{round.D}</td>
       <td>
         {isAbleToDelete && !isGameEnded ? (
           <button
             title="Delete row"
             type="button"
-            className="text-red-500 border-red-500 border text-2xl p-3 rounded-full"
+            className="text-red-500 border-red-500 border text-2xl p-2 rounded-full"
             onClick={deleteRound}
           >
             <svg
