@@ -3,7 +3,7 @@ import {
   IGambleRound,
   IGambleState,
   PlayerKey,
-} from "./../../features/gamble/gambleSlice"
+} from "../../features/gamble/gambleSlice"
 /**
  * create a function, input is a string following this pattern "A 1 B 2 C 3"
  * then convert into an object { "A": -1, "B": -2, "C": -3 }
