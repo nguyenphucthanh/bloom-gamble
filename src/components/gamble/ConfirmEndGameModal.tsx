@@ -1,10 +1,10 @@
-import React, { FC, Fragment } from "react"
-import { Dialog, Transition } from "@headlessui/react"
+import React, { FC, Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
 
 export interface IConfirmEndGameModalProps {
-  isOpen: boolean
-  closeModal: () => void
-  confirm: () => void
+  isOpen: boolean;
+  closeModal: () => void;
+  confirm: () => void;
 }
 const ConfirmEndGameModal: FC<IConfirmEndGameModalProps> = ({
   isOpen,
@@ -50,20 +50,20 @@ const ConfirmEndGameModal: FC<IConfirmEndGameModalProps> = ({
                   </p>
                 </div>
 
-                <div className="mt-4 flex gap-2">
-                  <button
-                    type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                    onClick={confirm}
-                  >
-                    END!
-                  </button>
+                <div className="mt-4 flex gap-2 justify-between">
                   <button
                     type="button"
                     className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                     onClick={closeModal}
                   >
                     Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                    onClick={confirm}
+                  >
+                    END!
                   </button>
                 </div>
               </Dialog.Panel>
@@ -72,6 +72,6 @@ const ConfirmEndGameModal: FC<IConfirmEndGameModalProps> = ({
         </div>
       </Dialog>
     </Transition>
-  )
-}
-export default ConfirmEndGameModal
+  );
+};
+export default ConfirmEndGameModal;

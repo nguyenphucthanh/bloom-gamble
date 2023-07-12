@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useCallback, useEffect } from "react";
+import React, { FC, Fragment, useCallback, useEffect, useMemo } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
 export interface IEnterPointProps {
@@ -7,26 +7,68 @@ export interface IEnterPointProps {
   onChange: (value: number | null) => void;
 }
 const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
-  const [point, setPoint] = React.useState<number | null>(null);
   const [open, setOpen] = React.useState<boolean>(false);
+  const [isNegative, setIsNegative] = React.useState<boolean>(true);
+  const [input, setInput] = React.useState<(number | null)[]>([null, null]);
+
+  const numberValue = useMemo(() => {
+    const str = `${isNegative ? "-" : ""}${input.join("")}`;
+    const n = parseInt(str, 10);
+    return n && !isNaN(n) ? n : null;
+  }, [isNegative, input]);
+
   useEffect(() => {
-    setPoint(value);
+    setIsNegative(value !== null && value < 0);
+    const str = value?.toString()?.replace("-", "");
+    setInput([
+      str?.[0] ? parseInt(str?.[0], 10) : null,
+      str?.[1] ? parseInt(str?.[1], 10) : null,
+    ]);
   }, [value]);
-  const confirm = useCallback(
-    (point: number) => {
-      setPoint(point);
-      onChange(point);
-      setOpen(false);
+
+  const confirm = useCallback(() => {
+    onChange(numberValue);
+    setOpen(false);
+  }, [onChange, numberValue]);
+
+  const enterNumber = useCallback((number: number) => {
+    setInput((prev) => {
+      if (prev[0] === null) {
+        return [number, null];
+      } else if (prev[1] === null) {
+        return [prev[0], number];
+      } else {
+        return prev;
+      }
+    });
+  }, []);
+
+  const isNumberDisabled = useCallback(
+    (number: number) => {
+      if (input[0] !== null && input[1] !== null) {
+        return true;
+      }
+      if (number !== 0) {
+        return false;
+      }
+      if (input[0] === null) {
+        return true;
+      }
+      return false;
     },
-    [onChange]
+    [input]
   );
+
   return (
     <div>
       <button
-        className="bg-gray-100 text-gray-900 rounded text-lg p-3 block w-full"
-        onClick={() => setOpen(true)}
+        className="bg-gray-100 text-gray-900 rounded text-lg p-3 block w-14"
+        onClick={() => {
+          setIsNegative(true);
+          setOpen(true);
+        }}
       >
-        {point || "-"}
+        {value ?? "-"}
       </button>
       <Transition appear show={open} as={Fragment}>
         <Dialog
@@ -64,27 +106,59 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
                   >
                     Nhập điểm {playerName}
                   </Dialog.Title>
-                  <div className="mt-2 grid grid-cols-6 gap-2">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 26].map(
-                      (p) => (
+                  <div className="flex justify-center gap-1 text-3xl mx-auto my-3">
+                    <button
+                      className="w-10 p-3 rounded bg-gray-100"
+                      onClick={() => {
+                        setIsNegative((prev) => !prev);
+                      }}
+                    >
+                      {isNegative ? "-" : "+"}
+                    </button>
+                    <div className="border-b-2 border-gray-300 w-10 text-center inline-flex items-center justify-center">
+                      {input[0]}
+                    </div>
+                    <div className="border-b-2 border-gray-300 w-10 text-center inline-flex items-center justify-center">
+                      {input[1]}
+                    </div>
+                  </div>
+                  <div className="mt-2 grid grid-cols-3 gap-2">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((p: number) => (
+                      <>
+                        {p === 0 ? <div /> : null}
                         <button
-                          className="bg-gray-100 text-gray-900 p-3 text-2xl rounded block"
+                          className="bg-gray-100 text-gray-900 p-3 text-2xl rounded block disabled:opacity-30"
                           key={p}
-                          onClick={() => confirm(p)}
+                          onClick={() => enterNumber(p)}
+                          disabled={isNumberDisabled(p)}
                         >
                           {p}
                         </button>
-                      )
-                    )}
+                      </>
+                    ))}
+
+                    <button
+                      className="bg-gray-100 text-gray-900 p-3 text-2xl rounded block"
+                      onClick={() => setInput([null, null])}
+                    >
+                      X
+                    </button>
                   </div>
 
-                  <div className="mt-4 flex gap-2">
+                  <div className="mt-4 flex gap-2 justify-between">
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                       onClick={() => setOpen(false)}
                     >
                       Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2 disabled:opacity-50"
+                      onClick={() => confirm()}
+                    >
+                      OK
                     </button>
                   </div>
                 </Dialog.Panel>

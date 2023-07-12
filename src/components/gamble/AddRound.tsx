@@ -31,10 +31,10 @@ const AddRow: FC = () => {
       const { A, B, C, D } = round;
       dispatch(
         newRound({
-          A: -A,
-          B: -B,
-          C: -C,
-          D: -D,
+          A: A,
+          B: B,
+          C: C,
+          D: D,
         })
       );
     },
