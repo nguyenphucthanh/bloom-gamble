@@ -14,7 +14,7 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
   const numberValue = useMemo(() => {
     const str = `${isNegative ? "-" : ""}${input.join("")}`;
     const n = parseInt(str, 10);
-    return n && !isNaN(n) ? n : null;
+    return !isNaN(n) ? n : null;
   }, [isNegative, input]);
 
   useEffect(() => {
@@ -47,21 +47,12 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
     });
   }, []);
 
-  const isNumberDisabled = useCallback(
-    (number: number) => {
-      if (input[0] !== null && input[1] !== null) {
-        return true;
-      }
-      if (number !== 0) {
-        return false;
-      }
-      if (input[0] === null) {
-        return true;
-      }
-      return false;
-    },
-    [input]
-  );
+  const isNumberDisabled = useCallback(() => {
+    if (input?.[0] === 0) {
+      return true;
+    }
+    return false;
+  }, [input]);
 
   return (
     <div>
@@ -134,7 +125,7 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
                           className="bg-gray-100 text-gray-900 p-3 text-2xl rounded block disabled:opacity-30"
                           key={p}
                           onClick={() => enterNumber(p)}
-                          disabled={isNumberDisabled(p)}
+                          disabled={isNumberDisabled()}
                         >
                           {p}
                         </button>
