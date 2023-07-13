@@ -1,5 +1,3 @@
-"use client";
-
 import { EnterPlayer } from "../gamble/EnterPlayer";
 import { selectPlayer } from "../gamble/gambleSlice";
 import { useMemo } from "react";
@@ -28,6 +26,7 @@ function GambleComponent() {
           alt="logo"
           width={120}
           height={120}
+          priority={true}
         />
       </header>
       <div className="text-center text-red-500 font-bold">
