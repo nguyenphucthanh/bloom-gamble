@@ -55,16 +55,6 @@ const Table: FC = () => {
             />
           ))}
         </tbody>
-        <tfoot>
-          <tr>
-            <th></th>
-            <th>{player.A}</th>
-            <th>{player.B}</th>
-            <th>{player.C}</th>
-            <th>{player.D}</th>
-            <th></th>
-          </tr>
-        </tfoot>
         {isGameEnded ? (
           <tfoot>
             <tr>
@@ -79,6 +69,16 @@ const Table: FC = () => {
         ) : (
           <AddRow />
         )}
+        <tfoot>
+          <tr>
+            <th></th>
+            <th>{player.A}</th>
+            <th>{player.B}</th>
+            <th>{player.C}</th>
+            <th>{player.D}</th>
+            <th></th>
+          </tr>
+        </tfoot>
       </table>
     </section>
   );

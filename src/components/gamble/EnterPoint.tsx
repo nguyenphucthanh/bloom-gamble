@@ -6,15 +6,23 @@ export interface IEnterPointProps {
   value: number | null;
   onChange: (value: number | null) => void;
 }
+
+const combineToPoint = (
+  isNegative: boolean,
+  input: (number | null)[]
+): number | null => {
+  const str = `${isNegative ? "-" : ""}${input.join("")}`;
+  const n = parseInt(str, 10);
+  return !isNaN(n) ? n : null;
+};
+
 const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
   const [open, setOpen] = React.useState<boolean>(false);
   const [isNegative, setIsNegative] = React.useState<boolean>(true);
   const [input, setInput] = React.useState<(number | null)[]>([null, null]);
 
   const numberValue = useMemo(() => {
-    const str = `${isNegative ? "-" : ""}${input.join("")}`;
-    const n = parseInt(str, 10);
-    return !isNaN(n) ? n : null;
+    return combineToPoint(isNegative, input);
   }, [isNegative, input]);
 
   useEffect(() => {
@@ -35,17 +43,27 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
     setOpen(false);
   }, [onChange, numberValue]);
 
-  const enterNumber = useCallback((number: number) => {
-    setInput((prev) => {
-      if (prev[0] === null) {
-        return [number, null];
-      } else if (prev[1] === null) {
-        return [prev[0], number];
-      } else {
-        return prev;
-      }
-    });
-  }, []);
+  const enterNumber = useCallback(
+    (number: number) => {
+      setInput((prev) => {
+        if (prev[0] === null) {
+          if (number === 0) {
+            onChange(0);
+            setOpen(false);
+          }
+          return [number, null];
+        } else if (prev[1] === null) {
+          const v = combineToPoint(isNegative, [prev[0], number]);
+          onChange(v);
+          setOpen(false);
+          return [prev[0], number];
+        } else {
+          return prev;
+        }
+      });
+    },
+    [onChange, isNegative]
+  );
 
   const isNumberDisabled = useCallback(() => {
     if (input?.[0] === 0) {

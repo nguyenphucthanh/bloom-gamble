@@ -94,7 +94,7 @@ const Summary: FC = () => {
             width={120}
             height={120}
           />
-          <h3 className="font-bold text-center">Winner</h3>
+          <h3 className="font-bold text-center">🏆 Winner 🏆</h3>
           <h4 className="font-bold text-center text-2xl rounded-full bg-red-500 text-white p-3 w-full">
             {player[winnerAndLoser.winnerKey as PlayerKey]}
           </h4>
@@ -107,7 +107,7 @@ const Summary: FC = () => {
             width={120}
             height={120}
           />
-          <h3 className="font-bold text-center">Loser</h3>
+          <h3 className="font-bold text-center">😭 Loser 😭 </h3>
           <h4 className="font-bold text-center text-2xl rounded-full bg-black text-white p-3 w-full">
             {winnerAndLoser.loserKeys
               ?.map((key) => player[key as PlayerKey])
