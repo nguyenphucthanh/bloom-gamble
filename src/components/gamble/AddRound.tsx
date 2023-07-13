@@ -202,7 +202,7 @@ const AddRow: FC = () => {
   }, [smartFill, players, calcLastPlayerPoint, addNewRound]);
 
   return (
-    <tfoot>
+    <>
       <tr>
         <td>New</td>
         {sortBy(Object.keys(round)).map((id: string) => (
@@ -282,7 +282,7 @@ const AddRow: FC = () => {
           </button>
         </td>
       </tr>
-    </tfoot>
+    </>
   );
 };
 

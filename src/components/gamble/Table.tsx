@@ -34,15 +34,15 @@ const Table: FC = () => {
 
   return (
     <section>
-      <table className={styles.table}>
+      <table className={`${styles.table} relative overflow-auto`}>
         <thead>
           <tr>
-            <th>No.</th>
-            <th>{player.A}</th>
-            <th>{player.B}</th>
-            <th>{player.C}</th>
-            <th>{player.D}</th>
-            <th></th>
+            <th className="sticky top-0">No.</th>
+            <th className="sticky top-0">{player.A}</th>
+            <th className="sticky top-0">{player.B}</th>
+            <th className="sticky top-0">{player.C}</th>
+            <th className="sticky top-0">{player.D}</th>
+            <th className="sticky top-0"></th>
           </tr>
         </thead>
         <tbody>
@@ -55,20 +55,6 @@ const Table: FC = () => {
             />
           ))}
         </tbody>
-        {isGameEnded ? (
-          <tfoot>
-            <tr>
-              <td className="font-bold">TOTAL</td>
-              <td className={colorClasses(playerRank.A)}>{playerPoint.A}</td>
-              <td className={colorClasses(playerRank.B)}>{playerPoint.B}</td>
-              <td className={colorClasses(playerRank.C)}>{playerPoint.C}</td>
-              <td className={colorClasses(playerRank.D)}>{playerPoint.D}</td>
-              <td className="font-bold">ENDED</td>
-            </tr>
-          </tfoot>
-        ) : (
-          <AddRow />
-        )}
         <tfoot>
           <tr>
             <th></th>
@@ -78,6 +64,18 @@ const Table: FC = () => {
             <th>{player.D}</th>
             <th></th>
           </tr>
+          {isGameEnded ? (
+            <tr>
+              <td className="font-bold">TOTAL</td>
+              <td className={colorClasses(playerRank.A)}>{playerPoint.A}</td>
+              <td className={colorClasses(playerRank.B)}>{playerPoint.B}</td>
+              <td className={colorClasses(playerRank.C)}>{playerPoint.C}</td>
+              <td className={colorClasses(playerRank.D)}>{playerPoint.D}</td>
+              <td className="font-bold">ENDED</td>
+            </tr>
+          ) : (
+            <AddRow />
+          )}
         </tfoot>
       </table>
     </section>
