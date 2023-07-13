@@ -6,6 +6,38 @@ import { fullFillRound, parseRoundString } from "../../lib/convert-pattern";
 import VoiceButton from "./VoiceButton";
 import EnterPoint from "./EnterPoint";
 
+const validateRound = (round: IGambleRound): boolean => {
+  const { A, B, C, D } = round;
+  const isAllValued =
+    A !== null &&
+    A !== undefined &&
+    typeof A === "number" &&
+    B !== null &&
+    B !== undefined &&
+    typeof B === "number" &&
+    C !== null &&
+    C !== undefined &&
+    typeof C === "number" &&
+    D !== null &&
+    D !== undefined &&
+    typeof D === "number";
+
+  if (isAllValued) {
+    // enter 4 zeros
+    if (!A && !B && !C && !D) {
+      return false;
+    }
+    const total = (A ?? 0) + (B ?? 0) + (C ?? 0) + (D ?? 0);
+    if (total !== 0) {
+      return false;
+    }
+  } else {
+    return false;
+  }
+
+  return true;
+};
+
 const AddRow: FC = () => {
   const players = useAppSelector(selectPlayer);
   const dispatch = useAppDispatch();
@@ -41,7 +73,7 @@ const AddRow: FC = () => {
     [dispatch]
   );
 
-  const addRound = useCallback(() => {
+  const onSubmit = useCallback(() => {
     const { A, B, C, D } = round;
     addNewRound({
       A,
@@ -58,35 +90,7 @@ const AddRow: FC = () => {
   }, [addNewRound, round]);
 
   const isAbleToAdd = useMemo(() => {
-    const { A, B, C, D } = round;
-    const isAllValued =
-      A !== null &&
-      A !== undefined &&
-      typeof A === "number" &&
-      B !== null &&
-      B !== undefined &&
-      typeof B === "number" &&
-      C !== null &&
-      C !== undefined &&
-      typeof C === "number" &&
-      D !== null &&
-      D !== undefined &&
-      typeof D === "number";
-
-    if (isAllValued) {
-      // enter 4 zeros
-      if (!A && !B && !C && !D) {
-        return false;
-      }
-      const total = (A ?? 0) + (B ?? 0) + (C ?? 0) + (D ?? 0);
-      if (total !== 0) {
-        return false;
-      }
-    } else {
-      return false;
-    }
-
-    return true;
+    return validateRound(round as IGambleRound);
   }, [round]);
 
   const calcLastPlayerPoint = useCallback((prev: IGambleRound) => {
@@ -110,19 +114,25 @@ const AddRow: FC = () => {
     return prev;
   }, []);
 
-  const onBlur = useCallback(
+  const onAfterChange = useCallback(
     (playerKey: string, value: number | null) => {
       const keys = ["A", "B", "C", "D"];
       // case white win
       if (value !== null && value !== undefined && !isNaN(value)) {
         if (value === 39) {
           const [, left] = partition(keys, (k) => k === playerKey);
-          setRound((prev) => {
-            const next = { ...prev };
-            left.forEach((key: string) => {
-              next[key] = -13;
-            });
-            return next;
+          const next = {
+            [playerKey]: 39,
+          };
+          left.forEach((key) => {
+            next[key] = -13;
+          });
+          addNewRound(next as IGambleRound);
+          setRound({
+            A: null,
+            B: null,
+            C: null,
+            D: null,
           });
         } else {
           // not white win
@@ -133,6 +143,15 @@ const AddRow: FC = () => {
               C: prev.C ?? null,
               D: prev.D ?? null,
             } as IGambleRound);
+            if (validateRound(calc)) {
+              addNewRound(calc);
+              return {
+                A: null,
+                B: null,
+                C: null,
+                D: null,
+              };
+            }
             return {
               A: calc.A ?? null,
               B: calc.B ?? null,
@@ -143,7 +162,7 @@ const AddRow: FC = () => {
         }
       }
     },
-    [calcLastPlayerPoint]
+    [addNewRound, calcLastPlayerPoint]
   );
 
   const convertSmartFill = useCallback(() => {
@@ -156,21 +175,21 @@ const AddRow: FC = () => {
         D: parsedRound.D ?? parsedRound.D ?? null,
       };
       next = calcLastPlayerPoint(next);
-      const anyUnfilled = Object.keys(next).find((key: string) => {
-        return (
-          next[key as PlayerKey] === null ||
-          next[key as PlayerKey] === undefined
-        );
-      });
-      if (anyUnfilled) {
+      const isValid = validateRound(next);
+      if (!isValid) {
         setRound({
-          A: next.A,
-          B: next.B,
-          C: next.C,
-          D: next.D,
+          A: next.A ? -next.A : null,
+          B: next.B ? -next.B : null,
+          C: next.C ? -next.C : null,
+          D: next.D ? -next.D : null,
         });
       } else {
-        addNewRound(next);
+        addNewRound({
+          A: -next.A,
+          B: -next.B,
+          C: -next.C,
+          D: -next.D,
+        });
         setRound({
           A: null,
           B: null,
@@ -194,7 +213,7 @@ const AddRow: FC = () => {
               value={round[id as string] ?? null}
               onChange={(value: number | null) => {
                 setPoint(id, value);
-                onBlur(id, value);
+                onAfterChange(id, value);
               }}
             />
           </td>
@@ -204,7 +223,7 @@ const AddRow: FC = () => {
             disabled={!isAbleToAdd}
             title="Add"
             className="bg-blue-500 text-white text-2xl p-2 rounded-full disabled:opacity-30"
-            onClick={addRound}
+            onClick={onSubmit}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

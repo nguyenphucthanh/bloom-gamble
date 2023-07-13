@@ -18,13 +18,17 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
   }, [isNegative, input]);
 
   useEffect(() => {
-    setIsNegative(value !== null && value < 0);
+    setIsNegative(
+      (value !== null && value !== undefined && value < 0) ||
+        value === null ||
+        value === undefined
+    );
     const str = value?.toString()?.replace("-", "");
     setInput([
       str?.[0] ? parseInt(str?.[0], 10) : null,
       str?.[1] ? parseInt(str?.[1], 10) : null,
     ]);
-  }, [value]);
+  }, [value, open]);
 
   const confirm = useCallback(() => {
     onChange(numberValue);
