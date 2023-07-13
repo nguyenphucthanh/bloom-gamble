@@ -33,6 +33,11 @@ export type IGamblePlayerArchive = {
   };
 };
 
+export type PlayerAmount = {
+  player: PlayerKey;
+  amount: number;
+};
+
 const initialState: IGambleState = {
   player: {
     A: "",
@@ -103,12 +108,9 @@ export const selectPlayerRank = (state: RootState) => {
 
 export const selectEndGame = (state: RootState) => state.gamble.ended;
 
-export const selectPayback = (state: RootState) => {
-  type PlayerAmount = {
-    player: PlayerKey;
-    amount: number;
-  };
-
+export const selectPayback = (
+  state: RootState
+): Map<PlayerKey, PlayerAmount> => {
   const paybackAmounts = new Map<PlayerKey, PlayerAmount[]>();
 
   const creditors: PlayerAmount[] = [];

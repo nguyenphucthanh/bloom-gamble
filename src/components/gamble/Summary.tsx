@@ -1,10 +1,13 @@
 import React, { FC, useMemo } from "react";
 import {
+  PlayerAmount,
   PlayerKey,
   selectPayback,
   selectPlayer,
   selectPlayerArchive,
+  selectPlayerPoint,
   selectPlayerRank,
+  selectRounds,
 } from "./gambleSlice";
 import { useAppSelector } from "../../store/hooks";
 import Image from "next/image";
@@ -47,6 +50,8 @@ const Summary: FC = () => {
   const playerRanks = useAppSelector(selectPlayerRank);
   const player = useAppSelector(selectPlayer);
   const archive = useAppSelector(selectPlayerArchive);
+  const total = useAppSelector(selectPlayerPoint);
+  const rounds = useAppSelector(selectRounds);
 
   const winnerAndLoser = useMemo(() => {
     const ranks = [playerRanks.A, playerRanks.B, playerRanks.C, playerRanks.D];
@@ -63,15 +68,17 @@ const Summary: FC = () => {
 
   return (
     <div className="p-3 border border-blue-300 shadow-lg shadow-blue-300s mt-5 rounded">
-      <h3 className="font-bold text-2xl mb-3">Tổng kết</h3>
+      <h3 className="font-bold text-2xl mb-3">
+        Tổng kết sau {rounds.length} ván
+      </h3>
       <ul className="text-left ml-3 flex flex-col gap-2">
         {Array.from(paybacks.keys()).map((key) => {
           return paybacks
             ?.get(key as PlayerKey)
-            ?.map((payback, index) => (
+            ?.map((payback: PlayerAmount, index: number) => (
               <Line
                 key={`${key}-${index}`}
-                nameTo={key}
+                nameTo={key as string}
                 nameFrom={payback.player}
                 amount={payback.amount}
               />
@@ -93,7 +100,7 @@ const Summary: FC = () => {
           </h4>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <img
+          <Image
             src={"/loser.jpg"}
             alt="Loser"
             className="rounded-full"
@@ -108,10 +115,11 @@ const Summary: FC = () => {
           </h4>
         </div>
       </div>
-      <table className={styles.table}>
+      <table className={`${styles.table} text-sm`}>
         <thead>
           <tr>
             <th>Player</th>
+            <th>Điểm</th>
             <th># Nhất</th>
             <th># Bét</th>
             <th>Thắng đậm nhất</th>
@@ -122,6 +130,7 @@ const Summary: FC = () => {
           {Object.keys(archive).map((playerKey) => (
             <tr key={playerKey}>
               <td className="font-bold">{player[playerKey as PlayerKey]}</td>
+              <td className="font-bold">{total[playerKey as PlayerKey]}</td>
               <td>{archive[playerKey as PlayerKey].winCount}</td>
               <td>{archive[playerKey as PlayerKey].loseCount}</td>
               <td>{archive[playerKey as PlayerKey].biggestPoint}</td>
