@@ -29,12 +29,6 @@ function GambleComponent() {
           priority={true}
         />
       </header>
-      <div className="text-center text-red-500 font-bold">
-        Cờ bạc là bác thằng bần
-      </div>
-      <div className="text-center text-red-500 font-bold">
-        Người thua bạc theo quy định pháp luật không cần phải trả nợ.
-      </div>
       {isGameStarted ? <Gamble /> : <EnterPlayer />}
     </div>
   );
