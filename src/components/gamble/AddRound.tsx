@@ -151,13 +151,14 @@ const AddRow: FC = () => {
                 C: null,
                 D: null,
               };
+            } else {
+              return {
+                A: calc.A ?? null,
+                B: calc.B ?? null,
+                C: calc.C ?? null,
+                D: calc.D ?? null,
+              };
             }
-            return {
-              A: calc.A ?? null,
-              B: calc.B ?? null,
-              C: calc.C ?? null,
-              D: calc.D ?? null,
-            };
           });
         }
       }
