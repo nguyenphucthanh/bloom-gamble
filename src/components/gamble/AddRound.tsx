@@ -5,6 +5,7 @@ import { partition, sortBy } from "lodash";
 import { fullFillRound, parseRoundString } from "../../lib/convert-pattern";
 import VoiceButton from "./VoiceButton";
 import EnterPoint from "./EnterPoint";
+import { speak } from "@/app/utils/speech";
 
 const validateRound = (round: IGambleRound): boolean => {
   const { A, B, C, D } = round;
@@ -61,6 +62,18 @@ const AddRow: FC = () => {
   const addNewRound = useCallback(
     (round: IGambleRound) => {
       const { A, B, C, D } = round;
+      const highest = Math.max(A, B, C, D);
+      const playerKey = ["A", "B", "C", "D"].find((key: string) => {
+        if (round[key as PlayerKey] === highest) {
+          return key as PlayerKey;
+        }
+        return null;
+      });
+      if (playerKey) {
+        speak(
+          `Chúc mừng ${players[playerKey as PlayerKey]} vừa thắng được một bàn. Giữ vững phong độ nhé!`
+        );
+      }
       dispatch(
         newRound({
           A: A,
@@ -70,7 +83,7 @@ const AddRow: FC = () => {
         })
       );
     },
-    [dispatch]
+    [dispatch, players]
   );
 
   const onSubmit = useCallback(() => {

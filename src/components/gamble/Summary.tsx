@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 import {
   PlayerAmount,
   PlayerKey,
@@ -12,6 +12,7 @@ import {
 import { useAppSelector } from "../../store/hooks";
 import Image from "next/image";
 import styles from "./styles.module.scss";
+import { speak } from "@/app/utils/speech";
 
 const Line: FC<{ nameFrom: string; nameTo: string; amount: number }> = ({
   nameFrom,
@@ -57,7 +58,7 @@ const Summary: FC = () => {
     const ranks = [playerRanks.A, playerRanks.B, playerRanks.C, playerRanks.D];
     const min = Math.min(...ranks);
     const max = Math.max(...ranks);
-    const winnerKey = Object.keys(playerRanks).find(
+    const winnerKey = Object.keys(playerRanks).filter(
       (key) => playerRanks[key as PlayerKey] === min
     );
     const loserKeys = Object.keys(playerRanks).filter(
@@ -65,6 +66,21 @@ const Summary: FC = () => {
     );
     return { winnerKey, loserKeys };
   }, [playerRanks]);
+
+  useEffect(() => {
+    if (winnerAndLoser.winnerKey && winnerAndLoser.loserKeys) {
+      const winners = winnerAndLoser.winnerKey
+        ?.map((key) => player[key as PlayerKey])
+        .join(", ");
+      const losers = winnerAndLoser.loserKeys
+        ?.map((key) => player[key as PlayerKey])
+        .join(", ");
+
+      speak(
+        `Chúc mừng ${winners} đã chiến thắng trận bài hôm nay. ${losers} hôm sau nhớ cúng trước khi chơi nhé!`
+      );
+    }
+  }, [winnerAndLoser, player]);
 
   return (
     <div className="p-3 border border-blue-300 shadow-lg shadow-blue-300s mt-5 rounded">
@@ -96,7 +112,9 @@ const Summary: FC = () => {
           />
           <h3 className="font-bold text-center">🏆 Winner 🏆</h3>
           <h4 className="font-bold text-center text-2xl rounded-full bg-red-500 text-white p-3 w-full">
-            {player[winnerAndLoser.winnerKey as PlayerKey]}
+            {winnerAndLoser.winnerKey
+              ?.map((key) => player[key as PlayerKey])
+              .join(", ")}
           </h4>
         </div>
         <div className="flex flex-col items-center gap-2">
