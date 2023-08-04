@@ -8,6 +8,10 @@ import {
   selectRounds,
 } from "./gambleSlice";
 
+import { Chart as ChartJS, registerables } from 'chart.js';
+import { Bar } from 'react-chartjs-2'
+ChartJS.register(...registerables);
+
 const LiveState: FC = () => {
   const players = useAppSelector(selectPlayer);
   const point = useAppSelector(selectPlayerPoint);
@@ -99,8 +103,52 @@ const LiveState: FC = () => {
           onClick={() => setShow(false)}
         >
           <div className="fixed bottom-2 left-5 right-5 z-40 bg-white rounded-xl shadow-xl h-10"></div>
-          <div className="flex gap-3 items-end justify-center relative z-50 pb-4">
-            {["A", "B", "C", "D"].map((key: string) => (
+          <div className="flex gap-3 items-end justify-center relative z-50 pb-4 pr-8">
+          <Bar
+            options={{
+              scales: {
+                x: {
+                  stacked: true,
+                  grid: {
+                    display: false
+                  }
+                },
+                y: {
+                  stacked: true,
+                  ticks: {
+                    callback: function(value) {
+                        const v = parseInt(value.toString())
+                        if (v == 0) return '';
+                        if (v > 0) return new Array(Math.floor(v / 20) || 1).fill('$').join('')
+                        if (v < -80) return '(╥﹏╥)'
+                        if (v < -60) return '(@_@)'
+                        if (v < -40) return '("･ω･")'
+                        if (v < -20) return '⊙︿⊙'
+                    }
+                  }
+                },
+              }
+            }}
+            data={{
+              labels: Object.values(players),
+              datasets: [{
+                label: 'Có tiền',
+                data: ["A", "B", "C", "D"].map((key: string) => point[key as PlayerKey] > 0 ? point[key as PlayerKey] : 0),
+                backgroundColor: 'rgb(96, 146, 255, 0.5)',
+                borderColor: 'rgb(0, 80, 255)',
+                borderWidth: 1
+              },
+              {
+                label: 'Có nợ',
+                data: ["A", "B", "C", "D"].map((key: string) => point[key as PlayerKey] < 0 ? point[key as PlayerKey] : 0),
+                backgroundColor: 'rgb(255, 119, 119, 0.5)',
+                borderColor: 'rgb(255, 0, 0)',
+                borderWidth: 1
+              }],
+              
+            }}
+          />
+            {/* {["A", "B", "C", "D"].map((key: string) => (
               <div key={key}>
                 <div
                   style={{ height: calcBarHeight(key as PlayerKey) }}
@@ -111,7 +159,7 @@ const LiveState: FC = () => {
                 ></div>
                 <div>{players[key as PlayerKey]}</div>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
       )}
