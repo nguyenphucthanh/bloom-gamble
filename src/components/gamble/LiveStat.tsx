@@ -1,12 +1,6 @@
 import { useAppSelector } from "@/store/hooks";
-import React, { FC, useCallback, useMemo, useState } from "react";
-import {
-  PlayerKey,
-  selectPlayer,
-  selectPlayerPoint,
-  selectPlayerRank,
-  selectRounds,
-} from "./gambleSlice";
+import React, { FC, useState } from "react";
+import { PlayerKey, selectPlayer, selectPlayerPoint } from "./gambleSlice";
 
 import { Chart as ChartJS, registerables } from "chart.js";
 import { Bar } from "react-chartjs-2";
@@ -15,39 +9,7 @@ ChartJS.register(...registerables);
 const LiveState: FC = () => {
   const players = useAppSelector(selectPlayer);
   const point = useAppSelector(selectPlayerPoint);
-  const rank = useAppSelector(selectPlayerRank);
-  const rounds = useAppSelector(selectRounds);
   const [show, setShow] = useState(false);
-
-  const roundsLength = useMemo(() => {
-    return rounds.length;
-  }, [rounds]);
-
-  const calcBarHeight = useCallback(
-    (playerKey: PlayerKey) => {
-      const playerRank = rank[playerKey];
-      let m = 0;
-      switch (playerRank) {
-        case 1:
-          m = 4;
-          break;
-        case 2:
-          m = 3;
-          break;
-        case 3:
-          m = 2;
-          break;
-        case 4:
-          m = 1;
-          break;
-        default:
-          m = 0;
-          break;
-      }
-      return m * 1.2 * roundsLength;
-    },
-    [rank, roundsLength]
-  );
 
   return (
     <>
@@ -77,8 +39,7 @@ const LiveState: FC = () => {
           className="fixed inset-0 top-auto bg-gradient-to-b from-transparent to-gray-300 backdrop-blur-md"
           onClick={() => setShow(false)}
         >
-          <div className="fixed bottom-2 left-5 right-5 z-40 bg-white rounded-xl shadow-xl h-10"></div>
-          <div className="flex gap-3 items-end justify-center relative z-50 pb-4 pr-8">
+          <div className="flex gap-3 items-end justify-center relative z-50 pb-4 m-4 pr-8 bg-white rounded-xl shadow-xl">
             <Bar
               options={{
                 scales: {
