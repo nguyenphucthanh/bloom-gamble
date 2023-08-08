@@ -59,32 +59,34 @@ const AddRow: FC = () => {
     }));
   }, []);
 
-  const addNewRound = useCallback(
-    (round: IGambleRound) => {
-      const { A, B, C, D } = round;
-      const highest = Math.max(A, B, C, D);
-      const playerKey = ["A", "B", "C", "D"].find((key: string) => {
-        if (round[key as PlayerKey] === highest) {
-          return key as PlayerKey;
-        }
-        return null;
-      });
-      if (playerKey) {
-        speak(
-          `Chúc mừng ${players[playerKey as PlayerKey]} vừa thắng được một bàn. Giữ vững phong độ nhé!`
-        );
-      }
-      dispatch(
-        newRound({
-          A: A,
-          B: B,
-          C: C,
-          D: D,
-        })
-      );
-    },
-    [dispatch, players]
-  );
+const addNewRound = useCallback(
+  (round: IGambleRound) => {
+    const { A, B, C, D } = round;
+    
+    // Create an array of strings for each player's name and value
+    const playerMessages = [
+      A !== null ? `${players.A}: ${A >= 0 ? '+' : ''}${A}` : null,
+      B !== null ? `${players.B}: ${B >= 0 ? '+' : ''}${B}` : null,
+      C !== null ? `${players.C}: ${C >= 0 ? '+' : ''}${C}` : null,
+      D !== null ? `${players.D}: ${D >= 0 ? '+' : ''}${D}` : null,
+    ].filter(Boolean);
+    
+    if (playerMessages.length > 0) {
+      const message = `Kết quả của ván này: ${playerMessages.join(", ")}.`;
+      speak(message);
+    }
+    
+    dispatch(
+      newRound({
+        A: A,
+        B: B,
+        C: C,
+        D: D,
+      })
+    );
+  },
+  [dispatch, players]
+);
 
   const onSubmit = useCallback(() => {
     const { A, B, C, D } = round;
