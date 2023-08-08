@@ -65,10 +65,10 @@ const addNewRound = useCallback(
     
     // Create an array of strings for each player's name and value
     const playerMessages = [
-      A !== null ? `${players.A}: ${A >= 0 ? '+' : ''}${A}` : null,
-      B !== null ? `${players.B}: ${B >= 0 ? '+' : ''}${B}` : null,
-      C !== null ? `${players.C}: ${C >= 0 ? '+' : ''}${C}` : null,
-      D !== null ? `${players.D}: ${D >= 0 ? '+' : ''}${D}` : null,
+      A !== null ? `${players.A}: ${A >= 0 ? '+' : '-'}${Math.abs(A)}` : null,
+      B !== null ? `${players.B}: ${B >= 0 ? '+' : '-'}${Math.abs(B)}` : null,
+      C !== null ? `${players.C}: ${C >= 0 ? '+' : '-'}${Math.abs(C)}` : null,
+      D !== null ? `${players.D}: ${D >= 0 ? '+' : '-'}${Math.abs(D)}` : null,
     ].filter(Boolean);
     
     if (playerMessages.length > 0) {
