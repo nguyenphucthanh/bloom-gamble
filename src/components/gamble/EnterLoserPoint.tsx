@@ -45,9 +45,12 @@ const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ value, onChange, winnerId 
   }, [value, open]);
 
   const setNextPlayer = useCallback(() => {
-    if (currentPlayerIndex >= (playerIds.length - 1)) return setOpen(false)
+    setInput([null, null]);
+    if (currentPlayerIndex >= (playerIds.length - 1)) {
+      setCurrentPlayerIndex(0);
+      return setOpen(false)
+    }
     setCurrentPlayerIndex(currentPlayerIndex + 1)
-    setInput([null, null])
   }, [currentPlayerIndex, playerIds.length])
 
   const confirm = useCallback(() => {
@@ -59,22 +62,23 @@ const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ value, onChange, winnerId 
     (number: number) => {
       setInput((prev) => {
         if (prev[0] === null) {
-          if (number === 0) {
-            onChange(0, playerIds[currentPlayerIndex]);
-            setNextPlayer();
-          }
+          // if (number === 0) {
+          //   onChange(0, playerIds[currentPlayerIndex]);
+          //   setNextPlayer();
+          //   return [null, null];
+          // }
           return [number, null];
         } else if (prev[1] === null) {
           const v = combineToPoint(isNegative, [prev[0], number]);
-          onChange(v, playerIds[currentPlayerIndex]);
-          setNextPlayer();
+          // onChange(v, playerIds[currentPlayerIndex]);
+          // setNextPlayer();
           return [prev[0], number];
         } else {
           return prev;
         }
       });
     },
-    [onChange, isNegative, currentPlayerIndex, playerIds]
+    [isNegative]
   );
 
   const isNumberDisabled = useCallback(() => {
