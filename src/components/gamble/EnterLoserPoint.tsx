@@ -61,13 +61,13 @@ const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ value, onChange, winnerId 
         if (prev[0] === null) {
           if (number === 0) {
             onChange(0, playerIds[currentPlayerIndex]);
-            // setOpen(false);
+            setNextPlayer();
           }
           return [number, null];
         } else if (prev[1] === null) {
           const v = combineToPoint(isNegative, [prev[0], number]);
           onChange(v, playerIds[currentPlayerIndex]);
-          // setOpen(false);
+          setNextPlayer();
           return [prev[0], number];
         } else {
           return prev;
