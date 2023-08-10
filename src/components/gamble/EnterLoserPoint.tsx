@@ -1,10 +1,12 @@
 import React, { FC, Fragment, useCallback, useEffect, useMemo } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { useAppSelector } from "@/store/hooks";
+import { PlayerKey, selectPlayer, selectPlayerPoint } from "./gambleSlice";
 
-export interface IEnterPointProps {
-  playerName: string;
+export interface IEnterLoserPointProps {
   value: number | null;
-  onChange: (value: number | null) => void;
+  winnerId: string;
+  onChange: (value: number | null, playerId: any) => void;
 }
 
 const combineToPoint = (
@@ -16,10 +18,14 @@ const combineToPoint = (
   return !isNaN(n) ? n : null;
 };
 
-const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
+const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ value, onChange, winnerId }) => {
   const [open, setOpen] = React.useState<boolean>(false);
   const [isNegative, setIsNegative] = React.useState<boolean>(true);
   const [input, setInput] = React.useState<(number | null)[]>([null, null]);
+  const players = useAppSelector(selectPlayer);
+  const playerIds = Object.keys(players).filter(id => id != winnerId)
+  const [currentPlayerIndex, setCurrentPlayerIndex] = React.useState<number>(0);
+  let clickTimeout: any = null
 
   const numberValue = useMemo(() => {
     return combineToPoint(isNegative, input);
@@ -38,31 +44,37 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
     ]);
   }, [value, open]);
 
+  const setNextPlayer = useCallback(() => {
+    if (currentPlayerIndex >= (playerIds.length - 1)) return setOpen(false)
+    setCurrentPlayerIndex(currentPlayerIndex + 1)
+    setInput([null, null])
+  }, [currentPlayerIndex, playerIds.length])
+
   const confirm = useCallback(() => {
-    onChange(numberValue);
-    setOpen(false);
-  }, [onChange, numberValue]);
+    onChange(numberValue, playerIds[currentPlayerIndex]);
+    setNextPlayer()
+  }, [onChange, numberValue, currentPlayerIndex, playerIds, setNextPlayer]);
 
   const enterNumber = useCallback(
     (number: number) => {
       setInput((prev) => {
         if (prev[0] === null) {
           if (number === 0) {
-            onChange(0);
-            setOpen(false);
+            onChange(0, playerIds[currentPlayerIndex]);
+            setNextPlayer();
           }
           return [number, null];
         } else if (prev[1] === null) {
           const v = combineToPoint(isNegative, [prev[0], number]);
-          onChange(v);
-          setOpen(false);
+          onChange(v, playerIds[currentPlayerIndex]);
+          setNextPlayer();
           return [prev[0], number];
         } else {
           return prev;
         }
       });
     },
-    [onChange, isNegative]
+    [onChange, isNegative, currentPlayerIndex, playerIds]
   );
 
   const isNumberDisabled = useCallback(() => {
@@ -72,16 +84,42 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
     return false;
   }, [input]);
 
+  const autoWin = useCallback(() => {
+    playerIds.forEach(id => {
+      onChange(-13, id);
+      setOpen(false)
+    })
+  }, [onChange, playerIds]);
+
+  const openPointInput = useCallback(() => {
+    setIsNegative(true);
+    setOpen(true);
+  }, [])
+
+  const handleClick = () => {
+    if (clickTimeout !== null) {
+      console.log('double click executes')
+      clearTimeout(clickTimeout)
+      clickTimeout = null
+      autoWin()
+    } else {
+      console.log('single click')  
+      clickTimeout = setTimeout(() => {
+        console.log('first click executes')
+        clearTimeout(clickTimeout)
+        clickTimeout = null
+        openPointInput()
+      }, 300)
+    }
+  }
+
   return (
     <div>
       <button
-        className="bg-gray-100 border border-gray-300 text-gray-900 rounded text-sm p-3 px-1 block w-10  "
-        onClick={() => {
-          setIsNegative(true);
-          setOpen(true);
-        }}
+        className="bg-yellow-100 border border-yellow-500 text-red-500 rounded text-sm p-3 px-1 block w-10 "
+        onClick={handleClick}
       >
-        {value ?? "📝"}
+        {"️🏆"}
       </button>
       <Transition appear show={open} as={Fragment}>
         <Dialog
@@ -117,7 +155,7 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Nhập điểm {playerName}
+                    Nhập điểm {players[playerIds[currentPlayerIndex] as PlayerKey]}
                   </Dialog.Title>
                   <div className="flex justify-center gap-1 text-3xl mx-auto my-3">
                     <button
@@ -184,4 +222,4 @@ const EnterPoint: FC<IEnterPointProps> = ({ playerName, value, onChange }) => {
   );
 };
 
-export default EnterPoint;
+export default EnterLoserPoint;

@@ -6,6 +6,7 @@ import { fullFillRound, parseRoundString } from "../../lib/convert-pattern";
 import VoiceButton from "./VoiceButton";
 import EnterPoint from "./EnterPoint";
 import { speak } from "@/app/utils/speech";
+import EnterLoserPoint from "./EnterLoserPoint";
 
 const validateRound = (round: IGambleRound): boolean => {
   const { A, B, C, D } = round;
@@ -220,7 +221,8 @@ const addNewRound = useCallback(
   return (
     <>
       <tr>
-        <td>New</td>
+        <td className="text-xs">Nhập điểm từng thằng
+        </td>
         {sortBy(Object.keys(round)).map((id: string) => (
           <td key={id}>
             <EnterPoint
@@ -259,8 +261,21 @@ const addNewRound = useCallback(
         </td>
       </tr>
       <tr>
-        <td>OR</td>
-        <td colSpan={4}>
+        <td className="text-xs">Nhấp thằng thắng<br/>(Tới trắng x 2)</td>
+        {sortBy(Object.keys(round)).map((id: string) => (
+          <td key={id}>
+            <EnterLoserPoint
+              winnerId={id}
+              key={id}
+              value={round[id as string] ?? null}
+              onChange={(value: number | null, playerId) => {
+                setPoint(playerId, value);
+                onAfterChange(playerId, value);
+              }}
+            />
+          </td>
+        ))}
+        {/* <td>
           <label title={"PatternInput"} className="flex">
             <input
               placeholder="A 1 B 2 C 3"
@@ -273,10 +288,10 @@ const addNewRound = useCallback(
             />
             <VoiceButton callback={setSmartFill} />
           </label>
-          <div>Chỉ cần ghi người thua, điểm tự đảo dấu</div>
-        </td>
+          
+        </td> */}
         <td>
-          <button
+          {/* <button
             title="Convert"
             className="bg-blue-500 text-white text-2xl p-2 rounded-full disabled:opacity-30"
             onClick={convertSmartFill}
@@ -295,7 +310,7 @@ const addNewRound = useCallback(
                 d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"
               />
             </svg>
-          </button>
+          </button> */}
         </td>
       </tr>
     </>

@@ -37,7 +37,7 @@ const Table: FC = () => {
       <table className={`${styles.table} relative overflow-auto`}>
         <thead>
           <tr>
-            <th className="sticky top-0">No.</th>
+            <th className="sticky top-0 w-24">No.</th>
             <th className="sticky top-0">{player.A}</th>
             <th className="sticky top-0">{player.B}</th>
             <th className="sticky top-0">{player.C}</th>
