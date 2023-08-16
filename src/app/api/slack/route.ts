@@ -10,14 +10,12 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const config = await axios.get('https://lhhl.github.io/bloom-gamble/config.json')
-  let slackWebhook = config?.data?.slkCode
+  const slackWebhook = process.env.SLACK_URL
 
   if (!slackWebhook) {
     return NextResponse.json({ status: 'failed', message: 'webhook url not found' })
   }
 
-  slackWebhook = atob(slackWebhook)
   const data = await request.json()
   await axios.post(slackWebhook, {
     text: data?.text
