@@ -13,6 +13,7 @@ import { useAppSelector } from "../../store/hooks";
 import Image from "next/image";
 import styles from "./styles.module.scss";
 import { speak } from "@/app/utils/speech";
+import SendResultToSlack from "./SendResultToSlack";
 
 const Line: FC<{ nameFrom: string; nameTo: string; amount: number }> = ({
   nameFrom,
@@ -49,23 +50,24 @@ const Line: FC<{ nameFrom: string; nameTo: string; amount: number }> = ({
 const Summary: FC = () => {
   const paybacks = useAppSelector(selectPayback);
   const playerRanks = useAppSelector(selectPlayerRank);
+  const playerPoints = useAppSelector(selectPlayerPoint);
   const player = useAppSelector(selectPlayer);
   const archive = useAppSelector(selectPlayerArchive);
   const total = useAppSelector(selectPlayerPoint);
   const rounds = useAppSelector(selectRounds);
 
   const winnerAndLoser = useMemo(() => {
-    const ranks = [playerRanks.A, playerRanks.B, playerRanks.C, playerRanks.D];
-    const min = Math.min(...ranks);
-    const max = Math.max(...ranks);
-    const winnerKey = Object.keys(playerRanks).filter(
-      (key) => playerRanks[key as PlayerKey] === min
+    // const ranks = [playerRanks.A, playerRanks.B, playerRanks.C, playerRanks.D];
+    // const min = Math.min(...ranks);
+    // const max = Math.max(...ranks);
+    const winnerKey = Object.keys(playerPoints).filter(
+      (key) => playerPoints[key as PlayerKey] > 0
     );
-    const loserKeys = Object.keys(playerRanks).filter(
-      (key) => playerRanks[key as PlayerKey] === max
+    const loserKeys = Object.keys(playerPoints).filter(
+      (key) => playerPoints[key as PlayerKey] < 0
     );
     return { winnerKey, loserKeys };
-  }, [playerRanks]);
+  }, [playerPoints]);
 
   useEffect(() => {
     if (winnerAndLoser.winnerKey && winnerAndLoser.loserKeys) {
@@ -157,6 +159,7 @@ const Summary: FC = () => {
           ))}
         </tbody>
       </table>
+      <SendResultToSlack />
     </div>
   );
 };

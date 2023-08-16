@@ -63,17 +63,22 @@ const AddRow: FC = () => {
 const addNewRound = useCallback(
   (round: IGambleRound) => {
     const { A, B, C, D } = round;
-    
+    const sortedRound = 
+      Object.entries(round).sort(([, valueA], [, valueB]) => valueA - valueB)
+    ;
+    const playerMessages = sortedRound.map(([key, point]) => 
+      point !== null ? `${players[key as PlayerKey]}: ${point >= 0 ? 'cộng ' : 'trừ '}${Math.abs(point)}` : null,
+    )
     // Create an array of strings for each player's name and value
-    const playerMessages = [
-      A !== null ? `${players.A}: ${A >= 0 ? '+' : '-'}${Math.abs(A)}` : null,
-      B !== null ? `${players.B}: ${B >= 0 ? '+' : '-'}${Math.abs(B)}` : null,
-      C !== null ? `${players.C}: ${C >= 0 ? '+' : '-'}${Math.abs(C)}` : null,
-      D !== null ? `${players.D}: ${D >= 0 ? '+' : '-'}${Math.abs(D)}` : null,
-    ].filter(Boolean);
+    // const playerMessages = [
+    //   A !== null ? `${players.A}: ${A >= 0 ? '+' : '-'}${Math.abs(A)}` : null,
+    //   B !== null ? `${players.B}: ${B >= 0 ? '+' : '-'}${Math.abs(B)}` : null,
+    //   C !== null ? `${players.C}: ${C >= 0 ? '+' : '-'}${Math.abs(C)}` : null,
+    //   D !== null ? `${players.D}: ${D >= 0 ? '+' : '-'}${Math.abs(D)}` : null,
+    // ].filter(Boolean);
     
     if (playerMessages.length > 0) {
-      const message = `Kết quả của ván này: ${playerMessages.join(", ")}.`;
+      const message = `Kết quả: ${playerMessages.join(", ")}.`;
       speak(message);
     }
     
