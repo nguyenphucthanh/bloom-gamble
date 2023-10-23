@@ -12,11 +12,14 @@ export const congrats = async (
     ", "
   )} chơi đánh bài. ${winner} vừa chiến thắng những người chơi còn lại. Hãy viết một câu chúc mừng thật kích động trong vòng 20 từ.`;
 
-  const messages = [{ role: "user", content: request }];
-
   const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
-    messages: messages,
+    messages: [
+      {
+        role: "user",
+        content: request,
+      },
+    ],
   });
 
   return response.choices[0].message.content;
