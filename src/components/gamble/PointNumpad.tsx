@@ -66,7 +66,7 @@ const PointNumpad: FC<IPointNumpad> = ({
         }
       });
     },
-    [onChange, isNegative, onClose]
+    [onChange, isNegative]
   );
 
   const isNumberDisabled = useCallback(() => {

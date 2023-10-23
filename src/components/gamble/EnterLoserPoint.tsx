@@ -49,7 +49,7 @@ const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ onChange, winnerId }) => {
       setEnteringPlayerKey(nextKey);
       setOpen(true);
     }
-  }, [round, getNextPlayerKey]);
+  }, [getNextPlayerKey]);
 
   const onChangePoint = useCallback(
     (point: number | null) => {
