@@ -7,6 +7,8 @@ import VoiceButton from "./VoiceButton";
 import EnterPoint from "./EnterPoint";
 import { speak } from "@/app/utils/speech";
 import EnterLoserPoint from "./EnterLoserPoint";
+import { congrats } from "@/app/utils/ai";
+import axios from "axios";
 
 const validateRound = (round: IGambleRound): boolean => {
   const { A, B, C, D } = round;
@@ -60,39 +62,61 @@ const AddRow: FC = () => {
     }));
   }, []);
 
-const addNewRound = useCallback(
-  (round: IGambleRound) => {
-    const { A, B, C, D } = round;
-    const sortedRound = 
-      Object.entries(round).sort(([, valueA], [, valueB]) => valueA - valueB)
-    ;
-    const playerMessages = sortedRound.map(([key, point]) => 
-      point !== null ? `${players[key as PlayerKey]}: ${point >= 0 ? 'cộng ' : 'trừ '}${Math.abs(point)}` : null,
-    )
-    // Create an array of strings for each player's name and value
-    // const playerMessages = [
-    //   A !== null ? `${players.A}: ${A >= 0 ? '+' : '-'}${Math.abs(A)}` : null,
-    //   B !== null ? `${players.B}: ${B >= 0 ? '+' : '-'}${Math.abs(B)}` : null,
-    //   C !== null ? `${players.C}: ${C >= 0 ? '+' : '-'}${Math.abs(C)}` : null,
-    //   D !== null ? `${players.D}: ${D >= 0 ? '+' : '-'}${Math.abs(D)}` : null,
-    // ].filter(Boolean);
-    
-    if (playerMessages.length > 0) {
-      const message = `Kết quả: ${playerMessages.join(", ")}.`;
-      speak(message);
-    }
-    
-    dispatch(
-      newRound({
-        A: A,
-        B: B,
-        C: C,
-        D: D,
-      })
-    );
-  },
-  [dispatch, players]
-);
+  const addNewRound = useCallback(
+    (round: IGambleRound) => {
+      const { A, B, C, D } = round;
+      const sortedRound = Object.entries(round).sort(
+        ([, valueA], [, valueB]) => valueA - valueB
+      );
+      const playerMessages = sortedRound.map(([key, point]) =>
+        point !== null
+          ? `${players[key as PlayerKey]}: ${
+              point >= 0 ? "cộng " : "trừ "
+            }${Math.abs(point)}`
+          : null
+      );
+      // Create an array of strings for each player's name and value
+      // const playerMessages = [
+      //   A !== null ? `${players.A}: ${A >= 0 ? '+' : '-'}${Math.abs(A)}` : null,
+      //   B !== null ? `${players.B}: ${B >= 0 ? '+' : '-'}${Math.abs(B)}` : null,
+      //   C !== null ? `${players.C}: ${C >= 0 ? '+' : '-'}${Math.abs(C)}` : null,
+      //   D !== null ? `${players.D}: ${D >= 0 ? '+' : '-'}${Math.abs(D)}` : null,
+      // ].filter(Boolean);
+
+      if (playerMessages.length > 0) {
+        const message = `Kết quả: ${playerMessages.join(", ")}.`;
+        speak(message);
+
+        const max = Math.max(A, B, C, D);
+        const maxKey = Object.keys(round).find(
+          (key) => round[key as PlayerKey] === max
+        );
+        const names = Object.keys(round).map(
+          (key) => players[key as PlayerKey]
+        );
+        const winnerName = players[maxKey as PlayerKey];
+
+        congrats(names, winnerName).then((mes) => {
+          if (mes) {
+            speak(mes);
+            axios.post("/api/slack", {
+              text: `[LIVE STREAM] ${message}. ${mes}`,
+            });
+          }
+        });
+      }
+
+      dispatch(
+        newRound({
+          A: A,
+          B: B,
+          C: C,
+          D: D,
+        })
+      );
+    },
+    [dispatch, players]
+  );
 
   const onSubmit = useCallback(() => {
     const { A, B, C, D } = round;
@@ -226,8 +250,7 @@ const addNewRound = useCallback(
   return (
     <>
       <tr>
-        <td className="text-xs">Nhập điểm từng thằng
-        </td>
+        <td className="text-xs">Nhập điểm từng thằng</td>
         {sortBy(Object.keys(round)).map((id: string) => (
           <td key={id}>
             <EnterPoint
@@ -266,7 +289,11 @@ const addNewRound = useCallback(
         </td>
       </tr>
       <tr>
-        <td className="text-xs">Nhấp thằng thắng<br/>(Tới trắng x 2)</td>
+        <td className="text-xs">
+          Nhấp thằng thắng
+          <br />
+          (Tới trắng x 2)
+        </td>
         {sortBy(Object.keys(round)).map((id: string) => (
           <td key={id}>
             <EnterLoserPoint
