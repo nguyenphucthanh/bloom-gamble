@@ -46,12 +46,22 @@ export const EnterPlayer: FC = () => {
         {Object.keys(names).map((id: string) => (
           <div key={id}>
             <input
-              type="text"
               placeholder={`Player ${id}`}
               className={styles.inputPlayer}
               value={names?.[id] ?? ""}
               onChange={(e) => setPlayerName(id, e.target.value)}
+              list="available-players"
             />
+            <datalist id="available-players">
+              <option value="Hà" />
+              <option value="Linh" />
+              <option value="Long" />
+              <option value="Luân" />
+              <option value="Minh" />
+              <option value="Thuận" />
+              <option value="Tuấn" />
+              <option value="Tuyến" />
+            </datalist>
           </div>
         ))}
         <div className="flex flex-col items-center gap-2">

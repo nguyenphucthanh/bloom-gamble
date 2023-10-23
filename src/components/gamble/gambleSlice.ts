@@ -8,6 +8,10 @@ export type IGambleRound = {
   [key in PlayerKey]: number;
 };
 
+export type INullableGambleRound = {
+  [key in PlayerKey]: number | null;
+};
+
 export type IPlayerRank = {
   [key in PlayerKey]: number;
 };

@@ -1,6 +1,12 @@
 import React, { FC, useCallback, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { IGambleRound, PlayerKey, newRound, selectPlayer } from "./gambleSlice";
+import {
+  IGambleRound,
+  INullableGambleRound,
+  PlayerKey,
+  newRound,
+  selectPlayer,
+} from "./gambleSlice";
 import { partition, sortBy } from "lodash";
 import { fullFillRound, parseRoundString } from "../../lib/convert-pattern";
 import VoiceButton from "./VoiceButton";
@@ -9,6 +15,7 @@ import { speak } from "@/app/utils/speech";
 import EnterLoserPoint from "./EnterLoserPoint";
 import { congrats } from "@/app/utils/ai";
 import axios from "axios";
+import IconPlus from "../icons/plus";
 
 const validateRound = (round: IGambleRound): boolean => {
   const { A, B, C, D } = round;
@@ -45,9 +52,7 @@ const validateRound = (round: IGambleRound): boolean => {
 const AddRow: FC = () => {
   const players = useAppSelector(selectPlayer);
   const dispatch = useAppDispatch();
-  const [round, setRound] = useState<{
-    [key: string]: number | null;
-  }>({
+  const [round, setRound] = useState<INullableGambleRound>({
     A: null,
     B: null,
     C: null,
@@ -96,14 +101,23 @@ const AddRow: FC = () => {
         );
         const winnerName = players[maxKey as PlayerKey];
 
-        congrats(names, winnerName).then((mes) => {
-          if (mes) {
-            speak(mes);
-            axios.post("/api/slack", {
-              text: `[LIVE STREAM] ${message}. ${mes}`,
-            });
-          }
-        });
+        axios
+          .post("/api/ai", {
+            names,
+            winnerName,
+          })
+          .then((response) => {
+            const mes = response.data.message;
+            if (mes) {
+              speak(mes);
+              axios.post("/api/slack", {
+                text: `[LIVE STREAM] ${message}. ${mes}`,
+              });
+            }
+          })
+          .catch(() => {
+            console.error("Could not get from AI");
+          });
       }
 
       dispatch(
@@ -211,7 +225,7 @@ const AddRow: FC = () => {
     [addNewRound, calcLastPlayerPoint]
   );
 
-  const convertSmartFill = useCallback(() => {
+  const _convertSmartFill = useCallback(() => {
     const parsedRound = fullFillRound(parseRoundString(smartFill, players));
     if (parsedRound) {
       let next = {
@@ -271,20 +285,7 @@ const AddRow: FC = () => {
             className="bg-blue-500 text-white text-2xl p-2 rounded-full disabled:opacity-30"
             onClick={onSubmit}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
+            <IconPlus />
           </button>
         </td>
       </tr>
@@ -297,53 +298,15 @@ const AddRow: FC = () => {
         {sortBy(Object.keys(round)).map((id: string) => (
           <td key={id}>
             <EnterLoserPoint
-              winnerId={id}
+              winnerId={id as PlayerKey}
               key={id}
-              value={round[id as string] ?? null}
-              onChange={(value: number | null, playerId) => {
-                setPoint(playerId, value);
-                onAfterChange(playerId, value);
+              onChange={(r: IGambleRound) => {
+                addNewRound(r);
               }}
             />
           </td>
         ))}
-        {/* <td>
-          <label title={"PatternInput"} className="flex">
-            <input
-              placeholder="A 1 B 2 C 3"
-              type="text"
-              className="text-black block w-full rounded text-2xl p-1 border border-gray-300 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 uppercase"
-              value={smartFill}
-              onChange={(e) => {
-                setSmartFill(e.target.value);
-              }}
-            />
-            <VoiceButton callback={setSmartFill} />
-          </label>
-          
-        </td> */}
-        <td>
-          {/* <button
-            title="Convert"
-            className="bg-blue-500 text-white text-2xl p-2 rounded-full disabled:opacity-30"
-            onClick={convertSmartFill}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"
-              />
-            </svg>
-          </button> */}
-        </td>
+        <td></td>
       </tr>
     </>
   );
