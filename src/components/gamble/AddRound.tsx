@@ -270,7 +270,7 @@ const AddRow: FC = () => {
             <EnterPoint
               key={id}
               playerName={players[id as PlayerKey]}
-              value={round[id as string] ?? null}
+              value={round[id as PlayerKey] ?? null}
               onChange={(value: number | null) => {
                 setPoint(id, value);
                 onAfterChange(id, value);
