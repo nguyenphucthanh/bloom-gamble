@@ -20,15 +20,19 @@ export const congrats = async (
     ", "
   )} chơi đánh bài. ${winner} vừa chiến thắng những người chơi còn lại. ${demand}`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "user",
-        content: request,
-      },
-    ],
-  });
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: request,
+        },
+      ],
+    });
 
-  return response.choices[0].message.content;
+    return response.choices[0].message.content;
+  } catch {
+    return null;
+  }
 };
