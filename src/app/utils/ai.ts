@@ -29,6 +29,7 @@ export const congrats = async (
           content: request,
         },
       ],
+      max_tokens: 120,
     });
 
     return response.choices[0].message.content;

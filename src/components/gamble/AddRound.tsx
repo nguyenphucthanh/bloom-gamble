@@ -5,15 +5,15 @@ import {
   INullableGambleRound,
   PlayerKey,
   newRound,
+  selectIsGPT,
   selectPlayer,
+  selectSlackThread,
 } from "./gambleSlice";
 import { partition, sortBy } from "lodash";
 import { fullFillRound, parseRoundString } from "../../lib/convert-pattern";
-import VoiceButton from "./VoiceButton";
 import EnterPoint from "./EnterPoint";
 import { speak } from "@/app/utils/speech";
 import EnterLoserPoint from "./EnterLoserPoint";
-import { congrats } from "@/app/utils/ai";
 import axios from "axios";
 import IconPlus from "../icons/plus";
 
@@ -51,6 +51,8 @@ const validateRound = (round: IGambleRound): boolean => {
 
 const AddRow: FC = () => {
   const players = useAppSelector(selectPlayer);
+  const slackThread = useAppSelector(selectSlackThread);
+  const isGPT = useAppSelector(selectIsGPT);
   const dispatch = useAppDispatch();
   const [round, setRound] = useState<INullableGambleRound>({
     A: null,
@@ -80,6 +82,9 @@ const AddRow: FC = () => {
             }${Math.abs(point)}`
           : null
       );
+      const playerMessagesToSlack = sortedRound.map(([key, point]) =>
+        point !== null ? `${players[key as PlayerKey]}: ${point}` : null
+      );
       // Create an array of strings for each player's name and value
       // const playerMessages = [
       //   A !== null ? `${players.A}: ${A >= 0 ? '+' : '-'}${Math.abs(A)}` : null,
@@ -101,23 +106,31 @@ const AddRow: FC = () => {
         );
         const winnerName = players[maxKey as PlayerKey];
 
-        axios
-          .post("/api/ai", {
-            names,
-            winnerName,
-          })
-          .then((response) => {
-            const mes = response.data.message;
-            if (mes) {
-              speak(mes);
-              axios.post("/api/slack", {
-                text: `[LIVE STREAM] ${message}. ${mes}`,
-              });
-            }
-          })
-          .catch(() => {
-            console.error("Could not get from AI");
-          });
+        axios.post("/api/slack", {
+          text: playerMessagesToSlack.join(", "),
+          thread_ts: slackThread,
+        });
+
+        if (isGPT) {
+          axios
+            .post("/api/ai", {
+              names,
+              winnerName,
+            })
+            .then((response) => {
+              const mes = response.data.message;
+              if (mes) {
+                speak(mes);
+                axios.post("/api/slack", {
+                  text: mes,
+                  thread_ts: slackThread,
+                });
+              }
+            })
+            .catch(() => {
+              console.error("Could not get from AI");
+            });
+        }
       }
 
       dispatch(
@@ -129,7 +142,7 @@ const AddRow: FC = () => {
         })
       );
     },
-    [dispatch, players]
+    [dispatch, players, slackThread, isGPT]
   );
 
   const onSubmit = useCallback(() => {

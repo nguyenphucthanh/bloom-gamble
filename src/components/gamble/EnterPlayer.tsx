@@ -7,8 +7,9 @@ import React, {
 } from "react";
 import styles from "./styles.module.scss";
 import { useAppDispatch } from "../../store/hooks";
-import { IGambleState, setPlayer } from "./gambleSlice";
+import { IGambleState, setPlayer, setSlackThread } from "./gambleSlice";
 import PlayerNameInput from "./PlayerNameInput";
+import axios from "axios";
 
 export const EnterPlayer: FC = () => {
   const dispatch = useAppDispatch();
@@ -29,9 +30,16 @@ export const EnterPlayer: FC = () => {
   }, []);
 
   const startGame = useCallback<FormEventHandler<HTMLFormElement>>(
-    (event) => {
+    async (event) => {
       event.preventDefault();
       dispatch(setPlayer(names as IGambleState["player"]));
+      const slackMessage = await axios.post("/api/slack", {
+        text: `[LIVE STREAM]: ${Object.values(names).join(
+          ", "
+        )} đã bắt đầu trò chơi!`,
+      });
+      const ts = slackMessage.data.response.ts;
+      dispatch(setSlackThread(ts));
     },
     [dispatch, names]
   );

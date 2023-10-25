@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useRef, useState } from "react";
 import {
   IGambleRound,
   INullableGambleRound,
@@ -14,6 +14,7 @@ export interface IEnterLoserPointProps {
 }
 
 const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ onChange, winnerId }) => {
+  const clickTimeout = useRef<NodeJS.Timeout | null>();
   const [round, setRound] = useState<INullableGambleRound>({
     A: null,
     B: null,
@@ -42,8 +43,8 @@ const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ onChange, winnerId }) => {
       B: null,
       C: null,
       D: null,
-    }
-    setRound(newRound)
+    };
+    setRound(newRound);
     const nextKey = getNextPlayerKey(newRound);
     if (nextKey) {
       setEnteringPlayerKey(nextKey);
@@ -86,12 +87,33 @@ const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ onChange, winnerId }) => {
     [enteringPlayerKey, getNextPlayerKey, onChange, winnerId]
   );
 
+  const onDoubleClick = useCallback(() => {
+    const round: IGambleRound = {
+      A: winnerId === "A" ? 13 * 3 : -13,
+      B: winnerId === "B" ? 13 * 3 : -13,
+      C: winnerId === "C" ? 13 * 3 : -13,
+      D: winnerId === "D" ? 13 * 3 : -13,
+    };
+    onChange(round);
+    setOpen(false);
+  }, [onChange, winnerId]);
+
   return (
     <>
       <button
         className="bg-gray-100 border border-gray-300 text-gray-900 rounded text-sm p-3 px-1 block w-10  "
         onClick={() => {
-          startFlow();
+          if (clickTimeout.current) {
+            onDoubleClick();
+            if (clickTimeout.current) {
+              clearTimeout(clickTimeout.current);
+              clickTimeout.current = null;
+            }
+          } else {
+            clickTimeout.current = setTimeout(() => {
+              startFlow();
+            }, 300);
+          }
         }}
       >
         {"🏆"}

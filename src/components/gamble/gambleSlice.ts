@@ -26,6 +26,8 @@ export interface IGambleState {
   };
   rounds: IGambleRound[];
   ended: boolean;
+  slackThread: string | null;
+  isGPT: boolean;
 }
 
 export type IGamblePlayerArchive = {
@@ -51,6 +53,8 @@ const initialState: IGambleState = {
   },
   rounds: [],
   ended: false,
+  slackThread: null,
+  isGPT: true,
 };
 
 export const gambleSlice = createSlice({
@@ -77,11 +81,27 @@ export const gambleSlice = createSlice({
     endGame: (state: IGambleState) => {
       state.ended = true;
     },
+    setSlackThread: (
+      state: IGambleState,
+      action: PayloadAction<string | null>
+    ) => {
+      state.slackThread = action.payload;
+    },
+    switchGPT: (state: IGambleState) => {
+      state.isGPT = !state.isGPT;
+    },
   },
 });
 
-export const { setPlayer, newRound, removeRound, endGame, resetAll } =
-  gambleSlice.actions;
+export const {
+  setPlayer,
+  newRound,
+  removeRound,
+  endGame,
+  resetAll,
+  setSlackThread,
+  switchGPT,
+} = gambleSlice.actions;
 
 export const selectPlayer = (state: RootState) => state.gamble.player;
 export const selectRounds = (state: RootState) => state.gamble.rounds;
@@ -209,5 +229,11 @@ export const selectPlayerArchive = (state: RootState) => {
   });
   return archive;
 };
+
+export const selectSlackThread = (state: RootState) => {
+  return state.gamble.slackThread;
+};
+
+export const selectIsGPT = (state: RootState) => state.gamble.isGPT;
 
 export default gambleSlice.reducer;

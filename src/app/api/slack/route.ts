@@ -10,31 +10,37 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const slackWebhook = process.env.SLACK_URL;
+  const token = process.env.SLACK_OAUTH_BOT_TOKEN;
 
-  if (!slackWebhook) {
+  if (!token) {
     return NextResponse.json({
       status: "failed",
-      message: "webhook url not found",
+      message: "SLACK not setup",
     });
   }
 
   const data = await request.json();
-  await axios
-    .post(
-      slackWebhook,
+  try {
+    const slackResponse = await axios.post(
+      "https://slack.com/api/chat.postMessage",
       {
         text: data?.text,
+        channel: "work-hard-play-harder",
+        thread_ts: data?.thread_ts,
       },
       {
         headers: {
           "Content-type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       }
-    )
-    .catch((err) =>
-      NextResponse.json({ status: "error", message: err?.message })
     );
 
-  return NextResponse.json({ status: "ok" });
+    return NextResponse.json({ status: "ok", response: slackResponse.data });
+  } catch (err) {
+    NextResponse.json({
+      status: "error",
+      message: (err as unknown as Error)?.message,
+    });
+  }
 }
