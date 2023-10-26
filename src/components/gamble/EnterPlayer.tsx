@@ -68,11 +68,6 @@ export const EnterPlayer: FC = () => {
           <div className="text-center text-red-500 font-bold text-lg">
             Chúc các bạn may mắn
           </div>
-          <p>
-            <a href="https://giphy.com/gifs/pokemon-anime-cheer-meowth-uzWoRrlxnbL6TJgIbP">
-              via GIPHY
-            </a>
-          </p>
         </div>
         <button
           type="submit"
