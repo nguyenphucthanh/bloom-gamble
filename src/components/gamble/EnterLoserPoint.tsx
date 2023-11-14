@@ -105,13 +105,12 @@ const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ onChange, winnerId }) => {
         onClick={() => {
           if (clickTimeout.current) {
             onDoubleClick();
-            if (clickTimeout.current) {
-              clearTimeout(clickTimeout.current);
-              clickTimeout.current = null;
-            }
+            clearTimeout(clickTimeout.current);
+            clickTimeout.current = null;
           } else {
             clickTimeout.current = setTimeout(() => {
               startFlow();
+              clickTimeout.current = null;
             }, 300);
           }
         }}
