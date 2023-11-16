@@ -3,7 +3,7 @@ let voices = [];
 const speech = isSpeechSupport ? new SpeechSynthesisUtterance() : null;
 if (speech) {
   speech.lang = "vi-VN";
-  speech.rate = 2;
+  speech.rate = 1.2;
   window.speechSynthesis.onvoiceschanged = () => {
     voices = window.speechSynthesis.getVoices();
 
