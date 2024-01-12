@@ -5,6 +5,7 @@ import {
   INullableGambleRound,
   PlayerKey,
   newRound,
+  selectEnableSlackNotification,
   selectIsGPT,
   selectPlayer,
   selectSlackThread,
@@ -53,6 +54,7 @@ const AddRow: FC = () => {
   const players = useAppSelector(selectPlayer);
   const slackThread = useAppSelector(selectSlackThread);
   const isGPT = useAppSelector(selectIsGPT);
+  const isNotificationEnabled = useAppSelector(selectEnableSlackNotification)
   const dispatch = useAppDispatch();
   const [round, setRound] = useState<INullableGambleRound>({
     A: null,
@@ -106,12 +108,14 @@ const AddRow: FC = () => {
         );
         const winnerName = players[maxKey as PlayerKey];
 
-        axios.post("/api/slack", {
-          text: playerMessagesToSlack.join(", "),
-          thread_ts: slackThread,
-        });
+        if (isNotificationEnabled) {
+          axios.post("/api/slack", {
+            text: playerMessagesToSlack.join(", "),
+            thread_ts: slackThread,
+          });
+        }
 
-        if (isGPT) {
+        if (isGPT && isNotificationEnabled) {
           axios
             .post("/api/ai", {
               names,
@@ -142,7 +146,7 @@ const AddRow: FC = () => {
         })
       );
     },
-    [dispatch, players, slackThread, isGPT]
+    [dispatch, players, isNotificationEnabled, isGPT, slackThread]
   );
 
   const onSubmit = useCallback(() => {

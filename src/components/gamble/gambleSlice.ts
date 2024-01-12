@@ -28,6 +28,7 @@ export interface IGambleState {
   ended: boolean;
   slackThread: string | null;
   isGPT: boolean;
+  enableSlackNotification: boolean;
 }
 
 export type IGamblePlayerArchive = {
@@ -55,6 +56,7 @@ const initialState: IGambleState = {
   ended: false,
   slackThread: null,
   isGPT: true,
+  enableSlackNotification: true,
 };
 
 export const gambleSlice = createSlice({
@@ -85,11 +87,16 @@ export const gambleSlice = createSlice({
       state: IGambleState,
       action: PayloadAction<string | null>
     ) => {
-      state.slackThread = action.payload;
+      if (state.enableSlackNotification) {
+        state.slackThread = action.payload;
+      }
     },
     switchGPT: (state: IGambleState) => {
       state.isGPT = !state.isGPT;
     },
+    switchSlackNotification: (state: IGambleState) => {
+      state.enableSlackNotification = !state.enableSlackNotification;
+    }
   },
 });
 
@@ -101,6 +108,7 @@ export const {
   resetAll,
   setSlackThread,
   switchGPT,
+  switchSlackNotification,
 } = gambleSlice.actions;
 
 export const selectPlayer = (state: RootState) => state.gamble.player;
@@ -235,5 +243,9 @@ export const selectSlackThread = (state: RootState) => {
 };
 
 export const selectIsGPT = (state: RootState) => state.gamble.isGPT;
+
+export const selectEnableSlackNotification = (
+  state: RootState
+) => state.gamble.enableSlackNotification;
 
 export default gambleSlice.reducer;

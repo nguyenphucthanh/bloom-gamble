@@ -3,6 +3,7 @@ import { FC, useCallback } from "react";
 import {
   PlayerAmount,
   PlayerKey,
+  selectEnableSlackNotification,
   selectPayback,
   selectPlayer,
   selectPlayerPoint,
@@ -13,6 +14,7 @@ const SendResultToSlack: FC = () => {
   const total = useAppSelector(selectPlayerPoint);
   const paybacks = useAppSelector(selectPayback);
   const player = useAppSelector(selectPlayer);
+  const isNotificationEnabled = useAppSelector(selectEnableSlackNotification);
 
   const sendResult = useCallback(() => {
     const result = Object.entries(total).map(([key, point]) => {
@@ -37,6 +39,10 @@ const SendResultToSlack: FC = () => {
       text,
     });
   }, [paybacks, player, total]);
+
+  if (!isNotificationEnabled) {
+    return null;
+  }
 
   return (
     <button

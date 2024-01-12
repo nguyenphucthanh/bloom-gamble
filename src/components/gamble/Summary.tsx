@@ -2,6 +2,7 @@ import React, { FC, useEffect, useMemo } from "react";
 import {
   PlayerAmount,
   PlayerKey,
+  selectEnableSlackNotification,
   selectPayback,
   selectPlayer,
   selectPlayerArchive,
