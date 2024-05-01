@@ -1,24 +1,47 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model Player {
-  id     Int    @id @default(autoincrement())
-  name   String @db.VarChar(255)
-  Game   Game?  @relation(fields: [gameId], references: [id])
-  gameId Int?
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Game {
-  id      Int      @id @default(autoincrement())
-  date    DateTime
-  players Player[]
+  id                                      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  date                                    DateTime           @default(now())
+  gameType                                String
+  createdAt                               DateTime           @default(now())
+  isEnded                                 Boolean            @default(false)
+  updatedAt                               DateTime           @default(now()) @updatedAt
+  createdBy                               String?            @db.Uuid
+  hostedBy                                String?            @db.Uuid
+  UserProfile_Game_createdByToUserProfile UserProfile?       @relation("Game_createdByToUserProfile", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  UserProfile_Game_hostedByToUserProfile  UserProfile?       @relation("Game_hostedByToUserProfile", fields: [hostedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  UserProfilePoint                        UserProfilePoint[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model UserProfile {
+  id                               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                          String?            @db.Uuid
+  email                            String?
+  firstName                        String?
+  lastName                         String?
+  name                             String?
+  Game_Game_createdByToUserProfile Game[]             @relation("Game_createdByToUserProfile")
+  Game_Game_hostedByToUserProfile  Game[]             @relation("Game_hostedByToUserProfile")
+  UserProfilePoint                 UserProfilePoint[]
+}
+
+model UserProfilePoint {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userProfile_id String      @db.Uuid
+  game_id        String      @db.Uuid
+  points         Int
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @default(now()) @updatedAt
+  UserProfile    UserProfile @relation(fields: [userProfile_id], references: [id])
+  Game           Game        @relation(fields: [game_id], references: [id])
 }

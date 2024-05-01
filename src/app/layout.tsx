@@ -2,6 +2,7 @@ import { Providers } from "@/store/provider";
 import "./globals.scss";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,12 +19,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icon.png"></link>
         <meta name="theme-color" content="#fff" />
       </head>
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <div className="container py-3">
+          <Providers>{children}</Providers>
+        </div>
+        <Toaster />
       </body>
     </html>
   );

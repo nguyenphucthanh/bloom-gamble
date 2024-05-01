@@ -108,7 +108,7 @@ const PointNumpad: FC<IPointNumpad> = ({
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Nhập điểm {playerName}
+                    Nhập điểm <span className="inline-block p-2 px-4 rounded-full bg-rose-100 font-bold">{playerName}</span>
                   </Dialog.Title>
                   <div className="flex justify-center gap-1 text-3xl mx-auto my-3">
                     <button

@@ -13,10 +13,11 @@ import {
 import { partition, sortBy } from "lodash";
 import { fullFillRound, parseRoundString } from "../../lib/convert-pattern";
 import EnterPoint from "./EnterPoint";
-import { speak } from "@/app/utils/speech";
+import { speak } from "@/utils/speech";
 import EnterLoserPoint from "./EnterLoserPoint";
-import axios from "axios";
 import IconPlus from "../icons/plus";
+import useProfiles from "@/hooks/useUserProfiles";
+import useMessenger from "@/hooks/useMessenger";
 
 const validateRound = (round: IGambleRound): boolean => {
   const { A, B, C, D } = round;
@@ -54,7 +55,7 @@ const AddRow: FC = () => {
   const players = useAppSelector(selectPlayer);
   const slackThread = useAppSelector(selectSlackThread);
   const isGPT = useAppSelector(selectIsGPT);
-  const isNotificationEnabled = useAppSelector(selectEnableSlackNotification)
+  const isNotificationEnabled = useAppSelector(selectEnableSlackNotification);
   const dispatch = useAppDispatch();
   const [round, setRound] = useState<INullableGambleRound>({
     A: null,
@@ -63,6 +64,15 @@ const AddRow: FC = () => {
     D: null,
   });
   const [smartFill, setSmartFill] = useState("");
+  const profiles = useProfiles();
+  const { sendMessage } = useMessenger();
+
+  const getPlayerName = useCallback(
+    (id: string) => {
+      return profiles?.find((player) => player.id === id)?.name ?? "Unknown";
+    },
+    [profiles],
+  );
 
   const setPoint = useCallback((name: string, value: number | null) => {
     setRound((prev) => ({
@@ -75,60 +85,53 @@ const AddRow: FC = () => {
     (round: IGambleRound) => {
       const { A, B, C, D } = round;
       const sortedRound = Object.entries(round).sort(
-        ([, valueA], [, valueB]) => valueA - valueB
+        ([, valueA], [, valueB]) => valueA - valueB,
       );
       const playerMessages = sortedRound.map(([key, point]) =>
         point !== null
-          ? `${players[key as PlayerKey]}: ${
+          ? `${getPlayerName(players[key as PlayerKey])}: ${
               point >= 0 ? "cộng " : "trừ "
             }${Math.abs(point)}`
-          : null
+          : null,
       );
       const playerMessagesToSlack = sortedRound.map(([key, point]) =>
-        point !== null ? `${players[key as PlayerKey]}: ${point}` : null
+        point !== null
+          ? `${getPlayerName(players[key as PlayerKey])}: ${point}`
+          : null,
       );
-      // Create an array of strings for each player's name and value
-      // const playerMessages = [
-      //   A !== null ? `${players.A}: ${A >= 0 ? '+' : '-'}${Math.abs(A)}` : null,
-      //   B !== null ? `${players.B}: ${B >= 0 ? '+' : '-'}${Math.abs(B)}` : null,
-      //   C !== null ? `${players.C}: ${C >= 0 ? '+' : '-'}${Math.abs(C)}` : null,
-      //   D !== null ? `${players.D}: ${D >= 0 ? '+' : '-'}${Math.abs(D)}` : null,
-      // ].filter(Boolean);
 
       if (playerMessages.length > 0) {
         const message = `Kết quả: ${playerMessages.join(", ")}.`;
+        console.log(message);
         speak(message);
 
         const max = Math.max(A, B, C, D);
         const maxKey = Object.keys(round).find(
-          (key) => round[key as PlayerKey] === max
+          (key) => round[key as PlayerKey] === max,
         );
         const names = Object.keys(round).map(
-          (key) => players[key as PlayerKey]
+          (key) => players[key as PlayerKey],
         );
         const winnerName = players[maxKey as PlayerKey];
 
         if (isNotificationEnabled) {
-          axios.post("/api/slack", {
-            text: playerMessagesToSlack.join(", "),
-            thread_ts: slackThread,
-          });
+          sendMessage(playerMessagesToSlack.join(", "), slackThread);
         }
 
         if (isGPT && isNotificationEnabled) {
-          axios
-            .post("/api/ai", {
+          fetch("/api/ai", {
+            method: "POST",
+            body: JSON.stringify({
               names,
               winnerName,
-            })
-            .then((response) => {
-              const mes = response.data.message;
+            }),
+          })
+            .then((response) => response.json())
+            .then(async (response) => {
+              const mes = response.message;
               if (mes) {
                 speak(mes);
-                axios.post("/api/slack", {
-                  text: mes,
-                  thread_ts: slackThread,
-                });
+                sendMessage(mes, slackThread);
               }
             })
             .catch(() => {
@@ -143,10 +146,18 @@ const AddRow: FC = () => {
           B: B,
           C: C,
           D: D,
-        })
+        }),
       );
     },
-    [dispatch, players, isNotificationEnabled, isGPT, slackThread]
+    [
+      dispatch,
+      players,
+      isNotificationEnabled,
+      isGPT,
+      slackThread,
+      getPlayerName,
+      sendMessage,
+    ],
   );
 
   const onSubmit = useCallback(() => {
@@ -239,7 +250,7 @@ const AddRow: FC = () => {
         }
       }
     },
-    [addNewRound, calcLastPlayerPoint]
+    [addNewRound, calcLastPlayerPoint],
   );
 
   const _convertSmartFill = useCallback(() => {
@@ -286,7 +297,7 @@ const AddRow: FC = () => {
           <td key={id}>
             <EnterPoint
               key={id}
-              playerName={players[id as PlayerKey]}
+              playerName={getPlayerName(players[id as PlayerKey])}
               value={round[id as PlayerKey] ?? null}
               onChange={(value: number | null) => {
                 setPoint(id, value);
@@ -299,7 +310,7 @@ const AddRow: FC = () => {
           <button
             disabled={!isAbleToAdd}
             title="Add"
-            className="bg-blue-500 text-white text-2xl p-2 rounded-full disabled:opacity-30"
+            className="rounded-full bg-blue-500 p-2 text-2xl text-white disabled:opacity-30"
             onClick={onSubmit}
           >
             <IconPlus />

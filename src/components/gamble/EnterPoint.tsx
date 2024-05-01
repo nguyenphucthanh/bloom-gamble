@@ -1,5 +1,4 @@
-import React, { FC, Fragment, useCallback, useEffect, useMemo } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import React, { FC } from "react";
 import PointNumpad from "./PointNumpad";
 
 export interface IEnterPointProps {

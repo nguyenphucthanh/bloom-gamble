@@ -1,52 +1,44 @@
-import React, { FormEvent } from "react";
-import AutoSuggest from "react-autosuggest";
+import React, { useEffect } from "react";
+import { api } from "@/trpc/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import useProfiles from "@/hooks/useUserProfiles";
 
 export type PlayerNameInputProps = {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
-  className: string;
 };
 
-const suggestions = [
-  "Hà",
-  "Linh",
-  "Long",
-  "Luân",
-  "Minh",
-  "Thuận",
-  "Tuấn",
-  "Tuyến",
-];
+export default function PlayerNameInput({
+  placeholder,
+  value,
+  onChange,
+}: PlayerNameInputProps) {
+  const profiles = useProfiles();
 
-export default function PlayerNameInput(props: PlayerNameInputProps) {
-  const [availableSuggestions, setAvailableSuggestions] =
-    React.useState(suggestions);
+  const players =
+    profiles?.slice().sort((a, b) => {
+      return a?.name?.localeCompare(b?.name ?? "") ?? 0;
+    }) ?? [];
 
   return (
-    <AutoSuggest
-      suggestions={availableSuggestions}
-      inputProps={{
-        ...props,
-        onChange: (
-          _e: FormEvent<HTMLElement>,
-          { newValue }: { newValue: string }
-        ) => {
-          props.onChange(newValue);
-        },
-      }}
-      renderSuggestion={(suggestion: string) => <div>{suggestion}</div>}
-      getSuggestionValue={(suggestion: string) => suggestion}
-      onSuggestionsFetchRequested={({ value }: { value: string }) => {
-        setAvailableSuggestions(
-          suggestions.filter(
-            (s) => s.toLowerCase().indexOf(value.toLowerCase()) !== -1
-          )
-        );
-      }}
-      shouldRenderSuggestions={(value: string, reason: string) => {
-        return value.length >= 0;
-      }}
-    />
+    <Select value={value} defaultValue={value} onValueChange={onChange}>
+      <SelectTrigger className={"w-48"}>
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent>
+        {players.map((player) => (
+          <SelectItem key={player.id} value={player.id}>
+            {player.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

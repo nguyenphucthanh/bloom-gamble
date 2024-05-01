@@ -1,21 +1,20 @@
-import React, { FC, useEffect, useMemo } from "react";
+import React, { FC, useCallback, useEffect, useMemo } from "react";
 import {
   PlayerAmount,
   PlayerKey,
-  selectEnableSlackNotification,
   selectPayback,
   selectPlayer,
   selectPlayerArchive,
   selectPlayerPoint,
-  selectPlayerRank,
   selectRounds,
 } from "./gambleSlice";
 import { useAppSelector } from "../../store/hooks";
 import Image from "next/image";
 import styles from "./styles.module.scss";
-import { speak } from "@/app/utils/speech";
+import { speak } from "@/utils/speech";
 import SendResultToSlack from "./SendResultToSlack";
 import IconMoney from "../icons/money";
+import useProfiles from "@/hooks/useUserProfiles";
 
 const Line: FC<{ nameFrom: string; nameTo: string; amount: number }> = ({
   nameFrom,
@@ -23,14 +22,19 @@ const Line: FC<{ nameFrom: string; nameTo: string; amount: number }> = ({
   amount,
 }) => {
   const player = useAppSelector(selectPlayer);
+  const profiles = useProfiles();
+
+  const showName = (id: string) => {
+    return profiles?.find((player) => player.id === id)?.name ?? "Unknown";
+  }
 
   return (
     <li className="flex gap-2">
       <IconMoney />
       <span>
-        {player[nameFrom as PlayerKey] ?? ""} chuyển cho{" "}
-        {player[nameTo as PlayerKey] ?? ""}{" "}
-        <span className="text-red-500 font-bold">{amount}K</span>
+        {showName(player[nameFrom as PlayerKey])} chuyển cho{" "}
+        {showName(player[nameTo as PlayerKey])}{" "}
+        <span className="font-bold text-red-500">{amount}K</span>
       </span>
     </li>
   );
@@ -38,22 +42,23 @@ const Line: FC<{ nameFrom: string; nameTo: string; amount: number }> = ({
 
 const Summary: FC = () => {
   const paybacks = useAppSelector(selectPayback);
-  const playerRanks = useAppSelector(selectPlayerRank);
   const playerPoints = useAppSelector(selectPlayerPoint);
   const player = useAppSelector(selectPlayer);
   const archive = useAppSelector(selectPlayerArchive);
   const total = useAppSelector(selectPlayerPoint);
   const rounds = useAppSelector(selectRounds);
+  const profiles = useProfiles();
+
+  const showName = useCallback((id: string) => {
+    return profiles?.find((player) => player.id === id)?.name ?? "Unknown";
+  }, [profiles]);
 
   const winnerAndLoser = useMemo(() => {
-    // const ranks = [playerRanks.A, playerRanks.B, playerRanks.C, playerRanks.D];
-    // const min = Math.min(...ranks);
-    // const max = Math.max(...ranks);
     const winnerKey = Object.keys(playerPoints).filter(
-      (key) => playerPoints[key as PlayerKey] > 0
+      (key) => playerPoints[key as PlayerKey] > 0,
     );
     const loserKeys = Object.keys(playerPoints).filter(
-      (key) => playerPoints[key as PlayerKey] < 0
+      (key) => playerPoints[key as PlayerKey] < 0,
     );
     return { winnerKey, loserKeys };
   }, [playerPoints]);
@@ -61,24 +66,25 @@ const Summary: FC = () => {
   useEffect(() => {
     if (winnerAndLoser.winnerKey && winnerAndLoser.loserKeys) {
       const winners = winnerAndLoser.winnerKey
-        ?.map((key) => player[key as PlayerKey])
+        ?.map((key) => showName(player[key as PlayerKey]))
         .join(", ");
       const losers = winnerAndLoser.loserKeys
-        ?.map((key) => player[key as PlayerKey])
+        ?.map((key) => showName(player[key as PlayerKey]))
         .join(", ");
 
       speak(
-        `Chúc mừng ${winners} đã chiến thắng trận bài hôm nay. ${losers} hôm sau nhớ cúng trước khi chơi nhé!`
+        `Chúc mừng ${winners} đã chiến thắng trận bài hôm nay. ${losers} hôm sau nhớ cúng trước khi chơi nhé!`,
       );
     }
-  }, [winnerAndLoser, player]);
+  }, [winnerAndLoser, player, showName]);
+
 
   return (
-    <div className="p-3 border border-blue-300 shadow-lg shadow-blue-300s mt-5 rounded">
-      <h3 className="font-bold text-2xl mb-3">
+    <div className="shadow-blue-300s mt-5 rounded border border-blue-300 p-3 shadow-lg">
+      <h3 className="mb-3 text-2xl font-bold">
         Tổng kết sau {rounds.length} ván
       </h3>
-      <ul className="text-left ml-3 flex flex-col gap-2">
+      <ul className="ml-3 flex flex-col gap-2 text-left">
         {Array.from(paybacks.keys()).map((key) => {
           return paybacks
             ?.get(key as PlayerKey)
@@ -92,7 +98,7 @@ const Summary: FC = () => {
             ));
         })}
       </ul>
-      <div className="grid grid-cols-2 gap-2 mt-4">
+      <div className="mt-4 grid grid-cols-2 gap-2">
         <div className="flex flex-col items-center gap-2">
           <Image
             src={"/winner.jpg"}
@@ -101,10 +107,10 @@ const Summary: FC = () => {
             width={120}
             height={120}
           />
-          <h3 className="font-bold text-center">🏆 Winner 🏆</h3>
-          <h4 className="font-bold text-center text-2xl rounded-full bg-red-500 text-white p-3 w-full">
+          <h3 className="text-center font-bold">🏆 Winner 🏆</h3>
+          <h4 className="w-full rounded-full bg-red-500 p-3 text-center text-2xl font-bold text-white">
             {winnerAndLoser.winnerKey
-              ?.map((key) => player[key as PlayerKey])
+              ?.map((key) => showName(player[key as PlayerKey]))
               .join(", ")}
           </h4>
         </div>
@@ -116,10 +122,10 @@ const Summary: FC = () => {
             width={120}
             height={120}
           />
-          <h3 className="font-bold text-center">😭 Loser 😭 </h3>
-          <h4 className="font-bold text-center text-2xl rounded-full bg-black text-white p-3 w-full">
+          <h3 className="text-center font-bold">😭 Loser 😭 </h3>
+          <h4 className="w-full rounded-full bg-black p-3 text-center text-2xl font-bold text-white">
             {winnerAndLoser.loserKeys
-              ?.map((key) => player[key as PlayerKey])
+              ?.map((key) => showName(player[key as PlayerKey]))
               .join(", ")}
           </h4>
         </div>
@@ -138,7 +144,7 @@ const Summary: FC = () => {
         <tbody>
           {Object.keys(archive).map((playerKey) => (
             <tr key={playerKey}>
-              <td className="font-bold">{player[playerKey as PlayerKey]}</td>
+              <td className="font-bold">{showName(player[playerKey as PlayerKey])}</td>
               <td className="font-bold">{total[playerKey as PlayerKey]}</td>
               <td>{archive[playerKey as PlayerKey].winCount}</td>
               <td>{archive[playerKey as PlayerKey].loseCount}</td>

@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../store/store";
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "../../store/store";
 import { orderBy, uniq } from "lodash";
 
 export type PlayerKey = "A" | "B" | "C" | "D";
@@ -21,6 +22,7 @@ export type IPlayerPoint = {
 };
 
 export interface IGambleState {
+  gameId: string;
   player: {
     [key in PlayerKey]: string;
   };
@@ -46,6 +48,7 @@ export type PlayerAmount = {
 };
 
 const initialState: IGambleState = {
+  gameId: "",
   player: {
     A: "",
     B: "",
@@ -63,9 +66,12 @@ export const gambleSlice = createSlice({
   name: "gamble",
   initialState,
   reducers: {
+    setGameId: (state: IGambleState, action: PayloadAction<string>) => {
+      state.gameId = action.payload;
+    },
     setPlayer: (
       state: IGambleState,
-      action: PayloadAction<IGambleState["player"]>
+      action: PayloadAction<IGambleState["player"]>,
     ) => {
       state.player = action.payload;
     },
@@ -85,7 +91,7 @@ export const gambleSlice = createSlice({
     },
     setSlackThread: (
       state: IGambleState,
-      action: PayloadAction<string | null>
+      action: PayloadAction<string | null>,
     ) => {
       if (state.enableSlackNotification) {
         state.slackThread = action.payload;
@@ -94,13 +100,17 @@ export const gambleSlice = createSlice({
     switchGPT: (state: IGambleState) => {
       state.isGPT = !state.isGPT;
     },
-    switchSlackNotification: (state: IGambleState) => {
-      state.enableSlackNotification = !state.enableSlackNotification;
-    }
+    switchSlackNotification: (
+      state: IGambleState,
+      action: PayloadAction<boolean>,
+    ) => {
+      state.enableSlackNotification = action.payload;
+    },
   },
 });
 
 export const {
+  setGameId,
   setPlayer,
   newRound,
   removeRound,
@@ -141,7 +151,7 @@ export const selectPlayerRank = (state: RootState) => {
 export const selectEndGame = (state: RootState) => state.gamble.ended;
 
 export const selectPayback = (
-  state: RootState
+  state: RootState,
 ): Map<PlayerKey, PlayerAmount[]> => {
   const paybackAmounts = new Map<PlayerKey, PlayerAmount[]>();
 
@@ -244,8 +254,9 @@ export const selectSlackThread = (state: RootState) => {
 
 export const selectIsGPT = (state: RootState) => state.gamble.isGPT;
 
-export const selectEnableSlackNotification = (
-  state: RootState
-) => state.gamble.enableSlackNotification;
+export const selectEnableSlackNotification = (state: RootState) =>
+  state.gamble.enableSlackNotification;
+
+export const selectGameId = (state: RootState) => state.gamble.gameId;
 
 export default gambleSlice.reducer;

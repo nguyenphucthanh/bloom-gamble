@@ -11,6 +11,7 @@ import {
 import styles from "./styles.module.scss";
 import AddRow from "./AddRound";
 import TableRound from "./TableRound";
+import useProfiles from "@/hooks/useUserProfiles";
 
 const Table: FC = () => {
   const rounds = useAppSelector(selectRounds);
@@ -18,6 +19,8 @@ const Table: FC = () => {
   const playerPoint = useAppSelector(selectPlayerPoint);
   const playerRank = useAppSelector(selectPlayerRank);
   const isGameEnded = useAppSelector(selectEndGame);
+
+  const profiles = useProfiles();
 
   const colorClasses = useCallback((rank: number) => {
     switch (rank) {
@@ -32,16 +35,21 @@ const Table: FC = () => {
     }
   }, []);
 
+  const showName = (id: string) => {
+    const player = profiles?.find((player) => player.id === id);
+    return player?.name ?? "Unknown";
+  }
+
   return (
     <section>
       <table className={`${styles.table} relative overflow-auto`}>
         <thead>
           <tr>
             <th className="sticky top-0 w-24">No.</th>
-            <th className="sticky top-0">{player.A}</th>
-            <th className="sticky top-0">{player.B}</th>
-            <th className="sticky top-0">{player.C}</th>
-            <th className="sticky top-0">{player.D}</th>
+            <th className="sticky top-0">{showName(player.A)}</th>
+            <th className="sticky top-0">{showName(player.B)}</th>
+            <th className="sticky top-0">{showName(player.C)}</th>
+            <th className="sticky top-0">{showName(player.D)}</th>
             <th className="sticky top-0"></th>
           </tr>
         </thead>
@@ -58,10 +66,10 @@ const Table: FC = () => {
         <tfoot>
           <tr>
             <th></th>
-            <th>{player.A}</th>
-            <th>{player.B}</th>
-            <th>{player.C}</th>
-            <th>{player.D}</th>
+            <th>{showName(player.A)}</th>
+            <th>{showName(player.B)}</th>
+            <th>{showName(player.C)}</th>
+            <th>{showName(player.D)}</th>
             <th></th>
           </tr>
           {isGameEnded ? (

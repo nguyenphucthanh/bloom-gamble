@@ -7,6 +7,7 @@ import {
 } from "./gambleSlice";
 import { useAppSelector } from "@/store/hooks";
 import PointNumpad from "./PointNumpad";
+import useProfiles from "@/hooks/useUserProfiles";
 
 export interface IEnterLoserPointProps {
   winnerId: PlayerKey;
@@ -98,6 +99,10 @@ const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ onChange, winnerId }) => {
     setOpen(false);
   }, [onChange, winnerId]);
 
+  const profiles = useProfiles();
+
+  const playerName = enteringPlayerKey ? profiles?.find(player => player.id === players[enteringPlayerKey])?.name ?? "Unknown" : "";
+
   return (
     <>
       <button
@@ -118,7 +123,7 @@ const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ onChange, winnerId }) => {
         {"🏆"}
       </button>
       <PointNumpad
-        playerName={enteringPlayerKey ? players[enteringPlayerKey] : ""}
+        playerName={playerName}
         value={enteringPlayerKey ? round[enteringPlayerKey] : null}
         onChange={onChangePoint}
         open={open}

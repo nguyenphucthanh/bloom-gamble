@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/store/hooks";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useMemo } from "react";
 import {
   PlayerAmount,
   PlayerKey,
@@ -8,17 +8,26 @@ import {
   selectPlayer,
   selectPlayerPoint,
 } from "./gambleSlice";
-import axios from "axios";
+import SendMessageToSlack from "../SendMessageToSlack";
+import useProfiles from "@/hooks/useUserProfiles";
 
 const SendResultToSlack: FC = () => {
   const total = useAppSelector(selectPlayerPoint);
   const paybacks = useAppSelector(selectPayback);
   const player = useAppSelector(selectPlayer);
   const isNotificationEnabled = useAppSelector(selectEnableSlackNotification);
+  const profiles = useProfiles();
 
-  const sendResult = useCallback(() => {
+  const showName = useCallback(
+    (id: string) => {
+      return profiles?.find((player) => player.id === id)?.name ?? "Unknown";
+    },
+    [profiles],
+  );
+
+  const message = useMemo(() => {
     const result = Object.entries(total).map(([key, point]) => {
-      return `${player[key as PlayerKey]}: ${point}`;
+      return `${showName(player[key as PlayerKey])}: ${point}`;
     });
     const paybackResult: string[] = [];
 
@@ -27,31 +36,22 @@ const SendResultToSlack: FC = () => {
         ?.get(key as PlayerKey)
         ?.forEach((payback: PlayerAmount, index: number) =>
           paybackResult.push(
-            `${player[payback.player as PlayerKey] ?? ""} chuyển cho ${
-              player[key as PlayerKey] ?? ""
-            } ${payback.amount}K`
-          )
+            `${showName(player[payback.player as PlayerKey])} chuyển cho ${showName(
+              player[key as PlayerKey],
+            )} ${payback.amount}K`,
+          ),
         );
     });
 
     const text = `${result.join(", ")}\n - ${paybackResult.join("\n - ")}`;
-    axios.post("/api/slack", {
-      text,
-    });
-  }, [paybacks, player, total]);
+    return text;
+  }, [paybacks, player, total, showName]);
 
   if (!isNotificationEnabled) {
     return null;
   }
 
-  return (
-    <button
-      className="font-bold bg-blue-500 text-white rounded p-3 mt-5 text-center justify-center inline-flex gap-2 w-full col-span-2"
-      onClick={sendResult}
-    >
-      Post Result To Slack
-    </button>
-  );
+  return <SendMessageToSlack message={message} />;
 };
 
 export default SendResultToSlack;

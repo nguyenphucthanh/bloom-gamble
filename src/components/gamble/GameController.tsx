@@ -1,18 +1,32 @@
 import React, { FC, useCallback, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { endGame, resetAll, selectEndGame, selectRounds } from "./gambleSlice";
+import {
+  endGame,
+  resetAll,
+  selectEndGame,
+  selectGameId,
+  selectPlayer,
+  selectPlayerPoint,
+  selectRounds,
+} from "./gambleSlice";
 import PhoneCallModal from "./PhoneCallModal";
-import ConfirmDeleteRoundModal from "./ConfirmDeleteRoundModal";
 import ConfirmEndGameModal from "./ConfirmEndGameModal";
 import IconRefresh from "../icons/refresh";
+import { api } from "@/trpc/react";
+import { useToast } from "../ui/use-toast";
 
 const GameController: FC = () => {
   const isGameEnded = useAppSelector(selectEndGame);
   const rounds = useAppSelector(selectRounds);
+  const gameId = useAppSelector(selectGameId);
+  const players = useAppSelector(selectPlayer);
+  const playerPoints = useAppSelector(selectPlayerPoint);
   const [callTitle, setCallTitle] = useState("");
   const [showCallModal, setShowCallModal] = useState(false);
   const [showEndGameModal, setShowEndGameModal] = useState(false);
   const dispatch = useAppDispatch();
+  const endGameMutation = api.game.endGame.useMutation();
+  const {toast} = useToast();
 
   const restartGame = useCallback(() => {
     dispatch(resetAll());
@@ -20,11 +34,6 @@ const GameController: FC = () => {
 
   const endThisGame = useCallback(() => {
     setShowEndGameModal(true);
-  }, []);
-
-  const openCallModal = useCallback((title: string) => {
-    setCallTitle(title);
-    setShowCallModal(true);
   }, []);
 
   const closeCallModal = useCallback(() => {
@@ -35,17 +44,46 @@ const GameController: FC = () => {
     setShowEndGameModal(false);
   }, []);
 
-  const onConfirmEndGame = useCallback(() => {
-    setShowEndGameModal(false);
-    dispatch(endGame());
-  }, [dispatch]);
+  const onConfirmEndGame = useCallback(async () => {
+    try {
+      setShowEndGameModal(false);
+      await endGameMutation.mutateAsync({
+        id: gameId,
+        players: [
+          {
+            userProfile_id: players.A,
+            points: playerPoints.A,
+          },
+          {
+            userProfile_id: players.B,
+            points: playerPoints.B,
+          },
+          {
+            userProfile_id: players.C,
+            points: playerPoints.C,
+          },
+          {
+            userProfile_id: players.D,
+            points: playerPoints.D,
+          },
+        ],
+      });
+      dispatch(endGame());
+    } catch (ex) {
+      const msg = ex instanceof Error ? ex.message : "Failed to end game";
+      toast({
+        title: "Error",
+        description: msg,
+      });
+    }
+  }, [dispatch, gameId, players, playerPoints, endGameMutation, toast]);
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 mt-5">
+      <div className="mt-5 grid grid-cols-2 gap-4">
         {isGameEnded || !rounds.length ? (
           <button
-            className="font-bold bg-green-500 text-white rounded p-3 text-center justify-center inline-flex gap-2 w-full col-span-2"
+            className="col-span-2 inline-flex w-full justify-center gap-2 rounded bg-green-500 p-3 text-center font-bold text-white"
             onClick={restartGame}
           >
             <IconRefresh />
@@ -54,7 +92,7 @@ const GameController: FC = () => {
         ) : (
           <button
             disabled={rounds.length === 0}
-            className="font-bold bg-blue-500 text-white rounded p-3 text-center justify-center inline-flex gap-2 w-full col-span-2 disabled:opacity-50 uppercase"
+            className="col-span-2 inline-flex w-full justify-center gap-2 rounded bg-blue-500 p-3 text-center font-bold uppercase text-white disabled:opacity-50"
             onClick={endThisGame}
           >
             <span>End Game</span>

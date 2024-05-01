@@ -5,15 +5,28 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import styles from "./styles.module.scss";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { IGambleState, selectEnableSlackNotification, setPlayer, setSlackThread, switchSlackNotification } from "./gambleSlice";
+import {
+  IGambleState,
+  selectEnableSlackNotification,
+  setGameId,
+  setPlayer,
+  setSlackThread,
+  switchSlackNotification,
+} from "./gambleSlice";
 import PlayerNameInput from "./PlayerNameInput";
-import axios from "axios";
+import { Checkbox } from "../ui/checkbox";
+import { Button } from "../ui/button";
+import { api } from "@/trpc/react";
+import { GAME_TYPE } from "@/consts";
+import { useToast } from "../ui/use-toast";
+import useMessenger from "@/hooks/useMessenger";
+import useProfiles from "@/hooks/useUserProfiles";
 
 export const EnterPlayer: FC = () => {
   const dispatch = useAppDispatch();
-  const isNotificationEnabled = useAppSelector(selectEnableSlackNotification)
+  const { toast } = useToast();
+  const isNotificationEnabled = useAppSelector(selectEnableSlackNotification);
   const [names, setNames] = useState<{
     [key: string]: string;
   }>({
@@ -30,36 +43,69 @@ export const EnterPlayer: FC = () => {
     }));
   }, []);
 
+  const startGameMutation = api.game.createGame.useMutation();
+  const profiles = useProfiles();
+  const { sendMessage } = useMessenger();
+
   const startGame = useCallback<FormEventHandler<HTMLFormElement>>(
     async (event) => {
       event.preventDefault();
-      dispatch(setPlayer(names as IGambleState["player"]));
-      if (isNotificationEnabled) {
-        const slackMessage = await axios.post("/api/slack", {
-          text: `[LIVE STREAM]: ${Object.values(names).join(
-            ", "
-          )} đã bắt đầu trò chơi!`,
+      try {
+        const response = await startGameMutation.mutateAsync({
+          gameType: GAME_TYPE.TIEN_LEN,
         });
-        const ts = slackMessage.data.response.ts;
-        dispatch(setSlackThread(ts));
+        dispatch(setGameId(response.game?.id));
+        dispatch(setPlayer(names as IGambleState["player"]));
+        if (isNotificationEnabled) {
+          const msg = `[LIVE STREAM]: ${Object.values(names)
+            .map((id) => {
+              const player = profiles?.find((profile) => profile.id === id);
+              return player?.name ?? id;
+            })
+            .join(", ")} đã bắt đầu trò chơi!`;
+          const slackMessage = await sendMessage(msg);
+          const ts = slackMessage.response.ts;
+          dispatch(setSlackThread(ts));
+        }
+      } catch (ex) {
+        const msg = ex instanceof Error ? ex.message : "Failed to start game";
+        toast({
+          title: "Error",
+          description: msg,
+        });
       }
     },
-    [dispatch, isNotificationEnabled, names]
+    [
+      dispatch,
+      isNotificationEnabled,
+      names,
+      startGameMutation,
+      toast,
+      sendMessage,
+    ],
   );
 
   const isAbleToSubmit = useMemo(() => {
-    return names.A && names.B && names.C && names.D;
+    return (
+      names.A &&
+      names.B &&
+      names.C &&
+      names.D &&
+      new Set([names.A, names.B, names.C, names.D]).size === 4
+    );
   }, [names]);
 
-
-  const toggleNotification = useCallback(() => {
-    dispatch(switchSlackNotification())
-  }, [dispatch])
+  const toggleNotification = useCallback(
+    (checked: boolean) => {
+      dispatch(switchSlackNotification(checked));
+    },
+    [dispatch],
+  );
 
   return (
     <form className="mt-4" onSubmit={startGame}>
-      <h1 className="text-2xl font-bold my-2">Nhập tên người chơi</h1>
-      <div className="flex flex-col gap-2 items-center">
+      <h1 className="my-2 text-2xl font-bold">Nhập tên người chơi</h1>
+      <div className="flex flex-col items-center gap-2">
         {Object.keys(names).map((id: string) => (
           <div key={id}>
             <PlayerNameInput
@@ -68,30 +114,39 @@ export const EnterPlayer: FC = () => {
                 setPlayerName(id, value);
               }}
               placeholder={`Player ${id}`}
-              className={styles.inputPlayer}
             />
           </div>
         ))}
         <div className="flex flex-col items-center gap-2">
-          <div className="text-center text-red-500 font-bold text-lg">
+          <div className="text-center text-lg font-bold text-red-500">
             Chúc các bạn may mắn
           </div>
         </div>
         <div className="p-2">
-          <label className="flex flex-row item-center gap-2">
-            <input type="checkbox" checked={isNotificationEnabled} onChange={toggleNotification} className="accent-blue-500 w-6 h-6" />
-            <span className="block">
-              Gửi thông báo đến Slack
-            </span>
+          <label className="item-top flex space-x-2">
+            <Checkbox
+              id="noti"
+              checked={isNotificationEnabled}
+              onCheckedChange={toggleNotification}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <label
+                htmlFor="noti"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Gửi thông báo đến slack
+              </label>
+            </div>
           </label>
         </div>
-        <button
+        <Button
           type="submit"
-          className="text-white font-bold text-3xl bg-blue-500 rounded-lg p-2 text-center w-1/2 disabled:opacity-50"
           disabled={!isAbleToSubmit}
+          size={"lg"}
+          className="bg-blue-500"
         >
           DZÔ!
-        </button>
+        </Button>
       </div>
     </form>
   );

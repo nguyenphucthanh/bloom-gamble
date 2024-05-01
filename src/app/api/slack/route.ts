@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import axios from "axios";
 
 export async function GET() {
   const res = {
@@ -21,22 +20,25 @@ export async function POST(request: NextRequest) {
 
   const data = await request.json();
   try {
-    const slackResponse = await axios.post(
+    const slackResponse = await fetch(
       "https://slack.com/api/chat.postMessage",
       {
-        text: data?.text,
-        channel: "work-hard-play-harder",
-        thread_ts: data?.thread_ts,
-      },
-      {
+        method: "POST",
         headers: {
           "Content-type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+        body: JSON.stringify({
+          text: data?.text,
+          channel: "work-hard-play-harder",
+          thread_ts: data?.thread_ts,
+        }),
+      },
     );
 
-    return NextResponse.json({ status: "ok", response: slackResponse.data });
+    const response = await slackResponse.json();
+
+    return NextResponse.json({ status: "ok", response });
   } catch (err) {
     NextResponse.json({
       status: "error",

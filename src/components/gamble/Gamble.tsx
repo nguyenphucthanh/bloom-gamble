@@ -15,10 +15,10 @@ const Gamble: FC = () => {
       <Table />
       <GameController />
       <button
-        className={`inline-flex gap-2  ring  rounded-full  p-3 fixed z-30 left-4 bottom-4 bg-white bg-opacity-50 backdrop-blur-md ${
+        className={`fixed bottom-4 left-4 z-30 inline-flex gap-2 rounded-full bg-white bg-opacity-50 p-3 ring backdrop-blur-md ${
           isGPT
-            ? "border-blue-500 ring-blue-100 text-blue-400"
-            : "border-red-500 ring-red-100 text-red-400"
+            ? "border-blue-500 text-blue-400 ring-blue-100"
+            : "border-red-500 text-red-400 ring-red-100"
         }`}
         onClick={() => dispatch(switchGPT())}
       >

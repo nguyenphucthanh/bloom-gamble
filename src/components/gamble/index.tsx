@@ -1,9 +1,11 @@
+"use client";
 import { EnterPlayer } from "../gamble/EnterPlayer";
 import { selectPlayer } from "../gamble/gambleSlice";
 import { useMemo } from "react";
 import Gamble from "./Gamble";
 import { useAppSelector } from "@/store/hooks";
 import Image from "next/image";
+import ProfilesProvider from "../ProfilesProvider";
 
 function GambleComponent() {
   const player = useAppSelector(selectPlayer);
@@ -18,19 +20,21 @@ function GambleComponent() {
   }, [A, B, C, D]);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <Image
-          src={"/logo.svg"}
-          className="App-logo"
-          alt="logo"
-          width={120}
-          height={120}
-          priority={true}
-        />
-      </header>
-      {isGameStarted ? <Gamble /> : <EnterPlayer />}
-    </div>
+    <ProfilesProvider>
+      <div className="flex w-full flex-col items-center">
+        <header className="">
+          <Image
+            src={"/logo.svg"}
+            className="App-logo"
+            alt="logo"
+            width={120}
+            height={120}
+            priority={true}
+          />
+        </header>
+        {isGameStarted ? <Gamble /> : <EnterPlayer />}
+      </div>
+    </ProfilesProvider>
   );
 }
 
