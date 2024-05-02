@@ -25,11 +25,9 @@ import { useFormState } from "react-dom";
 import { BiLacSchema } from "@/validations/schemas";
 import { useRouter } from "next/navigation";
 
-export type FormCreateGameFoosballProps = {};
-
 export type FormValues = z.infer<typeof BiLacSchema>;
 
-export default function FormCreateGameFoosball({}: FormCreateGameFoosballProps) {
+export default function FormCreateGameFoosball() {
   const form = useForm<FormValues>({
     resolver: zodResolver(BiLacSchema),
     mode: "all",
