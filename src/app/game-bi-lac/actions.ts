@@ -20,7 +20,7 @@ export type CreateState =
     }
   | null;
 
-export const create = async (
+export const createGameBiLac = async (
   prevState: CreateState | null,
   data: FormData,
 ): Promise<CreateState> => {

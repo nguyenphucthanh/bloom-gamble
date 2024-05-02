@@ -35,7 +35,7 @@ export default function PlayerNameInput({
       onValueChange={onChange}
       name={name}
     >
-      <SelectTrigger className={"w-full max-w-48"}>
+      <SelectTrigger className={"w-full"}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

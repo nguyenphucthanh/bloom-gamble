@@ -12,7 +12,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { getServerAuthSession } from "~/server/auth";
-import supabase from "../supabse.serveraction";
+import { createClient } from "../supabase.server";
 
 /**
  * 1. CONTEXT
@@ -29,6 +29,7 @@ import supabase from "../supabse.serveraction";
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
 
+  const supabase = createClient();
   return {
     supabase,
     session,

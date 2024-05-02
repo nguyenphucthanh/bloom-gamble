@@ -1,9 +1,14 @@
+import React from "react";
 import ProfilesProvider from "@/components/ProfilesProvider";
 import Report from "@/components/Report";
 import FormCreateGameFoosball from "@/components/foosball/form-create-game";
 import { GAME_TYPE } from "@/consts";
 import { format } from "date-fns";
 import Image from "next/image";
+
+export const dynamic = "force-dynamic";
+
+export const revalidate = 0;
 
 export default function GameBiLac() {
   const today = format(new Date(), "yyyy-MM-dd");

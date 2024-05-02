@@ -8,7 +8,7 @@ export default function GameTienLenLayout({
 }) {
   return (
     <main className="">
-      <Header title="Tiến lên" needSigin={false} gamePath="/game-tien-len" />
+      <Header title="Tiến lên" gamePath="/game-tien-len" />
       {children}
     </main>
   );

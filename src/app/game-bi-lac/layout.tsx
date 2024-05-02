@@ -8,7 +8,7 @@ export default function GameBiLacLayout({
 }) {
   return (
     <main className="">
-      <Header title="Bi lắc" needSigin={false} gamePath="/game-bi-lac" />
+      <Header title="Bi lắc" gamePath="/game-bi-lac" />
       {children}
     </main>
   );

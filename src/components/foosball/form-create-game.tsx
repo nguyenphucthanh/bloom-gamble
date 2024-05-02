@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { CreateState, create } from "@/app/game-bi-lac/actions";
+import { CreateState, createGameBiLac } from "@/app/game-bi-lac/actions";
 import { useFormState } from "react-dom";
 import { BiLacSchema } from "@/validations/schemas";
 import { useRouter } from "next/navigation";
@@ -32,7 +32,10 @@ export default function FormCreateGameFoosball() {
     resolver: zodResolver(BiLacSchema),
     mode: "all",
   });
-  const [state, formAction] = useFormState<CreateState, FormData>(create, null);
+  const [state, formAction] = useFormState<CreateState, FormData>(
+    createGameBiLac,
+    null,
+  );
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
