@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { api } from "@/trpc/react";
+import React from "react";
 import {
   Select,
   SelectContent,

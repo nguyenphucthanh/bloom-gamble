@@ -78,7 +78,7 @@ export default async function PageReportGameTienLen({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedResponse.map((item, index) => (
+          {sortedResponse.map((item) => (
             <TableRow key={item.name}>
               <TableCell>{item.name}</TableCell>
               <TableCell>{item.point}</TableCell>

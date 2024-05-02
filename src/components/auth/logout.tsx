@@ -9,14 +9,13 @@ export type LogoutProps = {
   path: string;
 };
 
-export default async function Logout({ path }: LogoutProps) {
+export default function Logout({ path }: LogoutProps) {
+  // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-misused-promises
   const handleSignOut = async () => {
     "use server";
-    try {
-      await api.user.signOut.mutate();
-    } catch (error) {
+    api.user.signOut.mutate().catch((error) => {
       console.error(error);
-    }
+    });
     revalidatePath(path);
     redirect(path);
   };

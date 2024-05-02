@@ -1,4 +1,5 @@
-import { FC, useCallback, useEffect, useState } from "react";
+/* eslint-disable */
+import { FC, useCallback, useState } from "react";
 import IconVoice from "../icons/voice";
 
 export interface IVoiceButtonProps {
@@ -43,15 +44,16 @@ const VoiceButton: FC<IVoiceButtonProps> = ({ callback }) => {
 
   return (
     recognition && (
-      <div className="w-15 relative flex h-11 sm:w-12 mx-2">
+      <div className="w-15 relative mx-2 flex h-11 sm:w-12">
         <span
           className={`${
             isListening ? "animate-ping" : ""
           } absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75`}
         ></span>
         <button
-          className="absolute inline-flex rounded-full h-full w-full bg-red-500"
+          className="absolute inline-flex h-full w-full rounded-full bg-red-500"
           onClick={startListening}
+          title="Start Listening"
         >
           <IconVoice />
         </button>

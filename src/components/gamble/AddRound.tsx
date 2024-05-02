@@ -1,4 +1,10 @@
-import React, { FC, useCallback, useMemo, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   IGambleRound,
@@ -66,6 +72,7 @@ const AddRow: FC = () => {
   const [smartFill, setSmartFill] = useState("");
   const profiles = useProfiles();
   const { sendMessage } = useMessenger();
+  const [isAdding, startAddingTransition] = useTransition();
 
   const getPlayerName = useCallback(
     (id: string) => {
@@ -83,71 +90,73 @@ const AddRow: FC = () => {
 
   const addNewRound = useCallback(
     (round: IGambleRound) => {
-      const { A, B, C, D } = round;
-      const sortedRound = Object.entries(round).sort(
-        ([, valueA], [, valueB]) => valueA - valueB,
-      );
-      const playerMessages = sortedRound.map(([key, point]) =>
-        point !== null
-          ? `${getPlayerName(players[key as PlayerKey])}: ${
-              point >= 0 ? "cộng " : "trừ "
-            }${Math.abs(point)}`
-          : null,
-      );
-      const playerMessagesToSlack = sortedRound.map(([key, point]) =>
-        point !== null
-          ? `${getPlayerName(players[key as PlayerKey])}: ${point}`
-          : null,
-      );
-
-      if (playerMessages.length > 0) {
-        const message = `Kết quả: ${playerMessages.join(", ")}.`;
-        console.log(message);
-        speak(message);
-
-        const max = Math.max(A, B, C, D);
-        const maxKey = Object.keys(round).find(
-          (key) => round[key as PlayerKey] === max,
+      startAddingTransition(async () => {
+        const { A, B, C, D } = round;
+        const sortedRound = Object.entries(round).sort(
+          ([, valueA], [, valueB]) => valueA - valueB,
         );
-        const names = Object.keys(round).map(
-          (key) => players[key as PlayerKey],
+        const playerMessages = sortedRound.map(([key, point]) =>
+          point !== null
+            ? `${getPlayerName(players[key as PlayerKey])}: ${
+                point >= 0 ? "cộng " : "trừ "
+              }${Math.abs(point)}`
+            : null,
         );
-        const winnerName = players[maxKey as PlayerKey];
+        const playerMessagesToSlack = sortedRound.map(([key, point]) =>
+          point !== null
+            ? `${getPlayerName(players[key as PlayerKey])}: ${point}`
+            : null,
+        );
 
-        if (isNotificationEnabled) {
-          sendMessage(playerMessagesToSlack.join(", "), slackThread);
-        }
+        if (playerMessages.length > 0) {
+          const message = `Kết quả: ${playerMessages.join(", ")}.`;
+          console.log(message);
+          speak(message);
 
-        if (isGPT && isNotificationEnabled) {
-          fetch("/api/ai", {
-            method: "POST",
-            body: JSON.stringify({
-              names,
-              winnerName,
-            }),
-          })
-            .then((response) => response.json())
-            .then(async (response) => {
-              const mes = response.message;
-              if (mes) {
-                speak(mes);
-                sendMessage(mes, slackThread);
-              }
+          const max = Math.max(A, B, C, D);
+          const maxKey = Object.keys(round).find(
+            (key) => round[key as PlayerKey] === max,
+          );
+          const names = Object.keys(round).map(
+            (key) => players[key as PlayerKey],
+          );
+          const winnerName = players[maxKey as PlayerKey];
+
+          if (isNotificationEnabled) {
+            await sendMessage(playerMessagesToSlack.join(", "), slackThread);
+          }
+
+          if (isGPT && isNotificationEnabled) {
+            fetch("/api/ai", {
+              method: "POST",
+              body: JSON.stringify({
+                names,
+                winnerName,
+              }),
             })
-            .catch(() => {
-              console.error("Could not get from AI");
-            });
+              .then((response) => response.json())
+              .then(async (response: { message: string }) => {
+                const mes = response.message;
+                if (mes) {
+                  speak(mes);
+                  await sendMessage(mes, slackThread);
+                }
+              })
+              .catch(() => {
+                console.error("Could not get from AI");
+              });
+          }
         }
-      }
 
-      dispatch(
-        newRound({
-          A: A,
-          B: B,
-          C: C,
-          D: D,
-        }),
-      );
+        dispatch(
+          newRound({
+            A: A,
+            B: B,
+            C: C,
+            D: D,
+          }),
+        );
+      });
     },
     [
       dispatch,
@@ -291,7 +300,7 @@ const AddRow: FC = () => {
 
   return (
     <>
-      <tr>
+      <tr data-is-adding={isAdding}>
         <td className="text-xs">Nhập điểm từng thằng</td>
         {sortBy(Object.keys(round)).map((id: string) => (
           <td key={id}>
@@ -317,7 +326,7 @@ const AddRow: FC = () => {
           </button>
         </td>
       </tr>
-      <tr>
+      <tr data-is-adding={isAdding}>
         <td className="text-xs">
           Nhấp thằng thắng
           <br />

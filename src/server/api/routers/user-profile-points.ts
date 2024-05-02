@@ -32,6 +32,14 @@ const userProfilePoints = createTRPCRouter({
       }
 
       const gameIds = gameResponse.data?.map((game) => game.id) ?? [];
+      interface ResponseItem {
+        userProfile_id: string;
+        UserProfile: {
+          name: string;
+          id: string;
+        };
+        sum: number;
+      }
       const response = await ctx.supabase
         .from("UserProfilePoint")
         .select("userProfile_id, points.sum(), UserProfile (id, name)")
@@ -41,12 +49,14 @@ const userProfilePoints = createTRPCRouter({
         throw new Error(response.error.message);
       }
 
-      return response.data.flatMap((item: any) => {
-        return {
-          name: item.UserProfile.name,
-          point: item.sum,
-        };
-      });
+      return (response.data as unknown as ResponseItem[]).flatMap(
+        (item: ResponseItem) => {
+          return {
+            name: item.UserProfile.name,
+            point: item.sum,
+          };
+        },
+      );
     }),
 });
 

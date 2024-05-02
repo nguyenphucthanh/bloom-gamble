@@ -1,13 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
 
-export async function GET() {
-  const res = {
-    ab: 1,
-  };
-
-  return NextResponse.json({ data: res });
-}
-
 export async function POST(request: NextRequest) {
   const token = process.env.SLACK_OAUTH_BOT_TOKEN;
 
@@ -18,7 +10,11 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const data = await request.json();
+  const data = (await request.json()) as {
+    text: string;
+    thread_ts: string;
+  };
+
   try {
     const slackResponse = await fetch(
       "https://slack.com/api/chat.postMessage",
@@ -36,13 +32,21 @@ export async function POST(request: NextRequest) {
       },
     );
 
-    const response = await slackResponse.json();
+    const response = (await slackResponse.json()) as {
+      response: {
+        ok: boolean;
+        ts: string;
+        channel: string;
+      };
+      status: string;
+    };
 
     return NextResponse.json({ status: "ok", response });
   } catch (err) {
+    const msg = err instanceof Error ? err.message : "Cannot post message";
     NextResponse.json({
       status: "error",
-      message: (err as unknown as Error)?.message,
+      message: msg,
     });
   }
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardHeader, CardTitle } from "./ui/card";
 
 export type GameSelectorProps = {
   children: React.ReactNode;

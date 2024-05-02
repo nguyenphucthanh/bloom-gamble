@@ -15,7 +15,7 @@ const useMessenger = () => {
         method: "POST",
         body: JSON.stringify({ text: message, thread_ts }),
       });
-      const response: SlackResponse = await result.json();
+      const response = (await result.json()) as SlackResponse;
       return response;
     },
     [],

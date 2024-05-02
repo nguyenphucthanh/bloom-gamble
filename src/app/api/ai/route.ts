@@ -11,16 +11,21 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const data = await request.json();
+  const data = (await request.json()) as {
+    names: string[];
+    winnerName: string;
+  };
 
   try {
     const result = await congrats(data.names, data.winnerName);
 
     return NextResponse.json({ status: "ok", message: result });
   } catch (error) {
+    const msg =
+      error instanceof Error ? error.message : "Cannot get chatgpt message";
     return NextResponse.json({
       status: "error",
-      message: "Cannot get chatgpt message",
+      message: msg,
     });
   }
 }

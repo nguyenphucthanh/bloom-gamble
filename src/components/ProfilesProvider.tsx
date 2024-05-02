@@ -12,7 +12,7 @@ export type UserProfile = {
 };
 
 export const ProfilesContext = createContext<{
-  profiles: Array<UserProfile>;
+  profiles: UserProfile[];
 }>({
   profiles: [],
 });
@@ -29,11 +29,11 @@ const ProfilesProvider = ({ children }: React.PropsWithChildren) => {
         variant: "destructive",
       });
     }
-  }, [profiles.error?.message]);
+  }, [profiles.error?.message, toast]);
 
   return (
     <ProfilesContext.Provider
-      value={{ profiles: (profiles.data?.data as Array<UserProfile>) ?? [] }}
+      value={{ profiles: (profiles.data?.data as UserProfile[]) ?? [] }}
     >
       {children}
     </ProfilesContext.Provider>

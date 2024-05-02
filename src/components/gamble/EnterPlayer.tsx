@@ -27,9 +27,7 @@ export const EnterPlayer: FC = () => {
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const isNotificationEnabled = useAppSelector(selectEnableSlackNotification);
-  const [names, setNames] = useState<{
-    [key: string]: string;
-  }>({
+  const [names, setNames] = useState<Record<string, string>>({
     A: "",
     B: "",
     C: "",
@@ -82,6 +80,7 @@ export const EnterPlayer: FC = () => {
       startGameMutation,
       toast,
       sendMessage,
+      profiles,
     ],
   );
 

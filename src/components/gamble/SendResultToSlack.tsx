@@ -34,7 +34,7 @@ const SendResultToSlack: FC = () => {
     Array.from(paybacks.keys()).map((key) => {
       return paybacks
         ?.get(key as PlayerKey)
-        ?.forEach((payback: PlayerAmount, index: number) =>
+        ?.forEach((payback: PlayerAmount) =>
           paybackResult.push(
             `${showName(player[payback.player as PlayerKey])} chuyển cho ${showName(
               player[key as PlayerKey],
