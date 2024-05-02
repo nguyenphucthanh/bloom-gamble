@@ -1,3 +1,5 @@
+"use client";
+
 import { api } from "@/trpc/react";
 import { createContext, useEffect } from "react";
 import { useToast } from "./ui/use-toast";

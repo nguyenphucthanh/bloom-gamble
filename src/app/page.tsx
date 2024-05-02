@@ -11,6 +11,7 @@ export default function Home() {
           Choose Game
         </h1>
         <GameSelector link="/game-tien-len">Tiến Lên</GameSelector>
+        <GameSelector link="/game-bi-lac">Bi Lắc</GameSelector>
       </div>
       <div className="text-center font-bold">
         <div className="m-4">Donate cho developer bạn ơi!</div>

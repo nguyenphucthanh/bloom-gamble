@@ -104,7 +104,7 @@ export const EnterPlayer: FC = () => {
   return (
     <form className="mt-4" onSubmit={startGame}>
       <h1 className="my-2 text-2xl font-bold">Nhập tên người chơi</h1>
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-stretch gap-2">
         {Object.keys(names).map((id: string) => (
           <div key={id}>
             <PlayerNameInput

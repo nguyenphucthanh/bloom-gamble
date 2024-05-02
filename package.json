@@ -64,7 +64,8 @@
     "tailwindcss": "3.4.3",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.4.5",
-    "zod": "^3.23.5"
+    "zod": "^3.23.5",
+    "zod-form-data": "^2.0.2"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.0",

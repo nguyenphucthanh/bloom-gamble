@@ -12,12 +12,14 @@ export type PlayerNameInputProps = {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
+  name?: string;
 };
 
 export default function PlayerNameInput({
   placeholder,
   value,
   onChange,
+  name,
 }: PlayerNameInputProps) {
   const profiles = useProfiles();
 
@@ -27,8 +29,13 @@ export default function PlayerNameInput({
     }) ?? [];
 
   return (
-    <Select value={value} defaultValue={value} onValueChange={onChange}>
-      <SelectTrigger className={"w-48"}>
+    <Select
+      value={value}
+      defaultValue={value}
+      onValueChange={onChange}
+      name={name}
+    >
+      <SelectTrigger className={"w-full max-w-48"}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
