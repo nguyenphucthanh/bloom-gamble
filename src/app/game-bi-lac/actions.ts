@@ -21,7 +21,7 @@ export type CreateState =
   | null;
 
 export const createGameBiLac = async (
-  prevState: CreateState | null,
+  prevState: Awaited<CreateState> | null,
   data: FormData,
 ): Promise<CreateState> => {
   try {

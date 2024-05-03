@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useTransition } from "react";
+import React, { useCallback, useEffect } from "react";
 import PlayerNameInput from "@/components/gamble/PlayerNameInput";
 import {
   Form,
@@ -21,9 +21,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { CreateState, createGameBiLac } from "@/app/game-bi-lac/actions";
-import { useFormState } from "react-dom";
 import { BiLacSchema } from "@/validations/schemas";
 import { useRouter } from "next/navigation";
+import { useFormState } from "react-dom";
 
 export type FormValues = z.infer<typeof BiLacSchema>;
 
@@ -32,11 +32,10 @@ export default function FormCreateGameFoosball() {
     resolver: zodResolver(BiLacSchema),
     mode: "all",
   });
-  const [state, formAction] = useFormState<CreateState, FormData>(
+  const [state, formAction, isPending] = useFormState<CreateState, FormData>(
     createGameBiLac,
     null,
   );
-  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -67,18 +66,24 @@ export default function FormCreateGameFoosball() {
 
   const router = useRouter();
 
+  const onHandleSwap = useCallback(() => {
+    const values = form.getValues();
+    form.setValue("winner1", values.loser1);
+    form.setValue("winner2", values.loser2);
+    form.setValue("loser1", values.winner1);
+    form.setValue("loser2", values.winner2);
+  }, [form.getValues, form.setValue]);
+
   return (
     <Form {...form}>
       <form
-        action={(formData) =>
-          startTransition(() => {
-            formAction(formData);
-            router.refresh();
-          })
-        }
+        action={(formData) => {
+          formAction(formData);
+          router.refresh();
+        }}
       >
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col items-stretch gap-3 rounded border border-blue-300 p-3 shadow-lg shadow-blue-100">
+        <div className="grid grid-cols-7 gap-3">
+          <div className="col-span-3 flex flex-col items-stretch gap-3 rounded border border-blue-300 p-3 shadow-lg shadow-blue-100">
             <h3 className="inline-flex gap-2 text-xl font-bold text-blue-500">
               <SmileIcon /> Winners
             </h3>
@@ -119,7 +124,12 @@ export default function FormCreateGameFoosball() {
               )}
             />
           </div>
-          <div className="flex flex-col items-stretch gap-3 rounded border border-red-100 p-3 shadow-lg shadow-red-100">
+          <div className="flex flex-col items-stretch justify-center">
+            <Button type="button" onClick={onHandleSwap} variant={"outline"}>
+              <RefreshCwIcon />
+            </Button>
+          </div>
+          <div className="col-span-3 flex flex-col items-stretch gap-3 rounded border border-red-100 p-3 shadow-lg shadow-red-100">
             <h3 className="inline-flex gap-2 text-xl font-bold text-red-500">
               <FrownIcon />
               Losers

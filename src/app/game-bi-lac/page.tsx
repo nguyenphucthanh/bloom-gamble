@@ -14,7 +14,7 @@ export default function GameBiLac() {
   const today = format(new Date(), "yyyy-MM-dd");
   return (
     <ProfilesProvider>
-      <div className="flex flex-col items-stretch gap-3 p-5">
+      <div className="flex flex-col items-stretch gap-3">
         <Image
           src={"/foosball.svg"}
           width={100}
