@@ -7,8 +7,10 @@ export default function Home() {
   return (
     <main>
       <div className="flex flex-col gap-3 p-3">
-        <h1 className="mb-5 text-center text-4xl font-bold uppercase">
-          Choose Game
+        <h1 className="mb-5 text-center text-4xl font-bold uppercase text-slate-700">
+          Work Hard
+          <br />
+          Play Harder
         </h1>
         <GameSelector link="/game-tien-len">Tiến Lên</GameSelector>
         <GameSelector link="/game-bi-lac">Bi Lắc</GameSelector>

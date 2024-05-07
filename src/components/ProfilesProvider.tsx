@@ -37,7 +37,16 @@ const ProfilesProvider = ({ children }: React.PropsWithChildren) => {
     <ProfilesContext.Provider
       value={{ profiles: (profiles.data?.data as UserProfile[]) ?? [] }}
     >
-      {children}
+      {profiles.isLoading ? (
+        <div className="my-5 flex flex-col items-stretch gap-3">
+          <div className="h-3 rounded bg-slate-100"></div>
+          <div className="h-3 rounded bg-slate-100"></div>
+          <div className="h-3 rounded bg-slate-100"></div>
+          <div className="h-3 rounded bg-slate-100"></div>
+        </div>
+      ) : (
+        children
+      )}
     </ProfilesContext.Provider>
   );
 };

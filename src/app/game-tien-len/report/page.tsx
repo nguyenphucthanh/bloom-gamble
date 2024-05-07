@@ -6,6 +6,12 @@ import Report from "@/components/Report";
 import { GAME_TYPE } from "@/consts";
 import { getServerAuth } from "@/utils/supabase/getServerAuth";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Tiến Lên | Thống kê",
+  description: "Work Hard Play Harder",
+};
 
 export default async function PageReportGameTienLen({
   searchParams,

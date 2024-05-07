@@ -7,8 +7,9 @@ import {
   SelectValue,
 } from "../ui/select";
 import useProfiles from "@/hooks/useUserProfiles";
+import { SelectProps } from "@radix-ui/react-select";
 
-export type PlayerNameInputProps = {
+export type PlayerNameInputProps = SelectProps & {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
@@ -20,6 +21,7 @@ export default function PlayerNameInput({
   value,
   onChange,
   name,
+  ...props
 }: PlayerNameInputProps) {
   const profiles = useProfiles();
 
@@ -34,6 +36,7 @@ export default function PlayerNameInput({
       defaultValue={value}
       onValueChange={onChange}
       name={name}
+      {...props}
     >
       <SelectTrigger className={"w-full"}>
         <SelectValue placeholder={placeholder} />

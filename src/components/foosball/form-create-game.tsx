@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useTransition } from "react";
 import PlayerNameInput from "@/components/gamble/PlayerNameInput";
 import {
   Form,
@@ -32,11 +32,12 @@ export default function FormCreateGameFoosball() {
     resolver: zodResolver(BiLacSchema),
     mode: "all",
   });
-  const [state, formAction, isPending] = useFormState<CreateState, FormData>(
+  const [state, formAction] = useFormState<CreateState, FormData>(
     createGameBiLac,
     null,
   );
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (state?.state === "error") {
@@ -74,14 +75,16 @@ export default function FormCreateGameFoosball() {
     form.setValue("loser2", values.winner2);
   }, [form]);
 
+  const onAction = useCallback((formData: FormData) => {
+    startTransition(() => {
+      formAction(formData);
+      router.refresh();
+    });
+  }, []);
+
   return (
     <Form {...form}>
-      <form
-        action={(formData) => {
-          formAction(formData);
-          router.refresh();
-        }}
-      >
+      <form action={onAction}>
         <div className="grid grid-cols-7 gap-3">
           <div className="col-span-3 flex flex-col items-stretch gap-3 rounded border border-blue-300 p-3 shadow-lg shadow-blue-100">
             <h3 className="inline-flex gap-2 text-xl font-bold text-blue-500">
@@ -99,6 +102,7 @@ export default function FormCreateGameFoosball() {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder={"Winner 1"}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -117,6 +121,7 @@ export default function FormCreateGameFoosball() {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder={"Winner 1"}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -125,8 +130,13 @@ export default function FormCreateGameFoosball() {
             />
           </div>
           <div className="flex flex-col items-stretch justify-center">
-            <Button type="button" onClick={onHandleSwap} variant={"outline"}>
-              <RefreshCwIcon />
+            <Button
+              type="button"
+              onClick={onHandleSwap}
+              variant={"outline"}
+              className="p-1"
+            >
+              <RefreshCwIcon className="h-4 w-4" />
             </Button>
           </div>
           <div className="col-span-3 flex flex-col items-stretch gap-3 rounded border border-red-100 p-3 shadow-lg shadow-red-100">
@@ -146,6 +156,7 @@ export default function FormCreateGameFoosball() {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder={"Loser 1"}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -164,6 +175,7 @@ export default function FormCreateGameFoosball() {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder={"Loser 2"}
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
