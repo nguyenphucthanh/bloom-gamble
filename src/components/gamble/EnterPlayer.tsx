@@ -62,8 +62,10 @@ export const EnterPlayer: FC = () => {
             })
             .join(", ")} đã bắt đầu trò chơi!`;
           const slackMessage = await sendMessage(msg);
-          const ts = slackMessage.response.ts;
-          dispatch(setSlackThread(ts));
+          if (slackMessage.response.ok) {
+            const ts = slackMessage.response.ts;
+            dispatch(setSlackThread(ts));
+          }
         }
       } catch (ex) {
         const msg = ex instanceof Error ? ex.message : "Failed to start game";
