@@ -4,6 +4,7 @@ import { addDays, format } from "date-fns";
 import Link from "next/link";
 import Report from "@/components/Report";
 import { GAME_TYPE } from "@/consts";
+import { getServerAuth } from "@/utils/supabase/getServerAuth";
 
 export default async function PageReportGameTienLen({
   searchParams,
@@ -13,6 +14,7 @@ export default async function PageReportGameTienLen({
     dateTo?: string; // yyyy-MM-dd
   };
 }) {
+  await getServerAuth("/game-tien-len/report");
   const dateFrom = searchParams.dateFrom
     ? searchParams.dateFrom
     : format(addDays(new Date(), -7), "yyyy-MM-dd");

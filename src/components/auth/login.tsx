@@ -21,7 +21,7 @@ export default function Login({ redirectTo }: LoginProps) {
       await supabase.auth.signInWithOAuth({
         provider: "slack",
         options: {
-          redirectTo: `${location.origin}/${redirectTo}`,
+          redirectTo: `${location.origin}/auth/v1/callback?redirectTo=${redirectTo}`,
           scopes: "openid email profile",
         },
       });

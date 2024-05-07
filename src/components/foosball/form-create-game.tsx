@@ -53,7 +53,7 @@ export default function FormCreateGameFoosball() {
         });
       }
     }
-  }, [state, form.setError]);
+  }, [state, form, toast]);
 
   const onReset = useCallback(() => {
     form.reset({
@@ -62,7 +62,7 @@ export default function FormCreateGameFoosball() {
       loser1: "",
       loser2: "",
     });
-  }, [form.reset]);
+  }, [form]);
 
   const router = useRouter();
 
@@ -72,7 +72,7 @@ export default function FormCreateGameFoosball() {
     form.setValue("winner2", values.loser2);
     form.setValue("loser1", values.winner1);
     form.setValue("loser2", values.winner2);
-  }, [form.getValues, form.setValue]);
+  }, [form]);
 
   return (
     <Form {...form}>
