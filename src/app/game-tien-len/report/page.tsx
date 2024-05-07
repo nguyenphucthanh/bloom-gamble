@@ -18,7 +18,7 @@ export default async function PageReportGameTienLen({
   const auth = await getServerAuth();
 
   if (!auth?.user) {
-    redirect(`/login?redirect=${encodeURIComponent("/game-tien-len/report")}`);
+    redirect(`/login?redirect=/game-tien-len/report`);
   }
 
   const dateFrom = searchParams.dateFrom

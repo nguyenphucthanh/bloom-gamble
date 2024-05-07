@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get("code");
   const redirectTo = requestUrl.searchParams.get("redirectTo") ?? "/";
   const redirectUrl = request.nextUrl.clone();
-  redirectUrl.pathname = redirectTo;
+  redirectUrl.pathname = decodeURIComponent(redirectTo);
 
   if (code) {
     const supabase = createClient();
@@ -29,5 +29,5 @@ export async function GET(request: NextRequest) {
   }
 
   // URL to redirect to after sign in process completes
-  return NextResponse.redirect(decodeURIComponent("/login"));
+  return NextResponse.redirect("/login");
 }

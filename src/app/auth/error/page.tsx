@@ -1,5 +1,11 @@
-import React from 'react'
+import Header from "@/components/Header";
+import React from "react";
 
 export default function ErrorPage() {
-  return <div>Something went wrong</div>
+  return (
+    <main>
+      <Header title="Error" />
+      <div>Something went wrong</div>
+    </main>
+  );
 }

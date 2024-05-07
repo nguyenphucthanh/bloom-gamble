@@ -1,3 +1,4 @@
+import Header from "@/components/Header";
 import Login from "@/components/auth/login";
 import Logout from "@/components/auth/logout";
 import { getServerAuth } from "@/utils/supabase/getServerAuth";
@@ -11,15 +12,18 @@ export default async function LoginPage({
   const auth = await getServerAuth();
 
   return (
-    <section className="flex items-center justify-center">
-      {auth?.user ? (
-        <div>
-          <div className="p-3 font-bold">Hello {auth?.user?.email}!</div>
-          <Logout path="/" />
-        </div>
-      ) : (
-        <Login redirectTo={redirect} />
-      )}
-    </section>
+    <main>
+      <Header title="Login" />
+      <section className="flex flex-col items-center justify-center">
+        {auth?.user ? (
+          <>
+            <div className="p-3 font-bold">Hello {auth?.user?.email}!</div>
+            <Logout path="/" />
+          </>
+        ) : (
+          <Login redirectTo={redirect} />
+        )}
+      </section>
+    </main>
   );
 }

@@ -16,18 +16,21 @@ export default function Login({ redirectTo }: LoginProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const handleSignIn = useCallback(() => {
-    startTransition(async () => {
-      await supabase.auth.signInWithOAuth({
-        provider: "slack",
-        options: {
-          redirectTo: `${location.origin}/auth/v1/callback?redirectTo=${redirectTo}`,
-          scopes: "openid email profile",
-        },
+  const handleSignIn = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      startTransition(async () => {
+        await supabase.auth.signInWithOAuth({
+          provider: "slack",
+          options: {
+            redirectTo: `${location.origin}/auth/v1/callback?redirectTo=${redirectTo}`,
+            scopes: "openid email profile",
+          },
+        });
       });
-      router.refresh();
-    });
-  }, [router, redirectTo]);
+    },
+    [router, redirectTo],
+  );
 
   return (
     <Button
