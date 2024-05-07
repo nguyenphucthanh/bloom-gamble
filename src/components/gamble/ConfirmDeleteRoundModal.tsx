@@ -1,8 +1,9 @@
-import React, { FC, Fragment } from "react";
+import React, { FC, Fragment, useCallback } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import styles from "./styles.module.scss";
 import { useAppSelector } from "../../store/hooks";
 import { IGambleRound, selectPlayer } from "./gambleSlice";
+import useProfiles from "@/hooks/useUserProfiles";
 
 export interface IConfirmDeleteRoundModalProps {
   isOpen: boolean;
@@ -17,6 +18,13 @@ const ConfirmDeleteRoundModal: FC<IConfirmDeleteRoundModalProps> = ({
   round,
 }) => {
   const players = useAppSelector(selectPlayer);
+  const profiles = useProfiles();
+  const getPlayerName = useCallback(
+    (id: string) => {
+      return profiles?.find((player) => player.id === id)?.name ?? "Unknown";
+    },
+    [profiles],
+  );
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
@@ -54,10 +62,10 @@ const ConfirmDeleteRoundModal: FC<IConfirmDeleteRoundModalProps> = ({
                   <thead>
                     <tr>
                       <th>Player</th>
-                      <th>{players.A}</th>
-                      <th>{players.B}</th>
-                      <th>{players.C}</th>
-                      <th>{players.D}</th>
+                      <th>{getPlayerName(players.A)}</th>
+                      <th>{getPlayerName(players.B)}</th>
+                      <th>{getPlayerName(players.C)}</th>
+                      <th>{getPlayerName(players.D)}</th>
                     </tr>
                   </thead>
                   <tbody>

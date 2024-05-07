@@ -2,9 +2,13 @@ import { useCallback } from "react";
 
 export type SlackResponse = {
   response: {
-    ok: boolean;
+    ok: true;
     channel: string;
     ts: string;
+  } | {
+    ok: false;
+    error? : string;
+    warning?: string;
   };
   status: string;
 };

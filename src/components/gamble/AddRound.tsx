@@ -123,7 +123,13 @@ const AddRow: FC = () => {
           const winnerName = players[maxKey as PlayerKey];
 
           if (isNotificationEnabled) {
-            await sendMessage(playerMessagesToSlack.join(", "), slackThread);
+            sendMessage(playerMessagesToSlack.join(", "), slackThread)
+              .then((response) => {
+                console.info(response);
+              })
+              .catch((error) => {
+                console.error(error);
+              });
           }
 
           if (isGPT && isNotificationEnabled) {

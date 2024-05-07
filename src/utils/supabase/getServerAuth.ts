@@ -1,13 +1,19 @@
 import { createClient } from "@/server/supabase.server";
-import { redirect } from "next/navigation";
+import { User } from "@supabase/supabase-js";
 
-export const getServerAuth = async (pathName?: string) => {
+export const getServerAuth = async (): Promise<{
+  error?: string;
+  user?: User | null;
+}> => {
   const supabase = createClient();
 
   const { data, error } = await supabase.auth.getUser();
 
   if (error ?? !data?.user) {
-    return redirect(`/login?redirect=${encodeURIComponent(pathName ?? "")}`);
+    return {
+      error: error?.message ?? "User not found",
+      user: null,
+    };
   }
 
   return {

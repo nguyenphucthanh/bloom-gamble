@@ -8,13 +8,13 @@ export default async function LoginPage({
 }: {
   searchParams: { redirect?: string };
 }) {
-  const { user } = await getServerAuth();
+  const auth = await getServerAuth();
 
   return (
     <section className="flex items-center justify-center">
-      {user ? (
+      {auth?.user ? (
         <div>
-          <div className="p-3 font-bold">Hello {user.email}!</div>
+          <div className="p-3 font-bold">Hello {auth?.user?.email}!</div>
           <Logout path="/" />
         </div>
       ) : (

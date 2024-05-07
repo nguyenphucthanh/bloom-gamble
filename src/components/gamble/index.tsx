@@ -6,6 +6,9 @@ import Gamble from "./Gamble";
 import { useAppSelector } from "@/store/hooks";
 import Image from "next/image";
 import ProfilesProvider from "../ProfilesProvider";
+import { Button } from "../ui/button";
+import Link from "next/link";
+import { BarChartIcon } from "lucide-react";
 
 function GambleComponent() {
   const player = useAppSelector(selectPlayer);
@@ -32,7 +35,25 @@ function GambleComponent() {
             priority={true}
           />
         </header>
-        {isGameStarted ? <Gamble /> : <EnterPlayer />}
+        {isGameStarted ? (
+          <Gamble />
+        ) : (
+          <>
+            <EnterPlayer />
+
+            <div className="mt-5 text-center">
+              <Button asChild variant={"secondary"}>
+                <Link
+                  href={"/game-tien-len/report"}
+                  className="inline-flex gap-2"
+                >
+                  <BarChartIcon />
+                  <span>Thống kê</span>
+                </Link>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </ProfilesProvider>
   );
