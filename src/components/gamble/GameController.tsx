@@ -109,6 +109,7 @@ const GameController: FC = () => {
         closeModal={closeCallModal}
       />
       <ConfirmEndGameModal
+        isLoading={isEnding}
         isOpen={showEndGameModal}
         closeModal={closeEndGameModal}
         confirm={onConfirmEndGame}

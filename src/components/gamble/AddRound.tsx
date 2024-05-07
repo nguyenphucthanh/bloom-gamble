@@ -17,7 +17,6 @@ import {
   selectSlackThread,
 } from "./gambleSlice";
 import { partition, sortBy } from "lodash";
-import { fullFillRound, parseRoundString } from "../../lib/convert-pattern";
 import EnterPoint from "./EnterPoint";
 import { speak } from "@/utils/speech";
 import EnterLoserPoint from "./EnterLoserPoint";
@@ -69,7 +68,6 @@ const AddRow: FC = () => {
     C: null,
     D: null,
   });
-  const [smartFill, setSmartFill] = useState("");
   const profiles = useProfiles();
   const { sendMessage } = useMessenger();
   const [isAdding, startAddingTransition] = useTransition();
@@ -238,71 +236,27 @@ const AddRow: FC = () => {
           });
         } else {
           // not white win
-          setRound((prev) => {
-            const calc = calcLastPlayerPoint({
-              A: prev.A ?? null,
-              B: prev.B ?? null,
-              C: prev.C ?? null,
-              D: prev.D ?? null,
-            } as IGambleRound);
-            if (validateRound(calc)) {
-              addNewRound(calc);
-              return {
-                A: null,
-                B: null,
-                C: null,
-                D: null,
-              };
-            } else {
-              return {
-                A: calc.A ?? null,
-                B: calc.B ?? null,
-                C: calc.C ?? null,
-                D: calc.D ?? null,
-              };
-            }
-          });
+          const next = calcLastPlayerPoint({
+            ...round,
+            [playerKey]: value,
+          } as IGambleRound);
+          const isValidRound = validateRound(next);
+          if (isValidRound) {
+            addNewRound(next);
+            setRound({
+              A: null,
+              B: null,
+              C: null,
+              D: null,
+            });
+          } else {
+            setRound(next);
+          }
         }
       }
     },
-    [addNewRound, calcLastPlayerPoint],
+    [round, addNewRound, calcLastPlayerPoint],
   );
-
-  const _convertSmartFill = useCallback(() => {
-    const parsedRound = fullFillRound(parseRoundString(smartFill, players));
-    if (parsedRound) {
-      let next = {
-        A: parsedRound.A ?? parsedRound.A ?? null,
-        B: parsedRound.B ?? parsedRound.B ?? null,
-        C: parsedRound.C ?? parsedRound.C ?? null,
-        D: parsedRound.D ?? parsedRound.D ?? null,
-      };
-      next = calcLastPlayerPoint(next);
-      const isValid = validateRound(next);
-      if (!isValid) {
-        setRound({
-          A: next.A ? -next.A : null,
-          B: next.B ? -next.B : null,
-          C: next.C ? -next.C : null,
-          D: next.D ? -next.D : null,
-        });
-      } else {
-        addNewRound({
-          A: -next.A,
-          B: -next.B,
-          C: -next.C,
-          D: -next.D,
-        });
-        setRound({
-          A: null,
-          B: null,
-          C: null,
-          D: null,
-        });
-      }
-      setSmartFill("");
-    }
-  }, [smartFill, players, calcLastPlayerPoint, addNewRound]);
 
   return (
     <>

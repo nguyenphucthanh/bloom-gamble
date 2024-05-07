@@ -11,7 +11,7 @@ export interface IPointNumpad {
 
 const combineToPoint = (
   isNegative: boolean,
-  input: (number | null)[]
+  input: (number | null)[],
 ): number | null => {
   const str = `${isNegative ? "-" : ""}${input.join("")}`;
   const n = parseInt(str, 10);
@@ -36,7 +36,7 @@ const PointNumpad: FC<IPointNumpad> = ({
     setIsNegative(
       (value !== null && value !== undefined && value < 0) ||
         value === null ||
-        value === undefined
+        value === undefined,
     );
     const str = value?.toString()?.replace("-", "");
     setInput([
@@ -66,7 +66,7 @@ const PointNumpad: FC<IPointNumpad> = ({
         }
       });
     },
-    [onChange, isNegative]
+    [onChange, isNegative],
   );
 
   const isNumberDisabled = useCallback(() => {
@@ -108,30 +108,33 @@ const PointNumpad: FC<IPointNumpad> = ({
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
                   >
-                    Nhập điểm <span className="inline-block p-2 px-4 rounded-full bg-rose-100 font-bold">{playerName}</span>
+                    Nhập điểm{" "}
+                    <span className="inline-block rounded-full bg-rose-100 p-2 px-4 font-bold">
+                      {playerName}
+                    </span>
                   </Dialog.Title>
-                  <div className="flex justify-center gap-1 text-3xl mx-auto my-3">
+                  <div className="mx-auto my-3 flex justify-center gap-1 text-3xl">
                     <button
-                      className="w-10 p-3 rounded bg-gray-100"
+                      className="w-10 rounded bg-gray-100 p-3"
                       onClick={() => {
                         setIsNegative((prev) => !prev);
                       }}
                     >
                       {isNegative ? "-" : "+"}
                     </button>
-                    <div className="border-b-2 border-gray-300 w-10 text-center inline-flex items-center justify-center">
+                    <div className="inline-flex w-10 items-center justify-center border-b-2 border-gray-300 text-center">
                       {input[0]}
                     </div>
-                    <div className="border-b-2 border-gray-300 w-10 text-center inline-flex items-center justify-center">
+                    <div className="inline-flex w-10 items-center justify-center border-b-2 border-gray-300 text-center">
                       {input[1]}
                     </div>
                   </div>
                   <div className="mt-2 grid grid-cols-3 gap-2">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((p: number) => (
                       <>
-                        {p === 0 ? <div /> : null}
+                        {p === 0 ? <div key={p} /> : null}
                         <button
-                          className="bg-gray-100 text-gray-900 p-3 text-2xl rounded block disabled:opacity-30"
+                          className="block rounded bg-gray-100 p-3 text-2xl text-gray-900 disabled:opacity-30"
                           key={p}
                           onClick={() => enterNumber(p)}
                           disabled={isNumberDisabled()}
@@ -142,14 +145,14 @@ const PointNumpad: FC<IPointNumpad> = ({
                     ))}
 
                     <button
-                      className="bg-gray-100 text-gray-900 p-3 text-2xl rounded block"
+                      className="block rounded bg-gray-100 p-3 text-2xl text-gray-900"
                       onClick={() => setInput([null, null])}
                     >
                       X
                     </button>
                   </div>
 
-                  <div className="mt-4 flex gap-2 justify-between">
+                  <div className="mt-4 flex justify-between gap-2">
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
