@@ -1,4 +1,22 @@
+import { env } from "@/env";
 import { NextResponse, NextRequest } from "next/server";
+
+const useWebHook = true;
+
+export type SlackResponse = {
+  response:
+    | {
+        ok: true;
+        channel: string;
+        ts: string;
+      }
+    | {
+        ok: false;
+        error?: string;
+        warning?: string;
+      };
+  status: string;
+};
 
 export async function POST(request: NextRequest) {
   const token = process.env.SLACK_OAUTH_BOT_TOKEN;
@@ -17,7 +35,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const slackResponse = await fetch(
-      "https://slack.com/api/chat.postMessage",
+      useWebHook ? env.SLACK_WEBHOOK : "https://slack.com/api/chat.postMessage",
       {
         method: "POST",
         headers: {
@@ -32,16 +50,21 @@ export async function POST(request: NextRequest) {
       },
     );
 
-    const response = (await slackResponse.json()) as {
-      response: {
-        ok: boolean;
-        ts: string;
-        channel: string;
+    if (useWebHook) {
+      const response: SlackResponse = {
+        response: {
+          ok: true,
+          channel: "work-hard-play-harder",
+          ts: "",
+        },
+        status: "ok",
       };
-      status: string;
-    };
+      return NextResponse.json({ status: "ok", response });
+    } else {
+      const response = (await slackResponse.json()) as SlackResponse;
 
-    return NextResponse.json({ status: "ok", response });
+      return NextResponse.json({ status: "ok", response });
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Cannot post message";
     NextResponse.json({

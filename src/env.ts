@@ -39,6 +39,12 @@ export const env = createEnv({
         (str) => !str.includes("YOUR_SLACK_BOT_TOKEN_HERE"),
         "You forgot to update slack oauth bot token",
       ),
+    SLACK_WEBHOOK: z
+      .string()
+      .refine(
+        (str) => !str.includes("SLACK_WEBHOOK"),
+        "You forgot to update slack oauth bot token",
+      ),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -77,6 +83,7 @@ export const env = createEnv({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     SLACK_OAUTH_TOKEN: process.env.SLACK_OAUTH_TOKEN,
     SLACK_OAUTH_BOT_TOKEN: process.env.SLACK_OAUTH_BOT_TOKEN,
+    SLACK_WEBHOOK: process.env.SLACK_WEBHOOK,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NODE_ENV: process.env.NODE_ENV,
