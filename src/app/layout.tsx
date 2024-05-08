@@ -1,10 +1,10 @@
 import { Providers } from "@/store/provider";
 import "./globals.scss";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Roboto_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ subsets: ["latin"] });
+const robotoMono = Roboto_Mono({ subsets: ["vietnamese"] });
 
 export const metadata: Metadata = {
   title: "Bloom Game",
@@ -23,8 +23,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon.png"></link>
         <meta name="theme-color" content="#fff" />
       </head>
-      <body className={inter.className}>
-        <div className="container py-3">
+      <body className={robotoMono.className}>
+        <div className="container py-8">
           <Providers>{children}</Providers>
         </div>
         <Toaster />

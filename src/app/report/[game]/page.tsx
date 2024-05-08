@@ -9,13 +9,22 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tiến Lên | Thống kê",
+  title: "Thống kê",
   description: "Work Hard Play Harder",
 };
 
+const gameTitle = {
+  [GAME_TYPE.TIEN_LEN]: "Tiến Lên",
+  [GAME_TYPE.BI_LAC]: "Bi lắc",
+};
+
 export default async function PageReportGameTienLen({
+  params,
   searchParams,
 }: {
+  params: {
+    game: GAME_TYPE;
+  };
   searchParams: {
     dateFrom?: string; // yyyy-MM-dd
     dateTo?: string; // yyyy-MM-dd
@@ -24,7 +33,7 @@ export default async function PageReportGameTienLen({
   const auth = await getServerAuth();
 
   if (!auth?.user) {
-    redirect(`/login?redirect=/game-tien-len/report`);
+    redirect(`/login?redirect=/report/${params.game}`);
   }
 
   const dateFrom = searchParams.dateFrom
@@ -43,6 +52,7 @@ export default async function PageReportGameTienLen({
   return (
     <div>
       <h1 className="mb-3 mt-3 text-xl font-bold">Thống kê</h1>
+      <h2 className="mb-3 text-lg font-bold">{gameTitle[params.game]}</h2>
       <div className="my-5 flex justify-end gap-1">
         <Button variant={"outline"} asChild>
           <Link href={buildLink(90)}>90d</Link>
@@ -60,11 +70,7 @@ export default async function PageReportGameTienLen({
           <Link href={buildLink(7)}>7d</Link>
         </Button>
       </div>
-      <Report
-        gameType={GAME_TYPE.TIEN_LEN}
-        dateFrom={dateFrom}
-        dateTo={dateTo}
-      />
+      <Report gameType={params.game} dateFrom={dateFrom} dateTo={dateTo} />
       <div className="mb-5 mt-5 text-left">
         <Button asChild variant={"outline"}>
           <Link href={"/game-tien-len"} className="inline-flex gap-2">

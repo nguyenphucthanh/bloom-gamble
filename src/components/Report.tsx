@@ -48,16 +48,24 @@ export default async function Report({
         <TableHeader className="bg-gray-200">
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>Point</TableHead>
+            <TableHead className="text-right">Point</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedResponse.map((item) => (
-            <TableRow key={item.name}>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.point}</TableCell>
+          {sortedResponse.length ? (
+            sortedResponse.map((item) => (
+              <TableRow key={item.name}>
+                <TableCell>{item.name}</TableCell>
+                <TableCell className="text-right">{item.point}</TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={2} className="text-center">
+                No records here
+              </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </div>

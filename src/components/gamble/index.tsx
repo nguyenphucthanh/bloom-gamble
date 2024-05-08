@@ -9,6 +9,7 @@ import ProfilesProvider from "../ProfilesProvider";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { BarChartIcon } from "lucide-react";
+import { GAME_TYPE } from "@/consts";
 
 function GambleComponent() {
   const player = useAppSelector(selectPlayer);
@@ -44,7 +45,7 @@ function GambleComponent() {
             <div className="mt-5 text-center">
               <Button asChild variant={"secondary"}>
                 <Link
-                  href={"/game-tien-len/report"}
+                  href={`/report/${GAME_TYPE.TIEN_LEN}`}
                   className="inline-flex gap-2"
                 >
                   <BarChartIcon />

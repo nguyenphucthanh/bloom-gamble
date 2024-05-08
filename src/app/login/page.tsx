@@ -20,7 +20,7 @@ export default async function LoginPage({
   return (
     <main>
       <Header title="Login" />
-      <section className="mt-5 flex flex-col items-center justify-center">
+      <section className="flex flex-col items-center justify-center">
         {auth?.user ? (
           <>
             <div className="p-3 font-bold">Hello {auth?.user?.email}!</div>

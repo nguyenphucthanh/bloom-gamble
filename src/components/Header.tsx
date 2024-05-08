@@ -11,13 +11,13 @@ export type HeaderProps = {
 
 export default function Header({ title, gamePath }: HeaderProps) {
   return (
-    <div className="flex flex-row items-center gap-3">
+    <div className="mb-5 flex flex-row items-center justify-between gap-3">
       <Button asChild variant={"outline"}>
         <Link href={"/"}>
           <HomeIcon />
         </Link>
       </Button>
-      <div className="flex-1 text-xl font-bold">
+      <div className="flex flex-1 flex-row justify-end text-xl font-bold">
         {gamePath ? (
           <Link href={gamePath} className="text-blue-500">
             {title}
