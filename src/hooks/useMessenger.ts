@@ -1,17 +1,6 @@
+import { SlackResponse } from "@/app/api/slack/route";
 import { useCallback } from "react";
 
-export type SlackResponse = {
-  response: {
-    ok: true;
-    channel: string;
-    ts: string;
-  } | {
-    ok: false;
-    error? : string;
-    warning?: string;
-  };
-  status: string;
-};
 const useMessenger = () => {
   const sendMessage = useCallback(
     async (message: string, thread_ts?: string | null) => {
