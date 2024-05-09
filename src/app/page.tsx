@@ -14,12 +14,14 @@ export default function Home() {
           <br />
           Play Harder
         </h1>
-        <GameSelector image={imgGamble} link="/game-tien-len">
-          Tiến Lên
-        </GameSelector>
-        <GameSelector image={imgBiLac} link="/game-bi-lac">
-          Bi Lắc
-        </GameSelector>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <GameSelector image={imgGamble} link="/game-tien-len">
+            Tiến Lên
+          </GameSelector>
+          <GameSelector image={imgBiLac} link="/game-bi-lac">
+            Bi Lắc
+          </GameSelector>
+        </div>
       </div>
       <div className="text-center font-bold">
         <div className="m-4">Donate cho developer bạn ơi!</div>

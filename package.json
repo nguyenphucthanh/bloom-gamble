@@ -7,8 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:db:push": "npx prisma db push",
-    "prisma:migrate:dev": "npx prisma migrate dev",
+    "prisma:db:push:prod": "dotenv -e .env.production -- npx prisma db push",
+    "prisma:db:push:dev": "dotenv -e .env.development -- npx prisma db push",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:migrate:deploy:prod": "dotenv -e .env.production -- npx prisma migrate deploy",
+    "prisma:migrate:deploy:dev": "dotenv -e .env.development -- npx prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "supabase:gen": "supabase gen types typescript > src/lib/database.types.ts --linked --schema public,auth"
   },

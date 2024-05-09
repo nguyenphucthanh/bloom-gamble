@@ -11,6 +11,7 @@ import {
   TableCell,
 } from "./ui/table";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
+import { TIME_FORMATS } from "@/lib/datetime";
 
 export type ReportProps = {
   gameType: GAME_TYPE;
@@ -35,16 +36,18 @@ export default async function Report({
 
   return (
     <div>
-      {dateDiff > 1 && (
-        <div className="mb-6 flex justify-between gap-3">
-          <div>{dateDiff} ngày</div>
-          <div className="inline-flex flex-1 flex-row items-center justify-end gap-1">
-            {format(dateFrom, "dd-MM-yy")} <ArrowRightIcon />{" "}
-            {format(dateTo, "dd-MM-yy")}
-          </div>
+      <div className="mb-6 flex justify-between gap-3">
+        <div>{dateDiff} ngày</div>
+        <div className="inline-flex flex-1 flex-row items-center justify-end gap-1">
+          {format(dateFrom, TIME_FORMATS.DISPLAY_DATE)}
+          {dateDiff > 1 && (
+            <>
+              <ArrowRightIcon /> {format(dateTo, TIME_FORMATS.DISPLAY_DATE)}
+            </>
+          )}
         </div>
-      )}
-      <Table>
+      </div>
+      <Table data-date-from={dateFrom} data-date-to={dateTo}>
         <TableHeader className="bg-gray-200">
           <TableRow>
             <TableHead>Name</TableHead>
