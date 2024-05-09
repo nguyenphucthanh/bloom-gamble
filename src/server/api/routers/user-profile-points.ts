@@ -1,4 +1,3 @@
-import { endOfDay, parse, startOfDay } from "date-fns";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import * as z from "zod";
 
@@ -12,12 +11,7 @@ const userProfilePoints = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-      const dateFrom = startOfDay(
-        parse(input.dateFrom, "yyyy-MM-dd", new Date()),
-      ).toISOString();
-      const dateTo = endOfDay(
-        parse(input.dateTo, "yyyy-MM-dd", new Date()),
-      ).toISOString();
+      const { dateFrom, dateTo } = input;
 
       console.log(dateFrom, dateTo);
       const gameResponse = await ctx.supabase

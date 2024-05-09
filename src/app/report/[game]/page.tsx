@@ -7,6 +7,7 @@ import { GAME_TYPE } from "@/consts";
 import { getServerAuth } from "@/utils/supabase/getServerAuth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import { TIME_FORMATS, formatUTCDate } from "@/lib/datetime";
 
 export const metadata: Metadata = {
   title: "Thống kê",
@@ -36,17 +37,21 @@ export default async function PageReportGameTienLen({
     redirect(`/login?redirect=/report/${params.game}`);
   }
 
-  const dateFrom = searchParams.dateFrom
-    ? searchParams.dateFrom
-    : format(addDays(new Date(), -7), "yyyy-MM-dd");
-  const dateTo = searchParams.dateTo
-    ? searchParams.dateTo
-    : format(new Date(), "yyyy-MM-dd");
+  const dateFrom = formatUTCDate(
+    searchParams.dateFrom
+      ? new Date(searchParams.dateFrom)
+      : addDays(new Date(), -7),
+    TIME_FORMATS.SUPABASE_DATETIME,
+  );
+  const dateTo = formatUTCDate(
+    searchParams.dateTo ? new Date(searchParams.dateTo) : new Date(),
+    TIME_FORMATS.SUPABASE_DATETIME,
+  );
 
   const buildLink = (days: number) => {
     const dateTo = format(new Date(), "yyyy-MM-dd");
     const dateFrom = format(addDays(new Date(), -days), "yyyy-MM-dd");
-    return `/game-tien-len/report?dateFrom=${dateFrom}&dateTo=${dateTo}`;
+    return `/report/${params.game}?dateFrom=${dateFrom}&dateTo=${dateTo}`;
   };
 
   return (
@@ -73,7 +78,7 @@ export default async function PageReportGameTienLen({
       <Report gameType={params.game} dateFrom={dateFrom} dateTo={dateTo} />
       <div className="mb-5 mt-5 text-left">
         <Button asChild variant={"outline"}>
-          <Link href={"/game-tien-len"} className="inline-flex gap-2">
+          <Link href={"/"} className="inline-flex gap-2">
             <ArrowLeftIcon />
             <span>Trở lại</span>
           </Link>

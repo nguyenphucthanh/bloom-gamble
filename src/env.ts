@@ -19,32 +19,29 @@ export const env = createEnv({
         (str) => !str.includes("YOUR_POSTGRES_DIRECT_URL_HERE"),
         "you forgot to add direct url for your postgress db",
       ),
-    SLACK_URL: z
-      .string()
-      .url()
-      .refine(
-        (str) => !str.includes("YOUR_SLACK_URL_HERE"),
-        "you forgot to add slack services hooks url here",
-      ),
     OPENAI_API_KEY: z.string().optional(),
     SLACK_OAUTH_TOKEN: z
       .string()
       .refine(
         (str) => !str.includes("YOUR_SLACK_OAUTH_TOKEN_HERE"),
         "You forgot to update slack oauth token",
-      ),
+      )
+      .optional(),
     SLACK_OAUTH_BOT_TOKEN: z
       .string()
       .refine(
         (str) => !str.includes("YOUR_SLACK_BOT_TOKEN_HERE"),
         "You forgot to update slack oauth bot token",
-      ),
+      )
+      .optional(),
     SLACK_WEBHOOK: z
       .string()
       .refine(
         (str) => !str.includes("SLACK_WEBHOOK"),
         "You forgot to update slack oauth bot token",
-      ),
+      )
+      .optional(),
+    SLACK_USE_WEBHOOK: z.boolean().default(false).optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -79,11 +76,11 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
-    SLACK_URL: process.env.SLACK_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     SLACK_OAUTH_TOKEN: process.env.SLACK_OAUTH_TOKEN,
     SLACK_OAUTH_BOT_TOKEN: process.env.SLACK_OAUTH_BOT_TOKEN,
     SLACK_WEBHOOK: process.env.SLACK_WEBHOOK,
+    SLACK_USE_WEBHOOK: process.env.SLACK_USE_WEBHOOK === "true",
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NODE_ENV: process.env.NODE_ENV,

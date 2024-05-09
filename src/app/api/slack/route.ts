@@ -1,8 +1,6 @@
 import { env } from "@/env";
 import { NextResponse, NextRequest } from "next/server";
 
-const useWebHook = true;
-
 export type SlackResponse = {
   response:
     | {
@@ -20,36 +18,49 @@ export type SlackResponse = {
 
 export async function POST(request: NextRequest) {
   const token = process.env.SLACK_OAUTH_BOT_TOKEN;
-
-  if (!token) {
-    return NextResponse.json({
-      status: "failed",
-      message: "SLACK not setup",
-    });
-  }
-
-  const data = (await request.json()) as {
-    text: string;
-    thread_ts: string;
-  };
+  const useWebHook = env.SLACK_USE_WEBHOOK;
 
   try {
-    const slackResponse = await fetch(
-      useWebHook ? env.SLACK_WEBHOOK : "https://slack.com/api/chat.postMessage",
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          text: data?.text,
-          channel: "work-hard-play-harder",
-          thread_ts: data?.thread_ts,
-        }),
-      },
-    );
+    const url =
+      useWebHook && env.SLACK_WEBHOOK
+        ? env.SLACK_WEBHOOK
+        : token
+          ? "https://slack.com/api/chat.postMessage"
+          : "";
 
+    if (!url) {
+      return NextResponse.json({
+        status: "error",
+        message: "No webhook or slack bot setup",
+      });
+    }
+    const data = (await request.json()) as {
+      text: string;
+      thread_ts: string;
+    };
+
+    const slackResponse = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        ...(useWebHook
+          ? {}
+          : {
+              Authorization: `Bearer ${token}`,
+            }),
+      },
+      body: JSON.stringify({
+        text: data?.text,
+        ...(useWebHook
+          ? {}
+          : {
+              channel: "work-hard-play-harder",
+              thread_ts: data?.thread_ts,
+            }),
+      }),
+    });
+
+    console.log(useWebHook);
     if (useWebHook) {
       const response: SlackResponse = {
         response: {
