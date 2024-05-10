@@ -70,7 +70,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SITE_URL: z
       .string()
       .refine(
-        (str) => !str.includes("localhost"),
+        (str) => !str.includes("YOUR_SITE_URL"),
         "You forgot to change the site url",
       ),
   },

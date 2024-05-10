@@ -1,14 +1,9 @@
 import { GAME_TYPE, GAME_TITLE } from "@/consts";
 import { api } from "@/trpc/server";
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "../ui/card";
+import StatCard from "@/components/StatCard";
+import UserGameStatChart from "@/components/UserGameStatChart";
+import { QuickUserGamePoint } from "@/models/game";
 
 export type PointsByUserProps = {
   emailOrId: string;
@@ -34,36 +29,64 @@ export default async function PointsByUser({ emailOrId }: PointsByUserProps) {
     return acc;
   }, {});
 
+  const tienLenRecords: QuickUserGamePoint[] = points
+    .filter(
+      (p) =>
+        p.gameType.toString().toLowerCase() ===
+        GAME_TYPE.TIEN_LEN.toString().toLowerCase(),
+    )
+    .map((item) => {
+      const next: QuickUserGamePoint = {
+        gameId: item.gameId,
+        gameType: item.gameType as GAME_TYPE,
+        gameDate: item.gameDate,
+        point: item.point,
+      };
+      return next;
+    });
+
+  const biLacRecords: QuickUserGamePoint[] = points
+    .filter(
+      (p) =>
+        p.gameType.toString().toLowerCase() ===
+        GAME_TYPE.BI_LAC.toString().toLowerCase(),
+    )
+    .map((item) => {
+      const next: QuickUserGamePoint = {
+        gameId: item.gameId,
+        gameType: item.gameType as GAME_TYPE,
+        gameDate: item.gameDate,
+        point: item.point,
+      };
+      return next;
+    });
+
   return (
     <div className="mt-5">
       <h3 className="text-xl font-bold">Points</h3>
       <div className="mt-3 grid grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardDescription>{GAME_TITLE[GAME_TYPE.TIEN_LEN]}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CardTitle className="text-3xl">
-              {grouped[GAME_TYPE.TIEN_LEN]?.point ?? 0}
-            </CardTitle>
-          </CardContent>
-          <CardFooter>
-            <p>{grouped[GAME_TYPE.TIEN_LEN]?.count ?? 0} games</p>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardDescription>{GAME_TITLE[GAME_TYPE.BI_LAC]}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CardTitle className="text-3xl">
-              {grouped[GAME_TYPE.BI_LAC]?.point ?? 0}
-            </CardTitle>
-          </CardContent>
-          <CardFooter>
-            <p>{grouped[GAME_TYPE.BI_LAC]?.count ?? 0} games</p>
-          </CardFooter>
-        </Card>
+        <StatCard
+          title={GAME_TITLE[GAME_TYPE.TIEN_LEN]}
+          value={grouped[GAME_TYPE.TIEN_LEN]?.point ?? 0}
+          description={<p>{grouped[GAME_TYPE.TIEN_LEN]?.count ?? 0} games</p>}
+        />
+        <StatCard
+          title={GAME_TITLE[GAME_TYPE.BI_LAC]}
+          value={grouped[GAME_TYPE.BI_LAC]?.point ?? 0}
+          description={<p>{grouped[GAME_TYPE.BI_LAC]?.count ?? 0} games</p>}
+        />
+      </div>
+
+      <hr className="my-8 border-slate-300" />
+      <h3 className="text-xl font-bold">{GAME_TITLE[GAME_TYPE.TIEN_LEN]}</h3>
+      <div>
+        <UserGameStatChart records={tienLenRecords} />
+      </div>
+
+      <hr className="my-8 border-slate-300" />
+      <h3 className="text-xl font-bold">{GAME_TITLE[GAME_TYPE.BI_LAC]}</h3>
+      <div>
+        <UserGameStatChart records={biLacRecords} />
       </div>
     </div>
   );

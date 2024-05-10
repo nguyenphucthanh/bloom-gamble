@@ -1,3 +1,4 @@
+import { QuickUserGamePoint } from "@/models/game";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import * as z from "zod";
 
@@ -18,7 +19,7 @@ const userProfilePoints = createTRPCRouter({
         }),
       ),
     )
-    .query(async ({ input, ctx }) => {
+    .query<QuickUserGamePoint[]>(async ({ input, ctx }) => {
       const { dateFrom, dateTo } = input;
 
       console.log(dateFrom, dateTo);
@@ -63,8 +64,17 @@ const userProfilePoints = createTRPCRouter({
 
   reportByUser: publicProcedure
     .input(z.string())
-    .output(z.array(z.object({ gameType: z.string(), point: z.number() })))
-    .query(async ({ input, ctx }) => {
+    .output(
+      z.array(
+        z.object({
+          gameId: z.string(),
+          gameType: z.string(),
+          point: z.number(),
+          gameDate: z.string(),
+        }),
+      ),
+    )
+    .query<QuickUserGamePoint[]>(async ({ input, ctx }) => {
       const value = input;
       const isEmail = value.includes("@");
       const userProfileResponse = await ctx.supabase
@@ -78,7 +88,7 @@ const userProfilePoints = createTRPCRouter({
 
       const pointsResponse = await ctx.supabase
         .from("UserProfilePoint")
-        .select("game_id, points.sum(), Game (id, gameType)")
+        .select("game_id, points.sum(), Game (id, gameType, createdAt)")
         .eq("userProfile_id", userProfileResponse?.data?.[0]?.id);
 
       if (pointsResponse.error) {
@@ -92,6 +102,7 @@ const userProfilePoints = createTRPCRouter({
         Game: {
           gameType: string;
           id: string;
+          createdAt: string;
         };
         sum: number;
       }
@@ -99,8 +110,10 @@ const userProfilePoints = createTRPCRouter({
       return (pointsResponse.data as unknown as ResponseItem[]).map(
         (item: ResponseItem) => {
           return {
+            gameId: item.game_id,
             gameType: item.Game.gameType,
             point: item.sum,
+            gameDate: item.Game.createdAt,
           };
         },
       );
