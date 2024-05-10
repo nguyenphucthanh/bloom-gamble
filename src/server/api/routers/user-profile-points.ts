@@ -10,6 +10,14 @@ const userProfilePoints = createTRPCRouter({
         gameType: z.string(),
       }),
     )
+    .output(
+      z.array(
+        z.object({
+          name: z.string(),
+          point: z.number(),
+        }),
+      ),
+    )
     .query(async ({ input, ctx }) => {
       const { dateFrom, dateTo } = input;
 
@@ -47,6 +55,51 @@ const userProfilePoints = createTRPCRouter({
         (item: ResponseItem) => {
           return {
             name: item.UserProfile.name,
+            point: item.sum,
+          };
+        },
+      );
+    }),
+
+  reportByUser: publicProcedure
+    .input(z.string())
+    .output(z.array(z.object({ gameType: z.string(), point: z.number() })))
+    .query(async ({ input, ctx }) => {
+      const value = input;
+      const isEmail = value.includes("@");
+      const userProfileResponse = await ctx.supabase
+        .from("UserProfile")
+        .select("id")
+        .eq(isEmail ? "email" : "user_id", value);
+
+      if (userProfileResponse.error) {
+        throw new Error(userProfileResponse.error.message);
+      }
+
+      const pointsResponse = await ctx.supabase
+        .from("UserProfilePoint")
+        .select("game_id, points.sum(), Game (id, gameType)")
+        .eq("userProfile_id", userProfileResponse?.data?.[0]?.id);
+
+      if (pointsResponse.error) {
+        throw new Error(pointsResponse.error.message);
+      }
+
+      console.log(pointsResponse.data);
+
+      interface ResponseItem {
+        game_id: string;
+        Game: {
+          gameType: string;
+          id: string;
+        };
+        sum: number;
+      }
+
+      return (pointsResponse.data as unknown as ResponseItem[]).map(
+        (item: ResponseItem) => {
+          return {
+            gameType: item.Game.gameType,
             point: item.sum,
           };
         },

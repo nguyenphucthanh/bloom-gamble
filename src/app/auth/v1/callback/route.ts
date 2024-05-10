@@ -17,9 +17,39 @@ export async function GET(request: NextRequest) {
     try {
       const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
-      console.log(data, error);
-
       if (!error) {
+        // Link user profile to user
+        //
+        const userId = data?.user?.id;
+        const userEmail = data.user?.email;
+
+        if (userId && userEmail) {
+          // Link profile
+          const findProfile = await supabase
+            .from("UserProfile")
+            .select("*")
+            .eq("email", userEmail);
+
+          if (findProfile.data?.[0].id) {
+            await supabase
+              .from("UserProfile")
+              .update({
+                user_id: userId,
+              })
+              .eq("id", findProfile.data?.[0]?.id);
+          } else {
+            // Create profile
+            //
+            const name =
+              data?.user?.user_metadata?.name || userEmail?.split("@")[0];
+            await supabase.from("UserProfile").insert({
+              user_id: userId,
+              email: userEmail,
+              name,
+              first_name: name,
+            });
+          }
+        }
         return NextResponse.redirect(redirectUrl);
       }
     } catch (ex) {

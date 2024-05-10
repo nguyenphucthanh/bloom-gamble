@@ -1,9 +1,9 @@
 import Header from "@/components/Header";
 import Login from "@/components/auth/login";
-import Logout from "@/components/auth/logout";
 import { getServerAuth } from "@/utils/supabase/getServerAuth";
 import { Metadata } from "next";
 import React from "react";
+import { redirect as goTo } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -17,18 +17,15 @@ export default async function LoginPage({
 }) {
   const auth = await getServerAuth();
 
+  if (auth.user?.id) {
+    return goTo("/profile");
+  }
+
   return (
     <main>
       <Header title="Login" />
       <section className="flex flex-col items-center justify-center">
-        {auth?.user ? (
-          <>
-            <div className="p-3 font-bold">Hello {auth?.user?.email}!</div>
-            <Logout path="/" />
-          </>
-        ) : (
-          <Login redirectTo={redirect} />
-        )}
+        <Login redirectTo={redirect} />
       </section>
     </main>
   );

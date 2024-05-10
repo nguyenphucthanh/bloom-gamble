@@ -9,7 +9,7 @@ import {
 } from "date-fns";
 import Link from "next/link";
 import Report from "@/components/Report";
-import { GAME_TYPE } from "@/consts";
+import { GAME_TITLE, GAME_TYPE } from "@/consts";
 import { getServerAuth } from "@/utils/supabase/getServerAuth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
@@ -18,11 +18,6 @@ import { TIME_FORMATS, formatUTCDate } from "@/lib/datetime";
 export const metadata: Metadata = {
   title: "Thống kê",
   description: "Work Hard Play Harder",
-};
-
-const gameTitle = {
-  [GAME_TYPE.TIEN_LEN]: "Tiến Lên",
-  [GAME_TYPE.BI_LAC]: "Bi lắc",
 };
 
 export default async function PageReportGameTienLen({
@@ -78,7 +73,7 @@ export default async function PageReportGameTienLen({
 
   return (
     <div>
-      <h2 className="mb-3 text-lg font-bold">{gameTitle[params.game]}</h2>
+      <h2 className="mb-3 text-lg font-bold">{GAME_TITLE[params.game]}</h2>
       <div className="my-5 flex flex-wrap justify-end gap-1">
         <Button variant={dayGap === 90 ? "default" : "outline"} asChild>
           <Link href={buildLink(90)}>90d</Link>
