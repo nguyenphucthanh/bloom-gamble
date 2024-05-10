@@ -12,7 +12,7 @@ export default async function PointsSlot() {
 
   return (
     <Suspense fallback={<Skeleton />}>
-      <PointsByUser emailOrId={auth.user?.email || auth.user?.id || ""} />
+      <PointsByUser emailOrId={auth.user?.email ?? auth.user?.id ?? ""} />
     </Suspense>
   );
 }

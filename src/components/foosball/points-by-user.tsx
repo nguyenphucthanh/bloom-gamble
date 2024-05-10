@@ -14,12 +14,7 @@ export type PointsByUserProps = {
   emailOrId: string;
 };
 
-type GamePoint = {
-  [key: string]: {
-    point: number;
-    count: number;
-  };
-};
+type GamePoint = Record<string, { point: number; count: number }>;
 
 export default async function PointsByUser({ emailOrId }: PointsByUserProps) {
   const points = await api.userProfilePoints.reportByUser.query(emailOrId);

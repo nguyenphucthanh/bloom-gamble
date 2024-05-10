@@ -18,8 +18,10 @@ export default function ProfileCard({ user }: ProfileCardProps) {
     return null;
   }
 
-  const shortName =
-    user?.user_metadata?.name?.slice(0, 1) || user?.email?.slice(0, 1) || "--";
+  const email: string = user?.email ?? "";
+  const name: string = user?.user_metadata?.name ?? "";
+
+  const shortName = email.slice(0, 1) || name.slice(0, 1) || "--";
 
   return (
     <Card className="overflow-hidden">
