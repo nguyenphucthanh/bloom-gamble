@@ -28,7 +28,8 @@ const userProfilePoints = createTRPCRouter({
         .select()
         .eq("gameType", input.gameType)
         .gte("createdAt", dateFrom)
-        .lte("createdAt", dateTo);
+        .lte("createdAt", dateTo)
+        .order("createdAt", { ascending: true });
 
       if (gameResponse.error) {
         throw new Error(gameResponse.error.message);
@@ -88,8 +89,11 @@ const userProfilePoints = createTRPCRouter({
 
       const pointsResponse = await ctx.supabase
         .from("UserProfilePoint")
-        .select("game_id, points.sum(), Game (id, gameType, createdAt)")
-        .eq("userProfile_id", userProfileResponse?.data?.[0]?.id);
+        .select(
+          "game_id, createdAt, points.sum(), Game (id, gameType, createdAt)",
+        )
+        .eq("userProfile_id", userProfileResponse?.data?.[0]?.id)
+        .order("createdAt", { ascending: true });
 
       if (pointsResponse.error) {
         throw new Error(pointsResponse.error.message);
