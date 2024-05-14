@@ -37,7 +37,7 @@ export default function FoosballGamesListItem({
       <TableCell className="text-blue-500">{game.winner1}</TableCell>
       <TableCell className="text-blue-500">{game.winner2}</TableCell>
       <TableCell className="text-red-500">{game.loser1}</TableCell>
-      <TableCell className="text-red-500">{game.loser1}</TableCell>
+      <TableCell className="text-red-500">{game.loser2}</TableCell>
       <TableCell>
         <Button variant={"ghost"} onClick={handleDelete} disabled={isPending}>
           {isPending ? (
