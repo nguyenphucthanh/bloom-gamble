@@ -24,7 +24,12 @@ export default function FoosballReportPage() {
   return (
     <div className="mt-5">
       <Suspense fallback={<Loading />}>
-        <Report gameType={GAME_TYPE.BI_LAC} dateFrom={start} dateTo={end} />
+        <Report
+          gameType={GAME_TYPE.BI_LAC}
+          dateFrom={start}
+          dateTo={end}
+          includePayback
+        />
       </Suspense>
 
       <div className="mt-5 text-center">

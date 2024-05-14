@@ -58,7 +58,7 @@ const validateRound = (round: IGambleRound): boolean => {
 
 const AddRow: FC = () => {
   const players = useAppSelector(selectPlayer);
-  const slackThread = useAppSelector(selectSlackThread);
+  const threadID = useAppSelector(selectSlackThread);
   const isGPT = useAppSelector(selectIsGPT);
   const isNotificationEnabled = useAppSelector(selectEnableSlackNotification);
   const dispatch = useAppDispatch();
@@ -121,7 +121,7 @@ const AddRow: FC = () => {
           const winnerName = players[maxKey as PlayerKey];
 
           if (isNotificationEnabled) {
-            sendMessage(playerMessagesToSlack.join(", "), slackThread)
+            sendMessage(playerMessagesToSlack.join(", "), threadID)
               .then((response) => {
                 console.info(response);
               })
@@ -143,7 +143,7 @@ const AddRow: FC = () => {
                 const mes = response.message;
                 if (mes) {
                   speak(mes);
-                  await sendMessage(mes, slackThread);
+                  await sendMessage(mes, threadID);
                 }
               })
               .catch(() => {
@@ -167,7 +167,7 @@ const AddRow: FC = () => {
       players,
       isNotificationEnabled,
       isGPT,
-      slackThread,
+      threadID,
       getPlayerName,
       sendMessage,
     ],

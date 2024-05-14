@@ -42,6 +42,12 @@ export const env = createEnv({
       )
       .optional(),
     SLACK_USE_WEBHOOK: z.boolean().default(false).optional(),
+    SLACK_CHANNEL: z
+      .string()
+      .refine(
+        (str) => !str.includes("YOUR_SLACK_CHANNEL"),
+        "You forgot to update slack channel",
+      ),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -87,6 +93,7 @@ export const env = createEnv({
     SLACK_OAUTH_BOT_TOKEN: process.env.SLACK_OAUTH_BOT_TOKEN,
     SLACK_WEBHOOK: process.env.SLACK_WEBHOOK,
     SLACK_USE_WEBHOOK: process.env.SLACK_USE_WEBHOOK === "true",
+    SLACK_CHANNEL: process.env.SLACK_CHANNEL,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NODE_ENV: process.env.NODE_ENV,

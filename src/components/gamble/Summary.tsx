@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo } from "react";
 import {
-  PlayerAmount,
   PlayerKey,
+  selectEnableSlackNotification,
   selectPayback,
   selectPlayer,
   selectPlayerArchive,
@@ -12,33 +12,10 @@ import { useAppSelector } from "../../store/hooks";
 import Image from "next/image";
 import styles from "./styles.module.scss";
 import { speak } from "@/utils/speech";
-import SendResultToSlack from "./SendResultToSlack";
-import IconMoney from "../icons/money";
+import SendResultToSlack from "@/components/SendResultToSlack";
 import useProfiles from "@/hooks/useUserProfiles";
-
-const Line: FC<{ nameFrom: string; nameTo: string; amount: number }> = ({
-  nameFrom,
-  nameTo,
-  amount,
-}) => {
-  const player = useAppSelector(selectPlayer);
-  const profiles = useProfiles();
-
-  const showName = (id: string) => {
-    return profiles?.find((player) => player.id === id)?.name ?? "Unknown";
-  }
-
-  return (
-    <li className="flex gap-2">
-      <IconMoney />
-      <span>
-        {showName(player[nameFrom as PlayerKey])} chuyển cho{" "}
-        {showName(player[nameTo as PlayerKey])}{" "}
-        <span className="font-bold text-red-500">{amount}K</span>
-      </span>
-    </li>
-  );
-};
+import PaybackBoard from "@/components/PaybackBoard";
+import { InputPoint, Payback } from "@/lib/payback";
 
 const Summary: FC = () => {
   const paybacks = useAppSelector(selectPayback);
@@ -48,10 +25,14 @@ const Summary: FC = () => {
   const total = useAppSelector(selectPlayerPoint);
   const rounds = useAppSelector(selectRounds);
   const profiles = useProfiles();
+  const isEnabledNotification = useAppSelector(selectEnableSlackNotification);
 
-  const showName = useCallback((id: string) => {
-    return profiles?.find((player) => player.id === id)?.name ?? "Unknown";
-  }, [profiles]);
+  const showName = useCallback(
+    (id: string) => {
+      return profiles?.find((player) => player.id === id)?.name ?? "Unknown";
+    },
+    [profiles],
+  );
 
   const winnerAndLoser = useMemo(() => {
     const winnerKey = Object.keys(playerPoints).filter(
@@ -78,26 +59,34 @@ const Summary: FC = () => {
     }
   }, [winnerAndLoser, player, showName]);
 
+  const namedPaybacks = useMemo(() => {
+    const newPaybacks: Payback = new Map();
+    paybacks.forEach((value, playerKey) => {
+      newPaybacks.set(
+        showName(player[playerKey]),
+        value.map((v) => ({
+          player: showName(player[v.player]),
+          amount: v.amount,
+        })),
+      );
+    });
+    return newPaybacks;
+  }, [paybacks, showName, player]);
+
+  const namedTotals = useMemo(() => {
+    const board: InputPoint = {};
+    Object.keys(total).forEach((key) => {
+      board[showName(player[key as PlayerKey])] = total[key as PlayerKey];
+    });
+    return board;
+  }, [player, showName, total]);
 
   return (
     <div className="shadow-blue-300s mt-5 rounded border border-blue-300 p-3 shadow-lg">
       <h3 className="mb-3 text-2xl font-bold">
         Tổng kết sau {rounds.length} ván
       </h3>
-      <ul className="ml-3 flex flex-col gap-2 text-left">
-        {Array.from(paybacks.keys()).map((key) => {
-          return paybacks
-            ?.get(key as PlayerKey)
-            ?.map((payback: PlayerAmount, index: number) => (
-              <Line
-                key={`${key}-${index}`}
-                nameTo={key as string}
-                nameFrom={payback.player}
-                amount={payback.amount}
-              />
-            ));
-        })}
-      </ul>
+      <PaybackBoard paybacks={namedPaybacks} />
       <div className="mt-4 grid grid-cols-2 gap-2">
         <div className="flex flex-col items-center gap-2">
           <Image
@@ -144,7 +133,9 @@ const Summary: FC = () => {
         <tbody>
           {Object.keys(archive).map((playerKey) => (
             <tr key={playerKey}>
-              <td className="font-bold">{showName(player[playerKey as PlayerKey])}</td>
+              <td className="font-bold">
+                {showName(player[playerKey as PlayerKey])}
+              </td>
               <td className="font-bold">{total[playerKey as PlayerKey]}</td>
               <td>{archive[playerKey as PlayerKey].winCount}</td>
               <td>{archive[playerKey as PlayerKey].loseCount}</td>
@@ -154,7 +145,13 @@ const Summary: FC = () => {
           ))}
         </tbody>
       </table>
-      <SendResultToSlack />
+      {isEnabledNotification && (
+        <SendResultToSlack
+          className="mt-5 w-full"
+          playerPoints={namedTotals}
+          paybacks={namedPaybacks}
+        />
+      )}
     </div>
   );
 };

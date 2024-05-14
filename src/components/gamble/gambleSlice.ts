@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../store/store";
 import { orderBy, uniq } from "lodash";
+import { payback } from "@/lib/payback";
 
 export type PlayerKey = "A" | "B" | "C" | "D";
 
@@ -153,63 +154,77 @@ export const selectEndGame = (state: RootState) => state.gamble.ended;
 export const selectPayback = (
   state: RootState,
 ): Map<PlayerKey, PlayerAmount[]> => {
-  const paybackAmounts = new Map<PlayerKey, PlayerAmount[]>();
+  // const paybackAmounts = new Map<PlayerKey, PlayerAmount[]>();
 
-  const creditors: PlayerAmount[] = [];
+  // const creditors: PlayerAmount[] = [];
 
-  const debtors: PlayerAmount[] = [];
+  // const debtors: PlayerAmount[] = [];
 
+  // const points = selectPlayerPoint(state);
+
+  // Object.keys(state.gamble.player).forEach((key: string) => {
+  //   const point = points[key as PlayerKey];
+  //   if (point > 0) {
+  //     creditors.push({
+  //       player: key as PlayerKey,
+  //       amount: point,
+  //     } as PlayerAmount);
+  //   } else {
+  //     debtors.push({
+  //       player: key as PlayerKey,
+  //       amount: Math.abs(point),
+  //     } as PlayerAmount);
+  //   }
+  // });
+
+  // creditors.sort((a, b) => b.amount - a.amount);
+  // debtors.sort((a, b) => a.amount - b.amount);
+
+  // while (creditors.length && debtors.length) {
+  //   const creditor = creditors[0];
+  //   const debtor = debtors[0];
+
+  //   const amount = Math.min(debtor.amount, creditor.amount);
+  //   const paybackAmount: PlayerAmount = { player: debtor.player, amount };
+
+  //   if (!paybackAmounts.has(creditor.player)) {
+  //     paybackAmounts.set(creditor.player, []);
+  //   }
+
+  //   const entry = paybackAmounts.get(creditor.player);
+  //   if (entry) {
+  //     entry?.push(paybackAmount);
+  //     paybackAmounts.set(creditor.player, entry);
+  //   }
+
+  //   debtor.amount -= amount;
+  //   creditor.amount -= amount;
+
+  //   if (debtor.amount === 0) {
+  //     debtors.shift();
+  //   }
+  //   if (creditor.amount === 0) {
+  //     creditors.shift();
+  //   }
+  // }
+
+  // console.log(paybackAmounts);
+
+  // return paybackAmounts;
   const points = selectPlayerPoint(state);
 
-  Object.keys(state.gamble.player).forEach((key: string) => {
-    const point = points[key as PlayerKey];
-    if (point > 0) {
-      creditors.push({
-        player: key as PlayerKey,
-        amount: point,
-      } as PlayerAmount);
-    } else {
-      debtors.push({
-        player: key as PlayerKey,
-        amount: Math.abs(point),
-      } as PlayerAmount);
-    }
+  const paybackAmounts = payback(points);
+
+  const transaction = new Map<PlayerKey, PlayerAmount[]>();
+
+  paybackAmounts.forEach((value, key) => {
+    transaction.set(
+      key as PlayerKey,
+      value.map((v) => ({ player: v.player as PlayerKey, amount: v.amount })),
+    );
   });
 
-  creditors.sort((a, b) => b.amount - a.amount);
-  debtors.sort((a, b) => a.amount - b.amount);
-
-  while (creditors.length && debtors.length) {
-    const creditor = creditors[0];
-    const debtor = debtors[0];
-
-    const amount = Math.min(debtor.amount, creditor.amount);
-    const paybackAmount: PlayerAmount = { player: debtor.player, amount };
-
-    if (!paybackAmounts.has(creditor.player)) {
-      paybackAmounts.set(creditor.player, []);
-    }
-
-    const entry = paybackAmounts.get(creditor.player);
-    if (entry) {
-      entry?.push(paybackAmount);
-      paybackAmounts.set(creditor.player, entry);
-    }
-
-    debtor.amount -= amount;
-    creditor.amount -= amount;
-
-    if (debtor.amount === 0) {
-      debtors.shift();
-    }
-    if (creditor.amount === 0) {
-      creditors.shift();
-    }
-  }
-
-  console.log(paybackAmounts);
-
-  return paybackAmounts;
+  return transaction;
 };
 
 export const selectPlayerArchive = (state: RootState) => {

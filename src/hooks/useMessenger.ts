@@ -1,15 +1,17 @@
-import { SlackResponse } from "@/app/api/slack/route";
+import { api } from "@/trpc/react";
 import { useCallback } from "react";
 
 const useMessenger = () => {
+  const mutation = api.messengerRoute.send.useMutation();
+
   const sendMessage = useCallback(
-    async (message: string, thread_ts?: string | null) => {
-      const result = await fetch("/api/slack", {
-        method: "POST",
-        body: JSON.stringify({ text: message, thread_ts }),
+    async (message: string, threadId?: string | null) => {
+      const result = await mutation.mutateAsync({
+        message: message,
+        threadId: threadId ?? "",
       });
-      const response = (await result.json()) as SlackResponse;
-      return response;
+
+      return result;
     },
     [],
   );
