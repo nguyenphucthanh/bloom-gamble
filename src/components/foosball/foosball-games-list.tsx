@@ -11,7 +11,7 @@ import {
 import { FrownIcon, SmileIcon } from "lucide-react";
 import FoosballGamesListItem, {
   FoosballGameInfo,
-} from "../foosball-games-list-item";
+} from "./foosball-games-list-item";
 
 export type GamesList = {
   dateFrom: string;
