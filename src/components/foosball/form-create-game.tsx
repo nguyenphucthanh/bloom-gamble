@@ -22,8 +22,11 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { CreateState, createGameBiLac } from "@/app/game-bi-lac/actions";
 import { BiLacSchema } from "@/validations/schemas";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useFormState } from "react-dom";
+import useProfiles from "@/hooks/useUserProfiles";
+import { api } from "@/trpc/react";
+import { GAME_TITLE, GAME_TYPE } from "@/consts";
 
 export type FormValues = z.infer<typeof BiLacSchema>;
 
@@ -66,6 +69,9 @@ export default function FormCreateGameFoosball() {
   }, [form]);
 
   const router = useRouter();
+  const pathname = usePathname();
+  const profiles = useProfiles();
+  const sendMessageMutation = api.messengerRoute.send.useMutation();
 
   const onHandleSwap = useCallback(() => {
     const values = form.getValues();
@@ -75,12 +81,30 @@ export default function FormCreateGameFoosball() {
     form.setValue("loser2", values.winner2);
   }, [form]);
 
-  const onAction = useCallback((formData: FormData) => {
-    startTransition(() => {
-      formAction(formData);
-      router.refresh();
-    });
-  }, []);
+  const onAction = useCallback(
+    (formData: FormData) => {
+      startTransition(() => {
+        formAction(formData);
+        const winner1 = formData.get("winner1")?.toString() ?? "";
+        const winner2 = formData.get("winner2")?.toString() ?? "";
+        const loser1 = formData.get("loser1")?.toString() ?? "";
+        const loser2 = formData.get("loser2")?.toString() ?? "";
+
+        const winner1Name = profiles?.find((p) => p.id === winner1)?.name;
+        const winner2Name = profiles?.find((p) => p.id === winner2)?.name;
+        const loser1Name = profiles?.find((p) => p.id === loser1)?.name;
+        const loser2Name = profiles?.find((p) => p.id === loser2)?.name;
+
+        const message = `[${GAME_TITLE[GAME_TYPE.BI_LAC]} ⚽️] 😚 {${winner1Name} & ${winner2Name}} beat {${loser1Name} & ${loser2Name}} 🥶`;
+        sendMessageMutation.mutate({ message });
+
+        router.replace(
+          `${pathname}?winner1=${winner1}&winner2=${winner2}&loser1=${loser1}&loser2=${loser2}`,
+        );
+      });
+    },
+    [router, pathname, profiles, sendMessageMutation],
+  );
 
   return (
     <Form {...form}>

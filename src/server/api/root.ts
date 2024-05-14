@@ -3,6 +3,7 @@ import userRoute from "./routers/user";
 import userProfileRoute from "./routers/user-profile";
 import gameRoute from "./routers/game";
 import userProfilePoints from "./routers/user-profile-points";
+import messengerRoute from "./routers/messenger";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   userProfile: userProfileRoute,
   game: gameRoute,
   userProfilePoints: userProfilePoints,
+  messengerRoute: messengerRoute,
 });
 
 // export type definition of API

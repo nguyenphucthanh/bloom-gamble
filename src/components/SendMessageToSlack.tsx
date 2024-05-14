@@ -1,13 +1,21 @@
+"use client";
 import useMessenger from "@/hooks/useMessenger";
 import { LoaderCircle } from "lucide-react";
 import { useCallback, useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export type SendMessageToSlackProps = {
   message: string;
   title?: string;
-};
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-const SendMessageToSlack = ({ message, title }: SendMessageToSlackProps) => {
+const SendMessageToSlack = ({
+  className,
+  message,
+  title,
+  ...props
+}: SendMessageToSlackProps) => {
   const { sendMessage } = useMessenger();
   const [isPending, startTransition] = useTransition();
   const send = useCallback(() => {
@@ -17,14 +25,15 @@ const SendMessageToSlack = ({ message, title }: SendMessageToSlackProps) => {
   }, [message, sendMessage]);
 
   return (
-    <button
-      className="col-span-2 mt-5 inline-flex w-full justify-center gap-2 rounded bg-blue-500 p-3 text-center font-bold text-white"
+    <Button
+      {...props}
+      className={cn("inline-flex gap-2", className)}
       onClick={send}
       disabled={isPending}
     >
       {isPending ? <LoaderCircle className="animate-spin" /> : null}
       {title ?? "Post Result To Slack"}
-    </button>
+    </Button>
   );
 };
 

@@ -61,9 +61,9 @@ export const EnterPlayer: FC = () => {
               return player?.name ?? id;
             })
             .join(", ")} đã bắt đầu trò chơi!`;
-          const slackMessage = await sendMessage(msg);
-          if (slackMessage.response.ok) {
-            const ts = slackMessage.response.ts;
+          const message = await sendMessage(msg);
+          if (message.success) {
+            const ts = message.threadId;
             dispatch(setSlackThread(ts));
           }
         }
