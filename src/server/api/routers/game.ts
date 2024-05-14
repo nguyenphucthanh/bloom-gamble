@@ -69,6 +69,46 @@ const gameRoute = createTRPCRouter({
 
       return response.data;
     }),
+  gamesByType: publicProcedure
+    .input(
+      z.object({
+        dateFrom: z.string(),
+        dateTo: z.string(),
+        gameType: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { dateFrom, dateTo, gameType } = input;
+
+      const gameResponse = await ctx.supabase
+        .from("Game")
+        .select(
+          "*, UserProfilePoint ( points, UserProfile ( name, firstName, lastName ) )",
+        )
+        .eq("gameType", gameType)
+        .gte("createdAt", dateFrom)
+        .lte("createdAt", dateTo)
+        .order("createdAt", { ascending: true });
+
+      if (gameResponse.error) {
+        throw new Error(gameResponse.error.message);
+      }
+
+      return gameResponse.data;
+    }),
+
+  deleteGame: publicProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      await ctx.supabase.from("UserProfilePoint").delete().eq("game_id", input);
+      const response = await ctx.supabase.from("Game").delete().eq("id", input);
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      return response.data;
+    }),
 });
 
 export default gameRoute;

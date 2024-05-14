@@ -21,13 +21,14 @@ export type ReportProps = {
   dateFrom: string;
   dateTo: string;
   includePayback?: boolean;
-};
+} & React.HTMLAttributes<HTMLDivElement>;
 
 export default async function Report({
   gameType,
   dateFrom,
   dateTo,
   includePayback = false,
+  ...props
 }: ReportProps) {
   const response = await api.userProfilePoints.reportByDate.query({
     gameType,
@@ -48,7 +49,7 @@ export default async function Report({
   const paybacks = payback(playerPoints);
 
   return (
-    <div>
+    <div {...props}>
       <div className="mb-6 flex justify-between gap-3">
         <div>{dateDiff} ngày</div>
         <div className="inline-flex flex-1 flex-row items-center justify-end gap-1">
@@ -74,7 +75,7 @@ export default async function Report({
                 <TableCell>{item.name}</TableCell>
                 <TableCell className="text-right">
                   <div
-                    className={`animate-number-appear inline-flex transition-transform`}
+                    className={`inline-flex animate-number-appear transition-transform`}
                   >
                     {item.point}
                   </div>
