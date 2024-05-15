@@ -18,12 +18,15 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
-export type PlayerNameInputProps = {
+export type PlayerNameInputProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange"
+> & {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
   name?: string;
-} & React.InputHTMLAttributes<HTMLInputElement>;
+};
 
 export default function PlayerNameInput({
   placeholder,

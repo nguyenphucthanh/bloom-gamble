@@ -111,7 +111,7 @@ export const EnterPlayer: FC = () => {
           <div key={id}>
             <PlayerNameInput
               value={names?.[id] ?? ""}
-              onChange={(value: string) => {
+              onChange={(value) => {
                 setPlayerName(id, value);
               }}
               placeholder={`Player ${id}`}
