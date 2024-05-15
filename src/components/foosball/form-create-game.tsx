@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { CreateState, createGameBiLac } from "@/app/game-bi-lac/actions";
 import { BiLacSchema } from "@/validations/schemas";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useFormState } from "react-dom";
 import useProfiles from "@/hooks/useUserProfiles";
 import { api } from "@/trpc/react";
@@ -71,6 +71,17 @@ export default function FormCreateGameFoosball() {
   const router = useRouter();
   const pathname = usePathname();
   const profiles = useProfiles();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const keys = ["winner1", "winner2", "loser1", "loser2"];
+    keys.forEach((key) => {
+      if (searchParams.get(key)) {
+        form.setValue(key as keyof FormValues, searchParams.get(key) ?? "");
+      }
+    });
+  }, [searchParams, form]);
+
   const sendMessageMutation = api.messengerRoute.send.useMutation();
 
   const onHandleSwap = useCallback(() => {
@@ -159,6 +170,7 @@ export default function FormCreateGameFoosball() {
               onClick={onHandleSwap}
               variant={"outline"}
               className="p-1"
+              tabIndex={5}
             >
               <RefreshCwIcon className="h-4 w-4" />
             </Button>
