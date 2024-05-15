@@ -77,7 +77,7 @@ export default function FormCreateGameFoosball() {
     const keys = ["winner1", "winner2", "loser1", "loser2"];
     keys.forEach((key) => {
       if (searchParams.get(key)) {
-        form.setValue(key, searchParams.get(key));
+        form.setValue(key as keyof FormValues, searchParams.get(key) ?? "");
       }
     });
   }, [searchParams, form]);
