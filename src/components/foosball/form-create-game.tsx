@@ -109,12 +109,14 @@ export default function FormCreateGameFoosball() {
         const message = `[${GAME_TITLE[GAME_TYPE.BI_LAC]} ⚽️] 😚 {${winner1Name} & ${winner2Name}} beat {${loser1Name} & ${loser2Name}} 🥶`;
         sendMessageMutation.mutate({ message });
 
-        router.replace(
-          `${pathname}?winner1=${winner1}&winner2=${winner2}&loser1=${loser1}&loser2=${loser2}`,
-        );
+        setTimeout(() => {
+          router.replace(
+            `${pathname}?winner1=${winner1}&winner2=${winner2}&loser1=${loser1}&loser2=${loser2}`,
+          );
+        }, 0);
       });
     },
-    [router, pathname, profiles, sendMessageMutation],
+    [formAction, profiles, sendMessageMutation, router, pathname],
   );
 
   return (
