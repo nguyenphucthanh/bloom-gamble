@@ -1,4 +1,3 @@
-import Header from "@/components/Header";
 import ProfileCard from "@/components/auth/profile-card";
 import { getServerAuth } from "@/utils/supabase/getServerAuth";
 import { redirect } from "next/navigation";
@@ -18,7 +17,6 @@ export default async function ProfileLayout({
   }
   return (
     <main>
-      <Header title="Profile" />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
         <aside>
           <ProfileCard user={auth.user} />

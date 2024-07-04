@@ -1,4 +1,3 @@
-import Header from "@/components/Header";
 import React from "react";
 
 export default function GameTienLenLayout({
@@ -8,7 +7,6 @@ export default function GameTienLenLayout({
 }) {
   return (
     <main className="">
-      <Header title="Tiến lên" gamePath="/game-tien-len" />
       {children}
     </main>
   );

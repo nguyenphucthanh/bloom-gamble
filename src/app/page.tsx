@@ -4,12 +4,10 @@ import GameSelector from "@/components/GameSelector";
 import React from "react";
 import imgGamble from "@/assets/images/danhbai.png";
 import imgBiLac from "@/assets/images/foosball.jpg";
-import Header from "@/components/Header";
 
 export default function Home() {
   return (
     <main>
-      <Header title="" />
       <div className="flex flex-col gap-3">
         <h1 className="mb-5 text-center text-4xl font-bold uppercase text-slate-700">
           Work Hard
