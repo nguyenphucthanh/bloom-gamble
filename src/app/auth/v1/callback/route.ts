@@ -41,12 +41,13 @@ export async function GET(request: NextRequest) {
             // Create profile
             //
             const name =
-              data?.user?.user_metadata?.name || userEmail?.split("@")[0];
+              (data?.user?.user_metadata?.name as string) ||
+              userEmail?.split("@")[0];
             await supabase.from("UserProfile").insert({
               user_id: userId,
               email: userEmail,
               name,
-              first_name: name,
+              firstName: name,
             });
           }
         }

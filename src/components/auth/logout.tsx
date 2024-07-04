@@ -1,28 +1,24 @@
+"use client";
 import React from "react";
 
 import { Button } from "../ui/button";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { api } from "@/trpc/server";
+import { handleSignOut } from "@/app/auth/actions";
+import { RefreshCwIcon } from "lucide-react";
+import { useFormState } from "react-dom";
 
 export type LogoutProps = {
   path: string;
 };
 
 export default function Logout({ path }: LogoutProps) {
-  // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-misused-promises
-  const handleSignOut = async () => {
-    "use server";
-    api.user.signOut.mutate().catch((error) => {
-      console.error(error);
-    });
-    revalidatePath(path);
-    redirect(path);
-  };
-
+  const [_, action, isPending] = useFormState(handleSignOut, null);
   return (
-    <form action={handleSignOut}>
-      <Button type="submit">Sign Out</Button>
+    <form action={action}>
+      <input type="hidden" name="path" value={path} />
+      <Button type="submit" disabled={isPending}>
+        {isPending && <RefreshCwIcon className="mr-2 h-4 w-4 animate-spin" />}
+        Sign Out
+      </Button>
     </form>
   );
 }

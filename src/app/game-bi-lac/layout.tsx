@@ -1,4 +1,3 @@
-import Header from "@/components/Header";
 import React from "react";
 
 export default function GameBiLacLayout({
@@ -10,7 +9,6 @@ export default function GameBiLacLayout({
 }) {
   return (
     <main className="">
-      <Header title="Bi lắc" gamePath="/game-bi-lac" />
       {children}
       {report}
     </main>

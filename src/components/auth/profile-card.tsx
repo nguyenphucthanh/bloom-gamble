@@ -5,9 +5,11 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
+  CardFooter,
 } from "@/components/ui/card";
 import { User } from "@supabase/supabase-js";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import Logout from "./logout";
 
 export type ProfileCardProps = {
   user?: User;
@@ -35,6 +37,9 @@ export default function ProfileCard({ user }: ProfileCardProps) {
         <CardTitle>{user?.user_metadata?.name}</CardTitle>
         <CardDescription>{user?.email}</CardDescription>
       </CardContent>
+      <CardFooter>
+        <Logout path="/" />
+      </CardFooter>
     </Card>
   );
 }

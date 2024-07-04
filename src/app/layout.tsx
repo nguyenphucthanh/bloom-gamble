@@ -3,6 +3,7 @@ import "./globals.scss";
 import type { Metadata } from "next";
 import { Roboto_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
+import Header from "@/components/Header";
 
 const robotoMono = Roboto_Mono({ subsets: ["vietnamese"] });
 
@@ -20,12 +21,15 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/icon.png"></link>
+        <link rel="apple-touch-icon" href="/icon.png" />
         <meta name="theme-color" content="#fff" />
       </head>
       <body className={robotoMono.className}>
         <div className="container py-8">
-          <Providers>{children}</Providers>
+          <Providers>
+            <Header />
+            {children}
+            </Providers>
         </div>
         <Toaster />
       </body>
