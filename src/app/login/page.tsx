@@ -1,4 +1,3 @@
-import Header from "@/components/Header";
 import Login from "@/components/auth/login";
 import { getServerAuth } from "@/utils/supabase/getServerAuth";
 import { Metadata } from "next";
@@ -23,7 +22,6 @@ export default async function LoginPage({
 
   return (
     <main>
-      <Header title="Login" />
       <section className="flex flex-col items-center justify-center">
         <Login redirectTo={redirect} />
       </section>
