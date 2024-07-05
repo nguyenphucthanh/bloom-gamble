@@ -28,15 +28,16 @@ export async function GET(request: NextRequest) {
           const findProfile = await supabase
             .from("UserProfile")
             .select("*")
-            .eq("email", userEmail);
+            .eq("email", userEmail)
+            .maybeSingle();
 
-          if (findProfile.data?.[0].id) {
+          if (findProfile.data?.id) {
             await supabase
               .from("UserProfile")
               .update({
                 user_id: userId,
               })
-              .eq("id", findProfile.data?.[0]?.id);
+              .eq("id", findProfile.data?.id);
           } else {
             // Create profile
             //

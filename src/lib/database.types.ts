@@ -251,6 +251,44 @@ export type Database = {
           },
         ]
       }
+      one_time_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          relates_to: string
+          token_hash: string
+          token_type: Database["auth"]["Enums"]["one_time_token_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          relates_to: string
+          token_hash: string
+          token_type: Database["auth"]["Enums"]["one_time_token_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          relates_to?: string
+          token_hash?: string
+          token_type?: Database["auth"]["Enums"]["one_time_token_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "one_time_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       refresh_tokens: {
         Row: {
           created_at: string | null
@@ -643,6 +681,13 @@ export type Database = {
       code_challenge_method: "s256" | "plain"
       factor_status: "unverified" | "verified"
       factor_type: "totp" | "webauthn"
+      one_time_token_type:
+        | "confirmation_token"
+        | "reauthentication_token"
+        | "recovery_token"
+        | "email_change_token_new"
+        | "email_change_token_current"
+        | "phone_change_token"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -682,6 +727,99 @@ export type Database = {
           started_at?: string
         }
         Relationships: []
+      }
+      Bet: {
+        Row: {
+          createdAt: string
+          createdBy: string
+          game_id: string | null
+          id: string
+          locked: boolean
+          teamA: string
+          teamAResult: number | null
+          teamB: string
+          teamBResult: number | null
+          updatedAt: string
+        }
+        Insert: {
+          createdAt?: string
+          createdBy: string
+          game_id?: string | null
+          id?: string
+          locked?: boolean
+          teamA: string
+          teamAResult?: number | null
+          teamB: string
+          teamBResult?: number | null
+          updatedAt?: string
+        }
+        Update: {
+          createdAt?: string
+          createdBy?: string
+          game_id?: string | null
+          id?: string
+          locked?: boolean
+          teamA?: string
+          teamAResult?: number | null
+          teamB?: string
+          teamBResult?: number | null
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Bet_createdBy_fkey"
+            columns: ["createdBy"]
+            isOneToOne: false
+            referencedRelation: "UserProfile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "Bet_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "Game"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      BetPlayer: {
+        Row: {
+          bet_id: string
+          betAmount: number
+          id: string
+          team: string
+          userProfile_id: string
+        }
+        Insert: {
+          bet_id: string
+          betAmount?: number
+          id?: string
+          team?: string
+          userProfile_id: string
+        }
+        Update: {
+          bet_id?: string
+          betAmount?: number
+          id?: string
+          team?: string
+          userProfile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "BetPlayer_bet_id_fkey"
+            columns: ["bet_id"]
+            isOneToOne: false
+            referencedRelation: "Bet"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "BetPlayer_userProfile_id_fkey"
+            columns: ["userProfile_id"]
+            isOneToOne: false
+            referencedRelation: "UserProfile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       Game: {
         Row: {

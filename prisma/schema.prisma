@@ -20,6 +20,7 @@ model Game {
   UserProfile_Game_createdByToUserProfile UserProfile?       @relation("Game_createdByToUserProfile", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   UserProfile_Game_hostedByToUserProfile  UserProfile?       @relation("Game_hostedByToUserProfile", fields: [hostedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   UserProfilePoint                        UserProfilePoint[]
+  BetGame                                 Bet[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -33,6 +34,8 @@ model UserProfile {
   Game_Game_createdByToUserProfile Game[]             @relation("Game_createdByToUserProfile")
   Game_Game_hostedByToUserProfile  Game[]             @relation("Game_hostedByToUserProfile")
   UserProfilePoint                 UserProfilePoint[]
+  BetPlayer                        BetPlayer[]
+  Bet                              Bet[]
 }
 
 model UserProfilePoint {
@@ -44,4 +47,31 @@ model UserProfilePoint {
   updatedAt      DateTime    @default(now()) @updatedAt
   UserProfile    UserProfile @relation(fields: [userProfile_id], references: [id])
   Game           Game        @relation(fields: [game_id], references: [id])
+}
+
+model Bet {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  game_id     String?     @db.Uuid
+  teamA       String
+  teamB       String
+  teamAResult Int?
+  teamBResult Int?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
+  Game        Game?       @relation(fields: [game_id], references: [id])
+  BetPlayer   BetPlayer[]
+  locked      Boolean     @default(false)
+
+  createdBy             String      @db.Uuid
+  CreatedBy_UserProfile UserProfile @relation(fields: [createdBy], references: [id])
+}
+
+model BetPlayer {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userProfile_id String      @db.Uuid
+  userProfile    UserProfile @relation(fields: [userProfile_id], references: [id])
+  bet_id         String      @db.Uuid
+  bet            Bet         @relation(fields: [bet_id], references: [id])
+  betAmount      Decimal     @default(0)
+  team           String      @default("A")
 }
