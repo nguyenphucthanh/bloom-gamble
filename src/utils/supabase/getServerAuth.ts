@@ -1,9 +1,11 @@
 import { createClient } from "@/server/supabase.server";
+import { UserProfile } from "@prisma/client";
 import { User } from "@supabase/supabase-js";
 
 export const getServerAuth = async (): Promise<{
   error?: string;
   user?: User | null;
+  profile?: UserProfile | null;
 }> => {
   const supabase = createClient();
 
@@ -16,7 +18,14 @@ export const getServerAuth = async (): Promise<{
     };
   }
 
+  const profile = await supabase
+    .from("UserProfile")
+    .select()
+    .eq("user_id", data.user.id)
+    .single();
+
   return {
     user: data.user,
+    profile: profile.data,
   };
 };

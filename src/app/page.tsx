@@ -4,6 +4,7 @@ import GameSelector from "@/components/GameSelector";
 import React from "react";
 import imgGamble from "@/assets/images/danhbai.png";
 import imgBiLac from "@/assets/images/foosball.jpg";
+import imgBet from "@/assets/images/bet.png";
 
 export default function Home() {
   return (
@@ -20,6 +21,9 @@ export default function Home() {
           </GameSelector>
           <GameSelector image={imgBiLac} link="/game-bi-lac">
             Bi Lắc
+          </GameSelector>
+          <GameSelector image={imgBet} link="/bet">
+            Cá cược
           </GameSelector>
         </div>
       </div>

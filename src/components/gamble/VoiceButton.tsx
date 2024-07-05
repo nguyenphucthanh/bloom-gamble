@@ -26,7 +26,6 @@ const VoiceButton: FC<IVoiceButtonProps> = ({ callback }) => {
         }
       }
       callback(result.trim());
-      console.log(result);
     };
 
     recognition.onstart = () => {
