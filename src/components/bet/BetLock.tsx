@@ -30,7 +30,7 @@ export const BetLock: FC<BetLockProps> = ({ id }) => {
         locked: locked,
       });
 
-      setLocked((result?.locked as boolean) ?? false);
+      setLocked(Boolean(result?.locked) ?? false);
     },
     [bet, setLock],
   );
