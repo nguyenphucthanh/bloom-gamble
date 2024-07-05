@@ -62,7 +62,5 @@ export function payback(state: InputPoint): Payback {
     }
   }
 
-  console.log(paybackAmounts);
-
   return paybackAmounts;
 }
