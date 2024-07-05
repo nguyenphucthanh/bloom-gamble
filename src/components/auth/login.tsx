@@ -17,7 +17,7 @@ export default function Login({ redirectTo }: LoginProps) {
       <Auth
         supabaseClient={supabase}
         providers={["slack"]}
-        redirectTo={`${env.NEXT_PUBLIC_SITE_URL}/auth/v1/callback`}
+        redirectTo={`${env.NEXT_PUBLIC_SITE_URL}/auth/v1/callback?redirectTo=${redirectTo}`}
         queryParams={{
           redirectTo: redirectTo ?? "",
         }}

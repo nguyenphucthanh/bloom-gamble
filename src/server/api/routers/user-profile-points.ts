@@ -22,7 +22,6 @@ const userProfilePoints = createTRPCRouter({
     .query<QuickUserGamePoint[]>(async ({ input, ctx }) => {
       const { dateFrom, dateTo } = input;
 
-      console.log(dateFrom, dateTo);
       const gameResponse = await ctx.supabase
         .from("Game")
         .select()
@@ -33,6 +32,10 @@ const userProfilePoints = createTRPCRouter({
 
       if (gameResponse.error) {
         throw new Error(gameResponse.error.message);
+      }
+
+      if (!gameResponse.data?.length) {
+        return [];
       }
 
       const gameIds = gameResponse.data?.map((game) => game.id) ?? [];
@@ -81,10 +84,13 @@ const userProfilePoints = createTRPCRouter({
       const userProfileResponse = await ctx.supabase
         .from("UserProfile")
         .select("id")
-        .eq(isEmail ? "email" : "user_id", value);
+        .eq(isEmail ? "email" : "user_id", value)
+        .maybeSingle();
 
-      if (userProfileResponse.error) {
-        throw new Error(userProfileResponse.error.message);
+      if (!userProfileResponse.data?.id) {
+        throw new Error(
+          userProfileResponse?.error?.message ?? "No user profile found",
+        );
       }
 
       const pointsResponse = await ctx.supabase
@@ -92,14 +98,12 @@ const userProfilePoints = createTRPCRouter({
         .select(
           "game_id, createdAt, points.sum(), Game (id, gameType, createdAt)",
         )
-        .eq("userProfile_id", userProfileResponse?.data?.[0]?.id)
+        .eq("userProfile_id", userProfileResponse?.data?.id)
         .order("createdAt", { ascending: true });
 
       if (pointsResponse.error) {
         throw new Error(pointsResponse.error.message);
       }
-
-      console.log(pointsResponse.data);
 
       interface ResponseItem {
         game_id: string;

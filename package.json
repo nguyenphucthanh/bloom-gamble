@@ -9,10 +9,10 @@
     "lint": "next lint",
     "db:push:prod": "dotenvx run -f .env.production -- npx prisma db push",
     "db:push:dev": "dotenvx run -f .env.development -- npx prisma db push",
-    "db:migrate": "npx prisma migrate dev",
+    "db:migrate": "dotenvx run -f .env.development -- npx prisma migrate dev",
     "db:deploy:prod": "dotenvx run -f .env.production -- npx prisma migrate deploy",
     "db:deploy:dev": "dotenvx run -f .env.development -- npx prisma migrate deploy",
-    "prisma:studio": "prisma studio",
+    "prisma:studio": "dotenvx run -f .env.development -- prisma studio",
     "supabase:gen": "supabase gen types typescript > src/lib/database.types.ts --linked --schema public,auth"
   },
   "dependencies": {
@@ -31,6 +31,8 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
+    "@radix-ui/react-toggle": "^1.1.0",
+    "@radix-ui/react-toggle-group": "^1.1.0",
     "@reduxjs/toolkit": "^1.9.7",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/auth-ui-react": "^0.4.7",
