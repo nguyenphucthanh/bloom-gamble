@@ -4,7 +4,6 @@ import { getServerAuth } from "@/utils/supabase/getServerAuth";
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BetCard } from "@/components/bet/BetCard";
-import { Bet } from "@prisma/client";
 
 export default async function BetGame() {
   const session = await getServerAuth();
