@@ -13,8 +13,14 @@ export const BetBoard: FC<BetBoardProps> = ({ betId }) => {
   const { data, refetch } = api.bet.getBetPlayers.useQuery(betId);
   const { toast } = useToast();
 
-  const sideA = data?.filter((player) => player.team === "A") ?? [];
-  const sideB = data?.filter((player) => player.team === "B") ?? [];
+  const sideA =
+    data
+      ?.filter((player) => player.team === "A")
+      .sort((a, b) => a.betAmount - b.betAmount) ?? [];
+  const sideB =
+    data
+      ?.filter((player) => player.team === "B")
+      .sort((a, b) => a.betAmount - b.betAmount) ?? [];
 
   const handleEvent = useCallback(
     (_payload: unknown) => {
@@ -61,7 +67,7 @@ export const BetBoard: FC<BetBoardProps> = ({ betId }) => {
   }, [handleEvent, toast]);
 
   return (
-    <div className="flex w-full flex-row items-stretch gap-4 border border-neutral-300 mt-4 rounded shadow p-2">
+    <div className="mt-4 flex w-full flex-row items-stretch gap-4 rounded border border-neutral-300 p-2 shadow">
       <div className="flex flex-1 flex-col items-end gap-2">
         <div className="text-neutral-300">{sideA.length} người cược</div>
         {sideA.map((player) => (

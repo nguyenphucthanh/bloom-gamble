@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
 import { BetInputSchema } from "@/validations/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { RefreshCwIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FC, useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -49,43 +50,47 @@ export const FormBet: FC = () => {
             className="flex flex-col gap-4"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            <FormField
-              control={form.control}
-              name="teamA"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Team A</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      {...field}
-                      className="ring ring-blue-300"
-                    />
-                  </FormControl>
-                  <FormDescription>Please enter team A</FormDescription>
-                  <FormMessage />
-                </FormItem>
+            <div className="bg-gradient-to-r from-white to-blue-50 rounded p-4 border border-blue-50">
+              <FormField
+                control={form.control}
+                name="teamA"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Team A</FormLabel>
+                    <FormControl>
+                      <Input type="text" {...field} className="bg-white" />
+                    </FormControl>
+                    <FormDescription>Please enter team A</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="text-center font-bold p-2 text-2xl">V.S.</div>
+            <div className="bg-gradient-to-r from-white to-red-50 rounded p-4 border border-red-50">
+              <FormField
+                control={form.control}
+                name="teamB"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Team B</FormLabel>
+                    <FormControl>
+                      <Input type="text" {...field} className="bg-white" />
+                    </FormControl>
+                    <FormDescription>Please enter team B</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={createBet.isLoading}
+            >
+              {createBet.isLoading && (
+                <RefreshCwIcon className="mr-2 h-4 w-4 animate-spin" />
               )}
-            />
-            <FormField
-              control={form.control}
-              name="teamB"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Team B</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      {...field}
-                      className="ring ring-red-300"
-                    />
-                  </FormControl>
-                  <FormDescription>Please enter team B</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button className="w-full" type="submit">
               Mở kèo Đặt cược
             </Button>
           </form>
