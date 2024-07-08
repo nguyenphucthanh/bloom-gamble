@@ -1,8 +1,24 @@
 import { BetInputSchema, BetPlayerSchema } from "@/validations/schemas";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
+import { formatUTCDate, TIME_FORMATS } from "@/lib/datetime";
 
 const betRoute = createTRPCRouter({
+  getBets: publicProcedure.query(async ({ ctx }) => {
+    const tenDaysAgo = new Date(
+      new Date().getTime() - 10 * 24 * 60 * 60 * 1000
+    );
+    const bets = await ctx.supabase
+      .from("Bet")
+      .select("*, UserProfile (id, name)")
+      .gte("createdAt", formatUTCDate(tenDaysAgo, TIME_FORMATS.SUPABASE_DATE))
+      .order("createdAt", { ascending: false });
+
+    if (bets.error) {
+      throw new Error(bets.error.message);
+    }
+    return bets.data;
+  }),
   getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const bet = await ctx.supabase
       .from("Bet")
