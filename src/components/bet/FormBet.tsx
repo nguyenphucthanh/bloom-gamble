@@ -60,7 +60,7 @@ export const FormBet: FC = () => {
                     <FormControl>
                       <Input type="text" {...field} className="bg-white" />
                     </FormControl>
-                    <FormDescription>Please enter team A</FormDescription>
+                    <FormDescription>Nhập tên đội A</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -77,7 +77,7 @@ export const FormBet: FC = () => {
                     <FormControl>
                       <Input type="text" {...field} className="bg-white" />
                     </FormControl>
-                    <FormDescription>Please enter team B</FormDescription>
+                    <FormDescription>Nhập tên đội B</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

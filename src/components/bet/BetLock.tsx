@@ -21,10 +21,13 @@ export const BetLock: FC<BetLockProps> = ({ id }) => {
   }, [bet]);
 
   const handleLock = useCallback(
-    async (locked: boolean) => {
+    async (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      e.preventDefault();
+      e.stopPropagation();
       if (!bet) {
         return;
       }
+      const locked = e.currentTarget.dataset.lock === "true";
       const result = await setLock.mutateAsync({
         id: bet.id,
         locked: locked,
@@ -38,12 +41,13 @@ export const BetLock: FC<BetLockProps> = ({ id }) => {
   if (locked) {
     return (
       <Button
-        variant={"default"}
-        onClick={() => handleLock(false)}
+        variant={"ghost"}
+        data-lock={false}
+        onClick={handleLock}
         disabled={setLock.isLoading}
       >
         <UnlockIcon className="mr-2" />
-        Unlock
+        Mở khóa
         {setLock.isLoading && <RefreshCwIcon className="ml-2 animate-spin" />}
       </Button>
     );
@@ -52,11 +56,11 @@ export const BetLock: FC<BetLockProps> = ({ id }) => {
   return (
     <Button
       variant={"destructive"}
-      onClick={() => handleLock(true)}
+      data-lock={true}
+      onClick={handleLock}
       disabled={setLock.isLoading}
     >
-      <LockIcon className="mr-2" />
-      Lock
+      <LockIcon className="mr-2" />Khóa
       {setLock.isLoading && <RefreshCwIcon className="ml-2 animate-spin" />}
     </Button>
   );

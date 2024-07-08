@@ -23,8 +23,14 @@ export const BetHeader: FC<BetHeaderProps> = ({
             VS
           </span>
         ) : (
-          <div className="rounded-full bg-destructive p-4 text-xl text-white">
-            {teamAResult} - {teamBResult}
+          <div className="flex flex-row items-center gap-1">
+            <div className="rounded p-2 min-w-12 text-xl text-red-500 bg-white text-center shadow font-bold">
+              {teamAResult}
+            </div>
+            -
+            <div className="rounded p-2 min-w-12 text-xl text-red-500 bg-white text-center shadow font-bold">
+              {teamBResult}
+            </div>
           </div>
         )}
       </div>

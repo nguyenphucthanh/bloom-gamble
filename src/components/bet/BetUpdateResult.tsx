@@ -102,13 +102,10 @@ export const BetUpdateResult: FC<BetUpdateResultProps> = ({ id }) => {
             {updateBet.isLoading && (
               <RefreshCcwIcon className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Save and Lock
+            Lưu & đóng kèo
           </Button>
         </form>
       </Form>
-      <div className="mt-4 text-sm text-neutral-700">
-        Không thể unlock sau khi cập nhật kết quả
-      </div>
     </div>
   );
 };
