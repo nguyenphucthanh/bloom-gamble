@@ -1,5 +1,6 @@
 import { BetBoard } from "@/components/bet/BetBoard";
 import { BetHeader } from "@/components/bet/BetHeader";
+import { BetResult } from "@/components/bet/BetResult";
 import { BetUpdateResult } from "@/components/bet/BetUpdateResult";
 import { FormJoinBet } from "@/components/bet/FormJoinBet";
 import { api } from "@/trpc/server";
@@ -27,19 +28,17 @@ export default async function PageBetDetail({
   return (
     <div>
       <h1 className="mb-8 text-center text-3xl">Kèo</h1>
-      <BetHeader
-        id={bet.id}
-        teamA={bet.teamA}
-        teamB={bet.teamB}
-      />
+      <BetHeader id={bet.id} teamA={bet.teamA} teamB={bet.teamB} />
       <BetBoard betId={params.id} />
       {isOwner && <BetUpdateResult id={params.id} />}
-      {!isFinished && (
+      {!isFinished ? (
         <div className="mt-8 flex flex-row justify-center border-t border-t-neutral-100 pt-4">
           {session?.user ? (
             <FormJoinBet
               betId={params.id}
               userProfileId={session?.profile?.id}
+              teamA={bet.teamA}
+              teamB={bet.teamB}
             />
           ) : (
             <div>
@@ -51,6 +50,18 @@ export default async function PageBetDetail({
             </div>
           )}
         </div>
+      ) : (
+        <BetResult
+          players={bet?.BetPlayer.map((player) => ({
+            id: player.id,
+            name: player.UserProfile?.name ?? "",
+            betAmount: player.betAmount,
+            team: player.team,
+          }))}
+          winTeam={
+            (bet?.teamAResult ?? 0) > (bet?.teamBResult ?? 0) ? "A" : "B"
+          }
+        />
       )}
     </div>
   );

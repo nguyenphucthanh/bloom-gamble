@@ -9,8 +9,17 @@ interface BetBoardProps {
   betId: string;
 }
 
+const LoadingPlayer = () => {
+  return Array.from({ length: 3 }).map((_, index) => (
+    <div
+      key={index}
+      className="block h-4 w-full animate-pulse rounded-sm bg-neutral-200"
+    />
+  ));
+};
+
 export const BetBoard: FC<BetBoardProps> = ({ betId }) => {
-  const { data, refetch } = api.bet.getBetPlayers.useQuery(betId);
+  const { data, refetch, isLoading } = api.bet.getBetPlayers.useQuery(betId);
   const { toast } = useToast();
 
   const sideA =
@@ -67,9 +76,10 @@ export const BetBoard: FC<BetBoardProps> = ({ betId }) => {
   }, [handleEvent, toast]);
 
   return (
-    <div className="mt-4 flex w-full flex-row items-stretch gap-4 rounded border border-neutral-300 p-2 shadow">
+    <div className="mt-4 flex w-full flex-row items-stretch gap-4 rounded-xl border border-neutral-300 p-2 shadow">
       <div className="flex flex-1 flex-col items-end gap-2">
         <div className="text-neutral-300">{sideA.length} người cược</div>
+        {isLoading && <LoadingPlayer />}
         {sideA.map((player) => (
           <div
             key={player.id}
@@ -82,6 +92,7 @@ export const BetBoard: FC<BetBoardProps> = ({ betId }) => {
       <div className="w-2 rounded bg-neutral-50"></div>
       <div className="flex flex-1 flex-col items-start gap-2">
         <div className="text-neutral-300">{sideB.length} người cược</div>
+        {isLoading && <LoadingPlayer />}
         {sideB.map((player) => (
           <div
             key={player.id}

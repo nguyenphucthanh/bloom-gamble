@@ -22,7 +22,7 @@ const betRoute = createTRPCRouter({
   getById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const bet = await ctx.supabase
       .from("Bet")
-      .select()
+      .select("*, BetPlayer(*, UserProfile(id, name))")
       .eq("id", input)
       .maybeSingle();
 
