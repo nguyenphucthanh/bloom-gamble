@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { CrownIcon, FrownIcon, LaughIcon } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 type BetResultProps = {
   players: {
@@ -37,22 +38,24 @@ export const BetResult: FC<BetResultProps> = ({ players, winTeam }) => {
       </CardHeader>
       <CardContent>
         <h4 className="text-xl font-bold">
-          <FrownIcon className="mr-2 inline-block w-10" />Losers
+          <FrownIcon className="mr-2 inline-block w-10" />
+          Losers
         </h4>
-        <ul className="list list-none ml-12 my-4">
+        <ul className="list my-4 ml-12 list-none">
           {losers.map((loser) => (
             <li key={loser.id}>
-              {loser.name} {-loser.betAmount}
+              {loser.name} {formatCurrency(-loser.betAmount)}
             </li>
           ))}
         </ul>
         <h4 className="text-xl font-bold">
-          <LaughIcon className="mr-2 inline-block w-10" />Winners
+          <LaughIcon className="mr-2 inline-block w-10" />
+          Winners
         </h4>
-        <ul className="list list-none ml-12 my-4">
+        <ul className="list my-4 ml-12 list-none">
           {winnersWithIncome.map((winner) => (
             <li key={winner.id}>
-              {winner.name}: +{winner.income}
+              {winner.name}: +{formatCurrency(Math.floor(winner.income))}
             </li>
           ))}
         </ul>
