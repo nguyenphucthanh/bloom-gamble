@@ -25,9 +25,16 @@ import { useToast } from "../ui/use-toast";
 export type FormJoinBetProps = {
   betId: string;
   userProfileId?: string;
+  teamA: string;
+  teamB: string;
 };
 
-export const FormJoinBet: FC<FormJoinBetProps> = ({ betId, userProfileId }) => {
+export const FormJoinBet: FC<FormJoinBetProps> = ({
+  betId,
+  userProfileId,
+  teamA,
+  teamB,
+}) => {
   const [locked, setLocked] = useState(false);
   const { toast } = useToast();
 
@@ -141,9 +148,9 @@ export const FormJoinBet: FC<FormJoinBetProps> = ({ betId, userProfileId }) => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col p-4 rounded ring-4 ring-red-100">
       <Form {...form}>
-        <h5 className="font-semibold text-xl">Tham gia đặt cược</h5>
+        <h5 className="text-xl font-semibold">Tham gia đặt cược</h5>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-4"
@@ -177,12 +184,21 @@ export const FormJoinBet: FC<FormJoinBetProps> = ({ betId, userProfileId }) => {
                     type="single"
                     {...field}
                     onValueChange={(v) => field.onChange(v)}
+                    className="items-stretch"
                   >
-                    <ToggleGroupItem value="A" aria-label="Team A">
-                      A
+                    <ToggleGroupItem
+                      value="A"
+                      aria-label="Team A"
+                      className="h-auto p-4"
+                    >
+                      <span className="text-blue-500">{teamA}</span>
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="B" aria-label="Team B">
-                      B
+                    <ToggleGroupItem
+                      value="B"
+                      aria-label="Team B"
+                      className="h-auto p-4"
+                    >
+                      <span className="text-red-500">{teamB}</span>
                     </ToggleGroupItem>
                   </ToggleGroup>
                 </FormControl>
