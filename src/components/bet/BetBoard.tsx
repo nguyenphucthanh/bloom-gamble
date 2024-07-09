@@ -4,6 +4,7 @@ import { api } from "@/trpc/react";
 import { FC, useCallback, useEffect } from "react";
 import { useToast } from "../ui/use-toast";
 import { Badge } from "../ui/badge";
+import { formatCurrency } from "@/lib/utils";
 
 interface BetBoardProps {
   betId: string;
@@ -85,7 +86,7 @@ export const BetBoard: FC<BetBoardProps> = ({ betId }) => {
             key={player.id}
             className="inline-flex flex-row items-center justify-end gap-2 text-sm"
           >
-            {player.UserProfile?.name} <Badge>{player.betAmount}</Badge>
+            {player.UserProfile?.name} <Badge>{formatCurrency(player.betAmount)}</Badge>
           </div>
         ))}
       </div>
