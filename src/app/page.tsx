@@ -5,6 +5,7 @@ import React from "react";
 import imgGamble from "@/assets/images/danhbai.png";
 import imgBiLac from "@/assets/images/foosball.jpg";
 import imgBet from "@/assets/images/bet.png";
+import deadpool from "@/assets/images/deadpool.jpeg";
 
 export default function Home() {
   return (
@@ -24,6 +25,9 @@ export default function Home() {
           </GameSelector>
           <GameSelector image={imgBet} link="/bet">
             Cá cược
+          </GameSelector>
+          <GameSelector image={deadpool} link="/free-board">
+            Free Board
           </GameSelector>
         </div>
       </div>
