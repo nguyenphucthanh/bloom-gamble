@@ -3,7 +3,6 @@ import { getServerAuth } from "@/utils/supabase/getServerAuth";
 import { Metadata } from "next";
 import React from "react";
 import { redirect as goTo } from "next/navigation";
-import { env } from "@/env";
 
 export const metadata: Metadata = {
   title: "Login",
