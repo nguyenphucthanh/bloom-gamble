@@ -2,7 +2,6 @@ import { InputPoint, payback } from "@/lib/payback";
 import { RootState } from "@/store/store";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { stat } from "fs";
 
 export type IFreeBoardMember = {
   profileId: string;
