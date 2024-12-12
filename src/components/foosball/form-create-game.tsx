@@ -96,10 +96,10 @@ export default function FormCreateGameFoosball() {
     (formData: FormData) => {
       startTransition(() => {
         formAction(formData);
-        const winner1 = formData.get("winner1")?.toString() ?? "";
-        const winner2 = formData.get("winner2")?.toString() ?? "";
-        const loser1 = formData.get("loser1")?.toString() ?? "";
-        const loser2 = formData.get("loser2")?.toString() ?? "";
+        const winner1 = (formData.get("winner1") as string) ?? "";
+        const winner2 = (formData.get("winner2") as string) ?? "";
+        const loser1 = (formData.get("loser1") as string) ?? "";
+        const loser2 = (formData.get("loser2") as string) ?? "";
 
         const winner1Name = profiles?.find((p) => p.id === winner1)?.name;
         const winner2Name = profiles?.find((p) => p.id === winner2)?.name;

@@ -10,10 +10,11 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage({
-  searchParams: { redirect },
+  searchParams,
 }: {
-  searchParams: { redirect?: string };
+  searchParams: Promise<{ redirect?: string }>;
 }) {
+  const redirect = (await searchParams).redirect;
   const auth = await getServerAuth();
 
   if (auth.user?.id) {

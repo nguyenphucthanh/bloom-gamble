@@ -9,7 +9,7 @@ export const handleSignOut = async (
   _previousState: SignOutState,
   formData: FormData,
 ) => {
-  const path = formData.get("path")?.toString();
+  const path = (formData.get("path") as string) ?? "";
   await api.user.signOut.mutate();
   if (path) {
     revalidatePath(path);
