@@ -155,7 +155,7 @@ export const FreeBoard: FC = () => {
             </>
           ) : (
             <div className="text-red-500">
-              Please check again. Sum of points must be 0. Someone's point is
+              Please check again. Sum of points must be 0. Someone&apos;s point is
               missing.
             </div>
           )}
