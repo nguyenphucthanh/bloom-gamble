@@ -24,25 +24,28 @@ export default async function PageReportGameTienLen({
   params,
   searchParams,
 }: {
-  params: {
+  params: Promise<{
     game: GAME_TYPE;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     dateFrom?: string; // yyyy-MM-dd
     dateTo?: string; // yyyy-MM-dd
-  };
+  }>;
 }) {
   const auth = await getServerAuth();
+  const gameParam = (await (params)).game
+  const dateFromParam = (await (searchParams)).dateFrom
+  const dateToParam = (await (searchParams)).dateTo
 
   if (!auth?.user) {
-    redirect(`/login?redirect=/report/${params.game}`);
+    redirect(`/login?redirect=/report/${gameParam}`);
   }
 
-  const dateFrom = searchParams.dateFrom
-    ? startOfDay(new Date(searchParams.dateFrom))
+  const dateFrom = dateFromParam
+    ? startOfDay(new Date(dateFromParam))
     : startOfDay(addDays(new Date(), -7));
-  const dateTo = searchParams.dateTo
-    ? endOfDay(new Date(searchParams.dateTo))
+  const dateTo = dateToParam
+    ? endOfDay(new Date(dateToParam))
     : endOfDay(new Date());
   const formatedDateFrom = formatUTCDate(
     dateFrom,
@@ -59,7 +62,7 @@ export default async function PageReportGameTienLen({
       addDays(new Date(), 0 - back),
       TIME_FORMATS.SUPABASE_DATE,
     );
-    return `/report/${params.game}?dateFrom=${dateFromParam}&dateTo=${dateToParam}`;
+    return `/report/${gameParam}?dateFrom=${dateFromParam}&dateTo=${dateToParam}`;
   };
 
   const dayGap = differenceInDays(formatedDateTo, formatedDateFrom);
@@ -73,7 +76,7 @@ export default async function PageReportGameTienLen({
 
   return (
     <div>
-      <h2 className="mb-3 text-lg font-bold">{GAME_TITLE[params.game]}</h2>
+      <h2 className="mb-3 text-lg font-bold">{GAME_TITLE[gameParam]}</h2>
       <div className="my-5 flex flex-wrap justify-end gap-1">
         <Button variant={dayGap === 90 ? "default" : "outline"} asChild>
           <Link href={buildLink(90)}>90d</Link>
@@ -98,7 +101,7 @@ export default async function PageReportGameTienLen({
         </Button>
       </div>
       <Report
-        gameType={params.game}
+        gameType={gameParam}
         dateFrom={formatedDateFrom}
         dateTo={formatedDateTo}
       />

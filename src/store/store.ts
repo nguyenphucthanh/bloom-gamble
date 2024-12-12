@@ -5,6 +5,7 @@ import {
   combineReducers,
 } from "@reduxjs/toolkit";
 import gambleReducer from "../components/gamble/gambleSlice";
+import freeBoardReducer from "../components/freeboard/freeboardSlice";
 import storage from "./storage";
 import {
   FLUSH,
@@ -25,6 +26,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   gamble: gambleReducer,
+  freeBoard: freeBoardReducer,
 });
 
 const persistedReducers = persistReducer(persistConfig, rootReducer);

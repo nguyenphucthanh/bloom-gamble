@@ -16,7 +16,7 @@ export const BetLock: FC<BetLockProps> = ({ id }) => {
 
   useEffect(() => {
     if (bet) {
-      setLocked((bet.locked as boolean) ?? false);
+      setLocked(bet.locked ?? false);
     }
   }, [bet]);
 
@@ -33,7 +33,7 @@ export const BetLock: FC<BetLockProps> = ({ id }) => {
         locked: locked,
       });
 
-      setLocked(Boolean(result?.locked) ?? false);
+      setLocked(result?.locked ?? false);
     },
     [bet, setLock],
   );
@@ -60,7 +60,8 @@ export const BetLock: FC<BetLockProps> = ({ id }) => {
       onClick={handleLock}
       disabled={setLock.isLoading}
     >
-      <LockIcon className="mr-2" />Khóa
+      <LockIcon className="mr-2" />
+      Khóa
       {setLock.isLoading && <RefreshCwIcon className="ml-2 animate-spin" />}
     </Button>
   );

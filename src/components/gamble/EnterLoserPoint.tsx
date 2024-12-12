@@ -15,7 +15,7 @@ export interface IEnterLoserPointProps {
 }
 
 const EnterLoserPoint: FC<IEnterLoserPointProps> = ({ onChange, winnerId }) => {
-  const clickTimeout = useRef<NodeJS.Timeout | null>();
+  const clickTimeout = useRef<NodeJS.Timeout | null>(null);
   const [round, setRound] = useState<INullableGambleRound>({
     A: null,
     B: null,

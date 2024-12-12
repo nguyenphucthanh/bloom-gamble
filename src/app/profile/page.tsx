@@ -1,5 +1,5 @@
 import React from "react";
 
-export default async function Profile() {
+export default function Profile() {
   return <div></div>;
 }
