@@ -7,7 +7,7 @@ export const getServerAuth = async (): Promise<{
   user?: User | null;
   profile?: UserProfile | null;
 }> => {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getUser();
 

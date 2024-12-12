@@ -19,8 +19,9 @@ import { transformer } from "./shared";
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
  * handling a tRPC call from a React Server Component.
  */
-const createContext = cache(() => {
-  const heads = new Headers(headers());
+const createContext = cache(async () => {
+  const hds = await headers();
+  const heads = new Headers(hds);
   heads.set("x-trpc-source", "rsc");
 
   return createTRPCContext({

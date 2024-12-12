@@ -29,7 +29,7 @@ import { createClient } from "../supabase.server";
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   const session = await getServerAuthSession();
 
-  const supabase = createClient();
+  const supabase = await createClient();
   return {
     supabase,
     session,

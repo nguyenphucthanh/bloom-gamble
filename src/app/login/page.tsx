@@ -3,6 +3,7 @@ import { getServerAuth } from "@/utils/supabase/getServerAuth";
 import { Metadata } from "next";
 import React from "react";
 import { redirect as goTo } from "next/navigation";
+import { env } from "@/env";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -10,10 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage({
-  searchParams: { redirect },
+  searchParams,
 }: {
-  searchParams: { redirect?: string };
+  searchParams: Promise<{ redirect?: string }>;
 }) {
+  const redirect = (await searchParams).redirect;
   const auth = await getServerAuth();
 
   if (auth.user?.id) {

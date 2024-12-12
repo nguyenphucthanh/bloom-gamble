@@ -13,10 +13,11 @@ export const dynamic = "force-dynamic";
 export default async function PageBetDetail({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const id = (await params).id;
   const session = await getServerAuth();
-  const bet = await api.bet.getById.query(params.id);
+  const bet = await api.bet.getById.query(id);
   const isOwner = session?.profile?.id === bet?.createdBy;
 
   if (!bet) {
@@ -29,13 +30,13 @@ export default async function PageBetDetail({
     <div>
       <h1 className="mb-8 text-center text-3xl">Kèo</h1>
       <BetHeader id={bet.id} teamA={bet.teamA} teamB={bet.teamB} />
-      <BetBoard betId={params.id} />
-      {isOwner && <BetUpdateResult id={params.id} />}
+      <BetBoard betId={id} />
+      {isOwner && <BetUpdateResult id={id} />}
       {!isFinished ? (
         <div className="mt-8 flex flex-row justify-center border-t border-t-neutral-100 pt-4">
           {session?.user ? (
             <FormJoinBet
-              betId={params.id}
+              betId={id}
               userProfileId={session?.profile?.id}
               teamA={bet.teamA}
               teamB={bet.teamB}
@@ -43,7 +44,7 @@ export default async function PageBetDetail({
           ) : (
             <div>
               <Link
-                href={`/login?redirect=${encodeURIComponent(`/bet/${params.id}`)}`}
+                href={`/login?redirect=${encodeURIComponent(`/bet/${id}`)}`}
               >
                 Login to bet
               </Link>

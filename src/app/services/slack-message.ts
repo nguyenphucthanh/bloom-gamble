@@ -21,7 +21,7 @@ export default class SlackMessage implements MessageService {
 
   async send(
     message: string,
-    threadId?: string | undefined,
+    threadId?: string,
   ): Promise<MessageResponse> {
     try {
       const url =

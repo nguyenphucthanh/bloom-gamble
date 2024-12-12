@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   redirectUrl.pathname = decodeURIComponent(redirectTo);
 
   if (code) {
-    const supabase = createClient();
+    const supabase = await createClient();
     try {
       const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
